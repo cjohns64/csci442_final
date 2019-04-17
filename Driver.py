@@ -4,23 +4,23 @@ import navigation as nav
 
 class Driver:
     # TODO implement state list
-    # find mining area = find_state + mining area target
+    # find mining area = find_state + target_mining_area
 
-    # travel to mining area = obstacle_avoidance_state + direction of mining area
+    # travel to mining area = obstacle_avoidance_state + target_mining_area
 
-    # find human = find_state + human target
+    # find human = find_state + target_human
 
-    # travel to human = traveling_state + human target -> ask for ice once there
+    # travel to human = traveling_state + target_human -> ask for ice once there
 
     # identify ice -> grab ice once correct
 
-    # find start area = find_state + start area target
+    # find start area = find_state + target_start_area
 
-    # return to start = obstacle_avoidance_state + direction of start area
+    # return to start = obstacle_avoidance_state + target_start_area
 
-    # find goal area = find_state + goal area for current ice target
+    # find goal area = find_state + target_goal_area for current ice target
 
-    # travel to goal area = traveling_state + goal area target -> drop ice once there
+    # travel to goal area = traveling_state + target_goal_area -> drop ice once there
 
     def __init__(self):
         # set up video capture
@@ -48,6 +48,24 @@ class Driver:
             self.move_function = self.navigation_obj.get_rotation(nav_x - frame.shape[1] // 2)
             # TODO use the movement function
             pass
+
+    def traveling_state(self):
+        pass
+
+    def find_state(self):
+        pass
+
+    def target_human(self):
+        pass
+
+    def target_mining_area(self):
+        pass
+
+    def target_start_area(self):
+        pass
+
+    def target_goal_area(self, goal_type):
+        pass
 
     def main_loop(self):
         while True:
