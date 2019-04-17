@@ -3,6 +3,24 @@ import navigation as nav
 
 
 class Driver:
+    # TODO implement state list
+    # find mining area = find_state + mining area target
+
+    # travel to mining area = obstacle_avoidance_state + direction of mining area
+
+    # find human = find_state + human target
+
+    # travel to human = traveling_state + human target -> ask for ice once there
+
+    # identify ice -> grab ice once correct
+
+    # find start area = find_state + start area target
+
+    # return to start = obstacle_avoidance_state + direction of start area
+
+    # find goal area = find_state + goal area for current ice target
+
+    # travel to goal area = traveling_state + goal area target -> drop ice once there
 
     def __init__(self):
         # set up video capture
