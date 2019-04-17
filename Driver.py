@@ -46,3 +46,7 @@ class Driver:
             if k == 27:
                 break
         cv.destroyAllWindows()
+
+
+robot = Driver()
+robot.main_loop()
