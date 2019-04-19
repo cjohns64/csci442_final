@@ -72,7 +72,7 @@ class PathDetection:
         # return target point
         return np.array(target_point)
 
-    def get_rotation(self, target_x_from_center, min_action_value=40):
+    def get_needed_action(self, target_x_from_center, min_action_value=40):
         """
         Gets whether the robot should rotate or not and in what direction
         :param target_x_from_center: the target horizontal location as measured from the center of the screen
@@ -98,5 +98,9 @@ class PathDetection:
         pass
 
     def rotate_left(self):
+        # TODO add motor movement
+        pass
+
+    def zero_motors(self):
         # TODO add motor movement
         pass

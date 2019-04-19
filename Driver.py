@@ -1,6 +1,7 @@
 import cv2 as cv
 import navigation as nav
 from enum import Enum
+import time
 
 
 class LostTargetException(Exception):
@@ -43,47 +44,84 @@ class Driver:
     def __init__(self, debug=False):
         # set up objects
         self.navigation_obj = nav.PathDetection(display=True)
-        self.move_function = None
         self.debug = debug
         # initialize with base state
         self.primary_state = PrmState.OBS_AVOID
         self.secondary_state = SecState.SEARCH
+        # global variables
+        self.last_seen_time = -1  # default to negative value so that the first run always works
 
-    def obstacle_avoidance_state(self, frame):
+        # adjustable parameters
+        self.distance_value = 10
+
+    def obstacle_avoidance_state(self, frame, targeting_function, retargeting_timeout=2):
         """
-        State for navigating through the obstacles
+        Continues to navigate through the obstacles, also takes into account if the target is seen.
         :param frame: the current frame of the camera
-        :return:
+        :param targeting_function: function used to identify distance and direction to target,
+        returns est. distance to target and its location on the screen,
+        raises a LostTargetException if the target is lost
+        :param retargeting_timeout: time delay between researching for the target
+        :return: True if target is reached, False if it has not,
+        raises a LostTargetException if the target is lost after the retargeting_timeout
         """
-        if self.debug: print("STATE: obstacle avoidance")
-        if frame is not None:
-            # get path target location on the screen
-            nav_x, nav_y = self.navigation_obj.get_path(frame)
-            # get the movement function we need
-            self.move_function = self.navigation_obj.get_rotation(nav_x - frame.shape[1] // 2)
-            # TODO use the movement function
-            pass
+        try:
+            # try to find the target
+            dis, loc = targeting_function(frame)
+            if dis < self.distance_value:
+                return True
+        except LostTargetException:
+            if self.last_seen_time - time.process_time() > retargeting_timeout:
+                # it has been to long since we last saw the target, will have to transition back into search state
+                raise LostTargetException("Target lost after {} seconds".format(retargeting_timeout))
+        # continue along available path
+        # get path target location on the screen
+        nav_x, nav_y = self.navigation_obj.get_path(frame)
+        # get the movement function we need
+        move_function = self.navigation_obj.get_needed_action(nav_x - frame.shape[1] // 2)
+        # do action
+        move_function()
+        return False
 
-    def traveling_state(self, targeting_function):
+    def traveling_state(self, frame, targeting_function):
         """
         Continues to travel to target, must be given a targeting function
+        :param frame: the current camera frame
         :param targeting_function: function used to identify distance and direction to target,
         returns est. distance to target and its location on the screen,
         raises a LostTargetException if the target is lost
         :return: True if target is reached, False if it has not,
         raises a LostTargetException if the target is lost
         """
-        pass
+        # find the object, LostTargetException raised if targeting_function fails to find the target
+        distance, location = targeting_function(frame)
+        if distance > self.distance_value:
+            # get function for moving or rotating
+            move_function = self.navigation_obj.get_needed_action(location[0] - frame.shape[1] // 2)
+            # do action
+            move_function()
+            return False
+        else:
+            return True
 
-    def find_state(self, targeting_function):
+    def find_state(self, frame, targeting_function):
         """
-        Continues to search for the target, given by the targeting_function
+        Continues to search for the target, given by the targeting_function.
+        Assumes the head is already in the correct orientation
+        :param frame: the current camera frame
         :param targeting_function: function used to identify distance and direction to target,
         returns est. distance to target and its location on the screen,
         raises a LostTargetException if the target is lost
         :return: True if the target is found, False if it has not
         """
-        pass
+        # search for target, if it is not found rotate right
+        try:
+            dis, loc = targeting_function(frame)
+            return True
+        except LostTargetException:
+            # target not found, rotate right
+            self.navigation_obj.rotate_right()
+            return False
 
     def target_human(self, frame, suppress_exception=False):
         """
@@ -132,8 +170,9 @@ class Driver:
         pass
 
     def main_loop_step(self, frame):
-        # TODO transition between states
-        self.obstacle_avoidance_state(frame)
+        if frame is not None:
+            # TODO transition between states
+            self.obstacle_avoidance_state(frame)
 
 
 def laptop_cam_loop(obj):
