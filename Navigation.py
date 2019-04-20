@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv
 
 
-class PathDetection:
+class Navigation:
 
     def __init__(self, display=False):
         self.display = display
