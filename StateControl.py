@@ -8,9 +8,9 @@ class LostTargetException(Exception):
 
 
 class PrmState(Enum):
-    OBS_AVOID = 0
+    TRAVEL_MINING = 0
     MINING = 1
-    RETURNING = 2
+    TRAVEL_GOAL = 2
     GOAL = 3
 
 
@@ -30,10 +30,11 @@ class StateController:
         self.navigation_obj = Nav(display=True)
         self.debug = debug
         # initialize with base state
-        self.primary_state = PrmState.OBS_AVOID
+        self.primary_state = PrmState.TRAVEL_MINING
         self.secondary_state = SecState.SEARCH
         # global variables
         self.last_seen_time = -1  # default to negative value so that the first run always works
+        self.goal = 0  # index for the current goal type to look for
 
         # adjustable parameters
         self.distance_value = 10
@@ -41,12 +42,152 @@ class StateController:
     def main_loop_step(self, frame):
         """
         Performs one step of the current state and handles transitions between states
-        :param frame:
-        :return:
+        State Order for one cycle:
+            0) find mining area = find_state + target_mining_area
+            1) travel to mining area = obstacle_avoidance_state + target_mining_area
+            2) find human = find_state + target_human
+            3) travel to human = traveling_state + target_human -> ask for ice once there
+            4) identify ice -> grab ice once correct
+            5) find goal area = find_state + target_goal_area
+            6) return to start = obstacle_avoidance_state + target_goal_area
+            7) find goal area = find_state + target_goal_area for current ice target
+            8) travel to goal area = traveling_state + target_goal_area
+            9) drop ice in correct goal area
+        :param frame: the current frame of the camera
+        :return: True on a successful completion of a cycle
         """
         if frame is not None:
-            # TODO transition between states
-            self.obstacle_avoidance_state(frame, self.target_mining_area)
+
+            # >>>> MOVING States >>>>
+            if self.secondary_state == SecState.MOVING:
+                if self.primary_state == PrmState.TRAVEL_MINING:
+                    # 1) travel to mining area = obstacle_avoidance_state + target_mining_area
+                    if self.debug: print("STATE = 1, travel to mining area")
+                    try:
+                        if self.obstacle_avoidance_state(frame, self.target_mining_area):
+                            # reached mining area since function returned True
+                            # TODO declare that mining area is reached
+                            if self.debug: print("STATE = 1, mining area reached")
+                            # set to next state
+                            self.primary_state = PrmState.MINING
+                            self.secondary_state = SecState.SEARCH
+                    except LostTargetException or TypeError:
+                        # revert back to search state
+                        self.secondary_state = SecState.SEARCH
+
+                elif self.primary_state == PrmState.MINING:
+                    # 3) travel to human = traveling_state + target_human -> ask for ice once there
+                    if self.debug: print("STATE = 3, travel to human")
+                    try:
+                        if self.traveling_state(frame, self.target_human):
+                            # reached human since function returned True
+                            # TODO ask for ice
+                            if self.debug: print("STATE = 3, asking for ice")
+                            # set to next state
+                            self.secondary_state = SecState.ACTING
+                    except LostTargetException or TypeError:
+                        # revert back to search state
+                        self.secondary_state = SecState.SEARCH
+
+                elif self.primary_state == PrmState.TRAVEL_GOAL:
+                    # 6) return to start = obstacle_avoidance_state + target_goal_area
+                    if self.debug: print("STATE = 6, return to start")
+                    try:
+                        if self.obstacle_avoidance_state(frame, self.target_goal_area):
+                            # reached start area since function returned True
+                            # TODO declare goal area is reached
+                            if self.debug: print("STATE = 6, goal area reached")
+                            # set to next state
+                            self.primary_state = PrmState.GOAL
+                            self.secondary_state = SecState.SEARCH
+                    except LostTargetException or TypeError:
+                        # revert back to search state
+                        self.secondary_state = SecState.SEARCH
+
+                else:  # PimState == GOAL
+                    # 8) travel to goal area = traveling_state + target_goal_area
+                    if self.debug: print("STATE = 8, travel to goal area")
+                    try:
+                        if self.traveling_state(frame, self.target_goal_area):
+                            # reached goal area since function returned True
+                            if self.debug: print("STATE = 8, goal area reached")
+                            # set to next state
+                            self.secondary_state = SecState.ACTING
+                    except LostTargetException or TypeError:
+                        # revert back to search state
+                        self.secondary_state = SecState.SEARCH
+
+            # >>>> SEARCH States >>>>
+            elif self.secondary_state == SecState.SEARCH:
+                if self.primary_state == PrmState.TRAVEL_MINING:
+                    # 0) find mining area = find_state + target_mining_area
+                    if self.debug: print("STATE = 0, find mining area")
+                    if self.find_state(frame, self.target_mining_area):
+                        # detected mining area since function returned True
+                        if self.debug: print("STATE = 0, mining area found")
+                        # set to next state
+                        self.secondary_state = SecState.MOVING
+
+                elif self.primary_state == PrmState.MINING:
+                    # 2) find human = find_state + target_human
+                    if self.debug: print("STATE = 2, find human")
+                    if self.find_state(frame, self.target_human):
+                        # detected human since function returned True
+                        if self.debug: print("STATE = 2, human found")
+                        # set to next state
+                        self.secondary_state = SecState.MOVING
+
+                elif self.primary_state == PrmState.TRAVEL_GOAL:
+                    # 5) find start area = find_state + target_goal_area
+                    if self.debug: print("STATE = 5, find start area")
+                    if self.find_state(frame, self.target_goal_area):
+                        # detected start area since function returned True
+                        if self.debug: print("STATE = 5, start area found")
+                        # set to next state
+                        self.secondary_state = SecState.MOVING
+
+                else:  # PimState == GOAL
+                    # 7) find goal area = find_state + target_goal_area for current ice target
+                    if self.debug: print("STATE = 7, find goal area")
+                    if self.find_state(frame, self.target_goal_area):
+                        # detected goal area since function returned True
+                        if self.debug: print("STATE = 7, goal area found")
+                        # set to next state
+                        self.secondary_state = SecState.MOVING
+
+            # >>>> ACTING States >>>>
+            else:  # SecState == ACTING
+                if self.primary_state == PrmState.MINING:
+                    # 4) identify ice -> grab ice once correct
+                    if self.debug: print("STATE = 4, grabbing ice")
+                    if self.grab_ice(frame, self.goal):
+                        # grab ice success
+                        if self.debug: print("STATE = 4, grab success")
+                        # set to next state
+                        self.primary_state = PrmState.TRAVEL_GOAL
+                        self.secondary_state = SecState.SEARCH
+                    else:
+                        # TODO ask for correct ice
+                        if self.debug: print("STATE = 4, grab failure")
+
+                elif self.primary_state == PrmState.GOAL:
+                    # 9) drop ice in correct goal area
+                    if self.debug: print("STATE = 9, dropping ice")
+                    if self.drop_ice(frame, self.goal):
+                        # drop ice success
+                        if self.debug: print("STATE = 9, drop success")
+                        # set to default state
+                        self.primary_state = PrmState.TRAVEL_MINING
+                        self.secondary_state = SecState.SEARCH
+                        # cycle complete
+                        return True
+                    else:
+                        # drop ice failure
+                        if self.debug: print("STATE = 9, drop failure")
+                else:
+                    raise Warning("TRAVEL_* primary states not defined for ACTING secondary state")
+        # cycle incomplete
+        return False
 
     def obstacle_avoidance_state(self, frame, targeting_function, retargeting_timeout=2, suppress_exception=False):
         """
@@ -148,7 +289,7 @@ class StateController:
         :return: est. distance to target and its location on the screen,
         raises a LostTargetException if the target was not found
         """
-        pass
+        if self.debug: return [0, [frame.shape[0]//2, frame.shape[1]//2]]
 
     def target_mining_area(self, frame, suppress_exception=False):
         """
@@ -159,7 +300,7 @@ class StateController:
         :return: est. distance to target and its location on the screen,
         raises a LostTargetException if the target was not found
         """
-        pass
+        if self.debug: return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
 
     def target_goal_area(self, frame,  goal_type, suppress_exception=False):
         """
@@ -172,4 +313,21 @@ class StateController:
         :return: est. distance to target and its location on the screen,
         raises a LostTargetException if the target was not found
         """
-        pass
+        if self.debug: return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+
+    def grab_ice(self, frame, goal_type):
+        """
+        Detects if the relevant ice is in the gripers, and closes them if it is.
+        :param frame: the current frame of the camera
+        :param goal_type: the type of goal to search for, e.i. small, medium, large
+        :return: True if ice was acquired, False otherwise
+        """
+        if self.debug: return True
+
+    def drop_ice(self, frame, goal_type):
+        """
+        Continues process to drop the ice in the relevant goal.
+        :return: True if ice was dropped, False otherwise
+        """
+        if self.debug: return True
+
