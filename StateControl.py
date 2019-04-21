@@ -209,7 +209,7 @@ class StateController:
             if dis < self.distance_value:
                 return True
         except LostTargetException or TypeError:
-            if self.last_seen_time - time.process_time() > retargeting_timeout:
+            if time.process_time() - self.last_seen_time > retargeting_timeout:
                 # it has been to long since we last saw the target, will have to transition back into search state
                 if suppress_exception:
                     return None
@@ -252,7 +252,7 @@ class StateController:
                 return True
         # handle losing the target
         except LostTargetException or TypeError:
-            if self.last_seen_time - time.process_time() > retargeting_timeout:
+            if time.process_time() - self.last_seen_time > retargeting_timeout:
                 # it has been to long since we last saw the target, will have to transition back into search state
                 if suppress_exception:
                     return None
@@ -289,7 +289,17 @@ class StateController:
         :return: est. distance to target and its location on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug: return [0, [frame.shape[0]//2, frame.shape[1]//2]]
+        if self.debug:
+            tmp = input("at/not/lost:")
+            if tmp.__contains__("at"):
+                # at target
+                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+            elif tmp.__contains__("not"):
+                # not at target
+                return [10000, [frame.shape[0] // 2, frame.shape[1] // 2]]
+            else:
+                # lost target
+                raise LostTargetException("TESTING, target lost in target_human")
 
     def target_mining_area(self, frame, suppress_exception=False):
         """
@@ -300,7 +310,17 @@ class StateController:
         :return: est. distance to target and its location on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug: return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+        if self.debug:
+            tmp = input("at/not/lost:")
+            if tmp.__contains__("at"):
+                # at target
+                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+            elif tmp.__contains__("not"):
+                # not at target
+                return [10000, [frame.shape[0] // 2, frame.shape[1] // 2]]
+            else:
+                # lost target
+                raise LostTargetException("TESTING, target lost in target_mining_area")
 
     def target_goal_area(self, frame,  goal_type, suppress_exception=False):
         """
@@ -313,7 +333,17 @@ class StateController:
         :return: est. distance to target and its location on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug: return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+        if self.debug:
+            tmp = input("at/not/lost:")
+            if tmp.__contains__("at"):
+                # at target
+                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+            elif tmp.__contains__("not"):
+                # not at target
+                return [10000, [frame.shape[0] // 2, frame.shape[1] // 2]]
+            else:
+                # lost target
+                raise LostTargetException("TESTING, target lost in target_goal_area")
 
     def grab_ice(self, frame, goal_type):
         """
@@ -322,12 +352,26 @@ class StateController:
         :param goal_type: the type of goal to search for, e.i. small, medium, large
         :return: True if ice was acquired, False otherwise
         """
-        if self.debug: return True
+        if self.debug:
+            tmp = input("T/F:").__contains__("T")
+            if tmp:
+                # function success
+                return True
+            else:
+                # function failure
+                return False
 
     def drop_ice(self, frame, goal_type):
         """
         Continues process to drop the ice in the relevant goal.
         :return: True if ice was dropped, False otherwise
         """
-        if self.debug: return True
+        if self.debug:
+            tmp = input("T/F:").__contains__("T")
+            if tmp:
+                # function success
+                return True
+            else:
+                # function failure
+                return False
 
