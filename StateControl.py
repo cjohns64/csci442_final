@@ -453,14 +453,19 @@ class StateController:
                 # function failure
                 return False
         else:
+            self.navigation_obj.arm_reach()
+            self.navigation_obj.arm_grab_ice()
             # TODO add non-debug function body
             if goal_type == 0:
+                # TODO add roi to check for correct color marker
                 # pink goal
                 pass
             elif goal_type == 1:
+                # TODO add roi to check for correct color marker
                 # green goal
                 pass
             else:
+                # TODO add roi to check for correct color marker
                 # orange goal
                 pass
 
@@ -484,6 +489,21 @@ class StateController:
                 return False
         else:
             # TODO add non-debug function body
+            if goal_type == 0:
+                # TODO look for then go to pink goal
+                # pink goal
+                self.navigation_obj.arm_reach()
+                pass
+            elif goal_type == 1:
+                # TODO look for then go to green goal
+                # green goal
+                self.navigation_obj.arm_reach()
+                pass
+            else:
+                # TODO look for then go to orange goal
+                # orange goal
+                self.navigation_obj.arm_reach()
+                pass
             pass
 
     def find_color_in_frame(self, frame, color):
