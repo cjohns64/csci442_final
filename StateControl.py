@@ -44,6 +44,10 @@ class StateController:
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9
+        # standard distances for targeting functions
+        # 1 distance value is recorded at the optimum distance
+        # and the ratio of the current sensor value and this distance
+        # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 140  # this value is for ~1 meter from the laptop camera
 
     def main_loop_step(self, frame):
@@ -293,7 +297,7 @@ class StateController:
         and returns the location of the face on the screen.
         :param frame: The current camera frame
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
-        :return: est. distance to target and its location (x, y) on the screen,
+        :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
         # TODO debug temporarily disabled
@@ -334,7 +338,7 @@ class StateController:
         and returns the location of the mining area identifier on the screen.
         :param frame: The current camera frame
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
-        :return: est. distance to target and its location (x, y) on the screen,
+        :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
         if self.debug:
@@ -360,7 +364,7 @@ class StateController:
         :param frame: The current camera frame
         :param goal_type: the type of goal to search for, e.i. small, medium, large
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
-        :return: est. distance to target and its location (x, y) on the screen,
+        :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
         if self.debug:
