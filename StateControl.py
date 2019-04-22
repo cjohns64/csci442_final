@@ -3,12 +3,14 @@ from enum import Enum
 import time
 import cv2 as cv
 from client import ClientSocket
+from global_settings import *
 
 IP = '10.200.22.237'
 PORT = 5010
 face = None
 # set up client and face searching
 client = ClientSocket(IP, PORT)
+
 
 class LostTargetException(Exception):
     pass
@@ -43,7 +45,10 @@ class StateController:
         self.last_seen_time = -1  # default to negative value so that the first run always works
         self.goal = 0  # index for the current goal type to look for
         # face cascades
-        base_path = "/Users/coryjohns/Desktop/School/CSCI/csci442_a2/venv/lib/python3.7/site-packages/cv2/"
+        if laptop:
+            base_path = "/Users/coryjohns/Desktop/School/CSCI/csci442_a2/venv/lib/python3.7/site-packages/cv2/"
+        else:
+            base_path = "/home/pi/Desktop/pythonFiles/csci442_final/venv/lib/python3.7/site-packages/cv2/"
         self.face_cascade = cv.CascadeClassifier(base_path + 'data/haarcascade_frontalface_default.xml')
 
         # adjustable parameters
@@ -55,6 +60,11 @@ class StateController:
         # and the ratio of the current sensor value and this distance
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 140  # this value is for ~1 meter from the laptop camera
+        self.mining_area_standard = None
+        self.goal_small_standard = None
+        self.goal_medium_standard = None
+        self.goal_large_standard = None
+
 
     def main_loop_step(self, frame):
         """
@@ -389,6 +399,11 @@ class StateController:
         Finds if the goal area is on the screen, and if so est. the distance
         and returns the location of the goal area on the screen. If the goal area is close enough, will return the
         location of the specific goal area instead.
+
+        average pink RGB: [235, 39, 113] indexed as goal_type == 0
+        average green RGB: [53, 222, 94] indexed as goal_type == 1
+        average orange RGB: [204, 139, 46] indexed as goal_type == 2
+
         :param frame: The current camera frame
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
@@ -414,6 +429,11 @@ class StateController:
         """
         Detects if the relevant ice is in the gripers, and closes them if it is.
         Must wait until an object enters the grippers
+
+        average pink RGB: [235, 39, 113] indexed as goal_type == 0
+        average green RGB: [53, 222, 94] indexed as goal_type == 1
+        average orange RGB: [204, 139, 46] indexed as goal_type == 2
+
         :param frame: the current frame of the camera
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :return: True if ice was acquired, False otherwise
@@ -428,11 +448,24 @@ class StateController:
                 return False
         else:
             # TODO add non-debug function body
-            pass
+            if goal_type == 0:
+                # pink goal
+                pass
+            elif goal_type == 1:
+                # green goal
+                pass
+            else:
+                # orange goal
+                pass
 
     def drop_ice(self, frame, goal_type):
         """
         Continues process to drop the ice in the relevant goal.
+
+        average pink RGB: [235, 39, 113] indexed as goal_type == 0
+        average green RGB: [53, 222, 94] indexed as goal_type == 1
+        average orange RGB: [204, 139, 46] indexed as goal_type == 2
+
         :return: True if ice was dropped, False otherwise
         """
         if self.debug:

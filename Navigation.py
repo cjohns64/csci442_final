@@ -1,6 +1,6 @@
 import numpy as np
 import cv2 as cv
-laptop = True
+from global_settings import *
 if not laptop: import maestro
 
 

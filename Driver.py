@@ -2,7 +2,7 @@ import cv2 as cv
 from StateControl import StateController
 
 # import differently for laptop camera
-laptop = True
+from global_settings import *
 if not laptop:
     from client import ClientSocket
     from picamera.array import PiRGBArray
