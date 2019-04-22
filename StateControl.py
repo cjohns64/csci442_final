@@ -4,12 +4,14 @@ import time
 import cv2 as cv
 from client import ClientSocket
 from global_settings import *
+import numpy as np
 
-IP = '10.200.22.237'
-PORT = 5010
-face = None
-# set up client and face searching
-client = ClientSocket(IP, PORT)
+if not laptop:
+    IP = '10.200.22.237'
+    PORT = 5010
+    face = None
+    # set up client and face searching
+    client = ClientSocket(IP, PORT)
 
 
 class LostTargetException(Exception):
@@ -52,6 +54,7 @@ class StateController:
         self.face_cascade = cv.CascadeClassifier(base_path + 'data/haarcascade_frontalface_default.xml')
 
         # adjustable parameters
+        self.color_tolerance = 30
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9
@@ -65,6 +68,9 @@ class StateController:
         self.goal_medium_standard = None
         self.goal_large_standard = None
 
+    @staticmethod
+    def exit():
+        client.killSocket()
 
     def main_loop_step(self, frame):
         """
@@ -400,9 +406,9 @@ class StateController:
         and returns the location of the goal area on the screen. If the goal area is close enough, will return the
         location of the specific goal area instead.
 
-        average pink RGB: [235, 39, 113] indexed as goal_type == 0
-        average green RGB: [53, 222, 94] indexed as goal_type == 1
-        average orange RGB: [204, 139, 46] indexed as goal_type == 2
+        average pink BGR: [113, 39, 235] indexed as goal_type == 0
+        average green BGR: [94, 222, 53] indexed as goal_type == 1
+        average orange BGR: [46, 139, 204] indexed as goal_type == 2
 
         :param frame: The current camera frame
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
@@ -430,9 +436,9 @@ class StateController:
         Detects if the relevant ice is in the gripers, and closes them if it is.
         Must wait until an object enters the grippers
 
-        average pink RGB: [235, 39, 113] indexed as goal_type == 0
-        average green RGB: [53, 222, 94] indexed as goal_type == 1
-        average orange RGB: [204, 139, 46] indexed as goal_type == 2
+        average pink BGR: [113, 39, 235] indexed as goal_type == 0
+        average green BGR: [94, 222, 53] indexed as goal_type == 1
+        average orange BGR: [46, 139, 204] indexed as goal_type == 2
 
         :param frame: the current frame of the camera
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
@@ -462,9 +468,9 @@ class StateController:
         """
         Continues process to drop the ice in the relevant goal.
 
-        average pink RGB: [235, 39, 113] indexed as goal_type == 0
-        average green RGB: [53, 222, 94] indexed as goal_type == 1
-        average orange RGB: [204, 139, 46] indexed as goal_type == 2
+        average pink BGR: [113, 39, 235] indexed as goal_type == 0
+        average green BGR: [94, 222, 53] indexed as goal_type == 1
+        average orange BGR: [46, 139, 204] indexed as goal_type == 2
 
         :return: True if ice was dropped, False otherwise
         """
@@ -479,4 +485,31 @@ class StateController:
         else:
             # TODO add non-debug function body
             pass
+
+    def find_color_in_frame(self, frame, color):
+        # TODO remove testing code
+        if self.debug:
+            testing = 0
+            cv.namedWindow("Image " + str(testing))
+
+            if testing == 0: # pink
+                frame = cv.imread("/Users/coryjohns/Desktop/IMG_2942.JPG", cv.IMREAD_COLOR)
+                color = [113, 39, 235]
+            elif testing == 1: # green
+                frame = cv.imread("/Users/coryjohns/Desktop/IMG_2943.JPG", cv.IMREAD_COLOR)
+                color = [94, 222, 53]
+            else: # orange
+                frame = cv.imread("/Users/coryjohns/Desktop/IMG_2944.JPG", cv.IMREAD_COLOR)
+                color = [46, 139, 204]
+
+        value = np.array(color)
+        blur = cv.GaussianBlur(frame, (5, 5), cv.BORDER_DEFAULT)
+        detection = cv.inRange(blur, value - self.color_tolerance, value + self.color_tolerance)
+
+        if self.debug:
+            cv.imshow("Image " + str(testing), detection)
+            cv.waitKey(0)
+            cv.destroyAllWindows()
+
+        return detection
 

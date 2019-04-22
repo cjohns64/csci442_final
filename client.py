@@ -48,9 +48,9 @@ class ClientSocket(threading.Thread):
         exit()
             
 
-IP = '10.152.168.109'
-PORT = 5010
-client = ClientSocket(IP, PORT)
+# IP = '10.152.168.109'
+# PORT = 5010
+# client = ClientSocket(IP, PORT)
 ##client.start()
 
 #while(True):
@@ -60,6 +60,6 @@ client = ClientSocket(IP, PORT)
 #        break;
 #    time.sleep(1)
 #    client.sendData(answer)
-    
-client.killSocket()
-print("Exiting Sends")
+#
+# client.killSocket()
+# print("Exiting Sends")

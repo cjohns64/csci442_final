@@ -4,15 +4,8 @@ from StateControl import StateController
 # import differently for laptop camera
 from global_settings import *
 if not laptop:
-    from client import ClientSocket
     from picamera.array import PiRGBArray
     from picamera import PiCamera
-
-    IP = '10.200.22.237'
-    PORT = 5010
-    face = None
-    # set up client and face searching
-    client = ClientSocket(IP, PORT)
 
 
 class Driver:
@@ -80,5 +73,7 @@ robot = StateController(debug=True)
 # run w/ laptop/pi camera
 if not laptop:
     Driver.pi_cam_loop(robot)
+    robot.exit()
 else:
-    Driver.laptop_cam_loop(robot)
+    # Driver.laptop_cam_loop(robot)
+    robot.find_color_in_frame(5, [113, 39, 235])
