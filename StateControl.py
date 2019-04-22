@@ -1,6 +1,7 @@
 from Navigation import Navigation as Nav
 from enum import Enum
 import time
+import cv2 as cv
 
 
 class LostTargetException(Exception):
@@ -35,9 +36,15 @@ class StateController:
         # global variables
         self.last_seen_time = -1  # default to negative value so that the first run always works
         self.goal = 0  # index for the current goal type to look for
+        # face cascades
+        base_path = "/Users/coryjohns/Desktop/School/CSCI/csci442_a2/venv/lib/python3.7/site-packages/cv2/"
+        self.face_cascade = cv.CascadeClassifier(base_path + 'data/haarcascade_frontalface_default.xml')
 
         # adjustable parameters
-        self.distance_value = 10
+        # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
+        # values less then 1 occur when target is far away
+        self.distance_ratio = 0.9
+        self.face_width_standard = 140  # this value is for ~1 meter from the laptop camera
 
     def main_loop_step(self, frame):
         """
@@ -206,7 +213,7 @@ class StateController:
             dis, loc = targeting_function(frame, suppress_exception)
             # update the last seen time with the current time
             self.last_seen_time = time.process_time()
-            if dis < self.distance_value:
+            if dis > self.distance_ratio:
                 return True
         except LostTargetException or TypeError:
             if time.process_time() - self.last_seen_time > retargeting_timeout:
@@ -242,7 +249,7 @@ class StateController:
             # update the last seen time with the current time
             self.last_seen_time = time.process_time()
             # check distance to target
-            if distance > self.distance_value:
+            if distance < self.distance_ratio:
                 # get function for moving or rotating
                 move_function = self.navigation_obj.get_needed_action(location[0] - frame.shape[1] // 2)
                 # do action
@@ -286,23 +293,40 @@ class StateController:
         and returns the location of the face on the screen.
         :param frame: The current camera frame
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
-        :return: est. distance to target and its location on the screen,
+        :return: est. distance to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug:
+        # TODO debug temporarily disabled
+        if False and self.debug:
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
-                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+                return [5, [frame.shape[0] // 2, frame.shape[1] // 2]]
             elif tmp.__contains__("not"):
                 # not at target
-                return [10000, [frame.shape[0] // 2, frame.shape[1] // 2]]
+                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
             else:
                 # lost target
                 raise LostTargetException("TESTING, target lost in target_human")
         else:
-            # TODO add non-debug function body
-            pass
+            # look for a face in the frame
+            gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+            faces = self.face_cascade.detectMultiScale(gray, 1.8, 5)
+            if len(faces) > 0:
+                # identify face to use
+                (x, y, w, h) = faces[0]
+                if self.debug: cv.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                # get est. distance to face
+                dis_ratio = w / self.face_width_standard
+                # get face location
+                face_loc = [x + w//2, y + h//2]
+                return dis_ratio, face_loc
+            else:
+                # face was not found
+                if suppress_exception:
+                    return None
+                else:
+                    raise LostTargetException("Face not found")
 
     def target_mining_area(self, frame, suppress_exception=False):
         """
@@ -310,17 +334,17 @@ class StateController:
         and returns the location of the mining area identifier on the screen.
         :param frame: The current camera frame
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
-        :return: est. distance to target and its location on the screen,
+        :return: est. distance to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
         if self.debug:
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
-                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+                return [5, [frame.shape[0] // 2, frame.shape[1] // 2]]
             elif tmp.__contains__("not"):
                 # not at target
-                return [10000, [frame.shape[0] // 2, frame.shape[1] // 2]]
+                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
             else:
                 # lost target
                 raise LostTargetException("TESTING, target lost in target_mining_area")
@@ -336,17 +360,17 @@ class StateController:
         :param frame: The current camera frame
         :param goal_type: the type of goal to search for, e.i. small, medium, large
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
-        :return: est. distance to target and its location on the screen,
+        :return: est. distance to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
         if self.debug:
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
-                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+                return [5, [frame.shape[0] // 2, frame.shape[1] // 2]]
             elif tmp.__contains__("not"):
                 # not at target
-                return [10000, [frame.shape[0] // 2, frame.shape[1] // 2]]
+                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
             else:
                 # lost target
                 raise LostTargetException("TESTING, target lost in target_goal_area")
