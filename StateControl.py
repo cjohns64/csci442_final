@@ -83,7 +83,7 @@ class StateController:
                     try:
                         if self.obstacle_avoidance_state(frame, self.target_mining_area):
                             # reached mining area since function returned True
-                            # TODO declare that mining area is reached
+                            # declare that mining area is reached
                             client.sendData("The mining area has been reached")
                             if self.debug: print("STATE = 1, mining area reached")
                             # set to next state
@@ -99,7 +99,7 @@ class StateController:
                     try:
                         if self.traveling_state(frame, self.target_human):
                             # reached human since function returned True
-                            # TODO ask for ice.  Need to test if this works.
+                            # ask for ice.  TODO Need to test if this works.
                             client.sendData("May I please have some ice")
                             time.sleep(1.5)
                             if self.debug: print("STATE = 3, asking for ice")
@@ -115,7 +115,7 @@ class StateController:
                     try:
                         if self.obstacle_avoidance_state(frame, self.target_goal_area):
                             # reached start area since function returned True
-                            # TODO declare goal area is reached
+                            # declare goal area is reached
                             client.sendData("We have reached the goal area")
                             time.sleep(1.5)
                             if self.debug: print("STATE = 6, goal area reached")
@@ -189,7 +189,7 @@ class StateController:
                         self.primary_state = PrmState.TRAVEL_GOAL
                         self.transition_to_search_state()
                     else:
-                        # TODO ask for correct ice
+                        # ask for correct ice
                         client.sendData("Please give me the correct ice")
                         if self.debug: print("STATE = 4, grab failure")
 
@@ -413,6 +413,7 @@ class StateController:
     def grab_ice(self, frame, goal_type):
         """
         Detects if the relevant ice is in the gripers, and closes them if it is.
+        Must wait until an object enters the grippers
         :param frame: the current frame of the camera
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :return: True if ice was acquired, False otherwise
