@@ -48,18 +48,18 @@ class ClientSocket(threading.Thread):
         exit()
             
 
-IP = '10.200.22.237'
+IP = '10.152.168.109'
 PORT = 5010
 client = ClientSocket(IP, PORT)
 ##client.start()
 
-while(True):
+#while(True):
 ##    for i in ["hello human", "How are you", "Sorry, you must die now"]:
-    answer = input("Give a string: ")
-    if answer == "exit":
-        break;
-    time.sleep(1)
-    client.sendData(answer)
+#    answer = input("Give a string: ")
+#    if answer == "exit":
+#        break;
+#    time.sleep(1)
+#    client.sendData(answer)
     
 client.killSocket()
 print("Exiting Sends")
