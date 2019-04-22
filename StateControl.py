@@ -28,7 +28,7 @@ class StateController:
 
     def __init__(self, debug=False):
         # set up objects
-        self.navigation_obj = Nav(display=True)
+        self.navigation_obj = Nav(display=False, debug=debug)
         self.debug = debug
         # initialize with base state
         self.primary_state = PrmState.TRAVEL_MINING
@@ -81,10 +81,10 @@ class StateController:
                             if self.debug: print("STATE = 1, mining area reached")
                             # set to next state
                             self.primary_state = PrmState.MINING
-                            self.secondary_state = SecState.SEARCH
+                            self.transition_to_search_state()
                     except LostTargetException or TypeError:
                         # revert back to search state
-                        self.secondary_state = SecState.SEARCH
+                        self.transition_to_search_state()
 
                 elif self.primary_state == PrmState.MINING:
                     # 3) travel to human = traveling_state + target_human -> ask for ice once there
@@ -95,10 +95,10 @@ class StateController:
                             # TODO ask for ice
                             if self.debug: print("STATE = 3, asking for ice")
                             # set to next state
-                            self.secondary_state = SecState.ACTING
+                            self.transition_to_acting_state()
                     except LostTargetException or TypeError:
                         # revert back to search state
-                        self.secondary_state = SecState.SEARCH
+                        self.transition_to_search_state()
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
                     # 6) return to start = obstacle_avoidance_state + target_goal_area
@@ -110,10 +110,10 @@ class StateController:
                             if self.debug: print("STATE = 6, goal area reached")
                             # set to next state
                             self.primary_state = PrmState.GOAL
-                            self.secondary_state = SecState.SEARCH
+                            self.transition_to_search_state()
                     except LostTargetException or TypeError:
                         # revert back to search state
-                        self.secondary_state = SecState.SEARCH
+                        self.transition_to_search_state()
 
                 else:  # PimState == GOAL
                     # 8) travel to goal area = traveling_state + target_goal_area
@@ -123,10 +123,10 @@ class StateController:
                             # reached goal area since function returned True
                             if self.debug: print("STATE = 8, goal area reached")
                             # set to next state
-                            self.secondary_state = SecState.ACTING
+                            self.transition_to_acting_state()
                     except LostTargetException or TypeError:
                         # revert back to search state
-                        self.secondary_state = SecState.SEARCH
+                        self.transition_to_search_state()
 
             # >>>> SEARCH States >>>>
             elif self.secondary_state == SecState.SEARCH:
@@ -137,7 +137,7 @@ class StateController:
                         # detected mining area since function returned True
                         if self.debug: print("STATE = 0, mining area found")
                         # set to next state
-                        self.secondary_state = SecState.MOVING
+                        self.transition_to_move_state()
 
                 elif self.primary_state == PrmState.MINING:
                     # 2) find human = find_state + target_human
@@ -146,7 +146,7 @@ class StateController:
                         # detected human since function returned True
                         if self.debug: print("STATE = 2, human found")
                         # set to next state
-                        self.secondary_state = SecState.MOVING
+                        self.transition_to_move_state()
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
                     # 5) find start area = find_state + target_goal_area
@@ -155,7 +155,7 @@ class StateController:
                         # detected start area since function returned True
                         if self.debug: print("STATE = 5, start area found")
                         # set to next state
-                        self.secondary_state = SecState.MOVING
+                        self.transition_to_move_state()
 
                 else:  # PimState == GOAL
                     # 7) find goal area = find_state + target_goal_area for current ice target
@@ -164,7 +164,7 @@ class StateController:
                         # detected goal area since function returned True
                         if self.debug: print("STATE = 7, goal area found")
                         # set to next state
-                        self.secondary_state = SecState.MOVING
+                        self.transition_to_move_state()
 
             # >>>> ACTING States >>>>
             else:  # SecState == ACTING
@@ -176,7 +176,7 @@ class StateController:
                         if self.debug: print("STATE = 4, grab success")
                         # set to next state
                         self.primary_state = PrmState.TRAVEL_GOAL
-                        self.secondary_state = SecState.SEARCH
+                        self.transition_to_search_state()
                     else:
                         # TODO ask for correct ice
                         if self.debug: print("STATE = 4, grab failure")
@@ -189,7 +189,7 @@ class StateController:
                         if self.debug: print("STATE = 9, drop success")
                         # set to default state
                         self.primary_state = PrmState.TRAVEL_MINING
-                        self.secondary_state = SecState.SEARCH
+                        self.transition_to_search_state()
                         # cycle complete
                         return True
                     else:
@@ -199,6 +199,22 @@ class StateController:
                     raise Warning("TRAVEL_* primary states not defined for ACTING secondary state")
         # cycle incomplete
         return False
+
+    def transition_to_search_state(self):
+        # set head to search angle
+        self.navigation_obj.tilt_head_to_search()
+        self.secondary_state = SecState.SEARCH
+
+    def transition_to_move_state(self):
+        # set head to move angle
+        self.navigation_obj.tilt_head_to_move()
+        self.secondary_state = SecState.MOVING
+
+    def transition_to_acting_state(self):
+        # set head to acting angle,
+        # same as movement since we will be looking for the ice or looking for the bin
+        self.navigation_obj.tilt_head_to_move()
+        self.secondary_state = SecState.ACTING
 
     def obstacle_avoidance_state(self, frame, targeting_function, retargeting_timeout=0.5, suppress_exception=False):
         """
@@ -362,7 +378,7 @@ class StateController:
         and returns the location of the goal area on the screen. If the goal area is close enough, will return the
         location of the specific goal area instead.
         :param frame: The current camera frame
-        :param goal_type: the type of goal to search for, e.i. small, medium, large
+        :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
@@ -386,7 +402,7 @@ class StateController:
         """
         Detects if the relevant ice is in the gripers, and closes them if it is.
         :param frame: the current frame of the camera
-        :param goal_type: the type of goal to search for, e.i. small, medium, large
+        :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :return: True if ice was acquired, False otherwise
         """
         if self.debug:

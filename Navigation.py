@@ -1,11 +1,28 @@
 import numpy as np
 import cv2 as cv
+import maestro
 
 
 class Navigation:
 
-    def __init__(self, display=False):
+    def __init__(self, display=False, debug=False):
+        # motor control
+        self.tango = maestro.Controller()
+        self.BODY = 0
+        self.MOTORS = 1
+        self.TURN = 2
+        self.HEADTURN = 3
+        self.HEADTILT = 4
+        self.body = 6000
+        self.headTurn = 6000
+        self.headTilt = 6000
+        self.motors = 6000
+        self.turn = 6000
+
+        # enable/disable displaying the detected path
         self.display = display
+        # enable/disable debug printouts/testing
+        self.debug = debug
 
     def get_path(self, frame):
         """
@@ -72,7 +89,7 @@ class Navigation:
         # return target point
         return np.array(target_point)
 
-    def get_needed_action(self, target_x_from_center, min_action_value=40):
+    def get_needed_action(self, target_x_from_center, min_action_value=60):
         """
         Gets whether the robot should rotate or not and in what direction
         :param target_x_from_center: the target horizontal location as measured from the center of the screen
@@ -80,6 +97,7 @@ class Navigation:
         to be needed
         :return: the movement function needed
         """
+        if self.debug: print(target_x_from_center, min_action_value)
         if np.abs(target_x_from_center) < min_action_value:
             return self.move_forward  # no rotation
         elif target_x_from_center > 0:
@@ -90,17 +108,53 @@ class Navigation:
             return self.rotate_right  # rotate right
 
     def move_forward(self):
-        # TODO add motor movement
-        pass
+        if self.debug: print("moving forward")
+        # one step increase in motor speed
+        self.motors -= 300
+        if self.motors < 2500:
+            self.motors = 2600
+        self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_right(self):
-        # TODO add motor movement
-        pass
+        if self.debug: print("rotating right")
+        # one step increase in right turning speed
+        self.turn -= 200
+        if self.turn < 3390:
+            self.turn = 3400
+        self.tango.setTarget(self.TURN, self.turn)
 
     def rotate_left(self):
-        # TODO add motor movement
+        if self.debug: print("rotating left")
+        # one step increase in left turning speed
+        self.turn += 200
+        if self.turn > 7010:
+            self.turn = 7000
+        self.tango.setTarget(self.TURN, self.turn)
+
+    def tilt_head_to_search(self):
+        # zero all motors
+        self.zero_motors()
+        # tilt head to searching position
+        # TODO add motor movement to search position
+        pass
+
+    def tilt_head_to_move(self):
+        # zero all motors
+        self.zero_motors()
+        # tilt head to movement position
+        # TODO add motor movement to movement position
         pass
 
     def zero_motors(self):
-        # TODO add motor movement
-        pass
+        if self.debug: print("zeroing motors")
+        # zero all motors
+        self.body = 6000
+        self.headTurn = 6000
+        self.headTilt = 6000
+        self.motors = 6000
+        self.turn = 6000
+        self.tango.setTarget(self.TURN, self.turn)
+        self.tango.setTarget(self.MOTORS, self.motors)
+        self.tango.setTarget(self.HEADTILT, self.headTilt)
+        self.tango.setTarget(self.HEADTURN, self.headTurn)
+        self.tango.setTarget(self.BODY, self.body)
