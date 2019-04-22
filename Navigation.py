@@ -139,7 +139,7 @@ class Navigation:
         # zero all motors
         self.zero_motors()
         # tilt head to searching position
-        self.headTilt=4000
+        self.headTilt=6500
         self.tango.setTarget(self.HEADTILT, self.headTilt)
         pass
 
@@ -148,7 +148,7 @@ class Navigation:
         # zero all motors
         self.zero_motors()
         # tilt head to movement position
-        self.headTilt=7600
+        self.headTilt=4000
         self.tango.setTarget(self.HEADTILT, self.headTilt)
         pass
 
