@@ -1,13 +1,14 @@
 import numpy as np
 import cv2 as cv
-import maestro
+laptop = True
+if not laptop: import maestro
 
 
 class Navigation:
 
     def __init__(self, display=False, debug=False):
         # motor control
-        self.tango = maestro.Controller()
+        if not laptop: self.tango = maestro.Controller()
         self.BODY = 0
         self.MOTORS = 1
         self.TURN = 2
@@ -113,7 +114,7 @@ class Navigation:
         self.motors -= 300
         if self.motors < 2500:
             self.motors = 2600
-        self.tango.setTarget(self.MOTORS, self.motors)
+        if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_right(self):
         if self.debug: print("rotating right")
@@ -121,7 +122,7 @@ class Navigation:
         self.turn -= 200
         if self.turn < 3390:
             self.turn = 3400
-        self.tango.setTarget(self.TURN, self.turn)
+        if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def rotate_left(self):
         if self.debug: print("rotating left")
@@ -129,7 +130,7 @@ class Navigation:
         self.turn += 200
         if self.turn > 7010:
             self.turn = 7000
-        self.tango.setTarget(self.TURN, self.turn)
+        if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def tilt_head_to_search(self):
         # zero all motors
@@ -153,8 +154,9 @@ class Navigation:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
-        self.tango.setTarget(self.TURN, self.turn)
-        self.tango.setTarget(self.MOTORS, self.motors)
-        self.tango.setTarget(self.HEADTILT, self.headTilt)
-        self.tango.setTarget(self.HEADTURN, self.headTurn)
-        self.tango.setTarget(self.BODY, self.body)
+        if not laptop:
+            self.tango.setTarget(self.TURN, self.turn)
+            self.tango.setTarget(self.MOTORS, self.motors)
+            self.tango.setTarget(self.HEADTILT, self.headTilt)
+            self.tango.setTarget(self.HEADTURN, self.headTurn)
+            self.tango.setTarget(self.BODY, self.body)

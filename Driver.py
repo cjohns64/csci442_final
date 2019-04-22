@@ -1,15 +1,19 @@
 import cv2 as cv
 from StateControl import StateController
-from client import ClientSocket
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-import time
 
-IP = '10.200.22.237'
-PORT = 5010
-face = None
-# set up client and face searching
-client = ClientSocket(IP, PORT)
+# import differently for laptop camera
+laptop = True
+if not laptop:
+    from client import ClientSocket
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
+
+    IP = '10.200.22.237'
+    PORT = 5010
+    face = None
+    # set up client and face searching
+    client = ClientSocket(IP, PORT)
+
 
 class Driver:
 
@@ -73,5 +77,8 @@ class Driver:
 
 # start robot state object
 robot = StateController(debug=True)
-# run w/ laptop camera
-Driver.pi_cam_loop(robot)
+# run w/ laptop/pi camera
+if not laptop:
+    Driver.pi_cam_loop(robot)
+else:
+    Driver.laptop_cam_loop(robot)
