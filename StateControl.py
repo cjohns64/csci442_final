@@ -189,7 +189,7 @@ class StateController:
         # cycle incomplete
         return False
 
-    def obstacle_avoidance_state(self, frame, targeting_function, retargeting_timeout=2, suppress_exception=False):
+    def obstacle_avoidance_state(self, frame, targeting_function, retargeting_timeout=0.5, suppress_exception=False):
         """
         Continues to navigate through the obstacles, also takes into account if the target is seen.
         :param frame: the current frame of the camera
@@ -214,7 +214,7 @@ class StateController:
                 if suppress_exception:
                     return None
                 else:
-                    raise LostTargetException("Target lost after {} seconds".format(retargeting_timeout))
+                    raise LostTargetException("Target lost after timeout")
         # continue along available path
         # get path target location on the screen
         nav_x, nav_y = self.navigation_obj.get_path(frame)
@@ -257,7 +257,7 @@ class StateController:
                 if suppress_exception:
                     return None
                 else:
-                    raise LostTargetException("Target lost after {} seconds".format(retargeting_timeout))
+                    raise LostTargetException("Target lost after timeout")
 
     def find_state(self, frame, targeting_function, suppress_exception=False):
         """
@@ -300,6 +300,9 @@ class StateController:
             else:
                 # lost target
                 raise LostTargetException("TESTING, target lost in target_human")
+        else:
+            # TODO add non-debug function body
+            pass
 
     def target_mining_area(self, frame, suppress_exception=False):
         """
@@ -321,6 +324,9 @@ class StateController:
             else:
                 # lost target
                 raise LostTargetException("TESTING, target lost in target_mining_area")
+        else:
+            # TODO add non-debug function body
+            pass
 
     def target_goal_area(self, frame,  goal_type, suppress_exception=False):
         """
@@ -344,6 +350,9 @@ class StateController:
             else:
                 # lost target
                 raise LostTargetException("TESTING, target lost in target_goal_area")
+        else:
+            # TODO add non-debug function body
+            pass
 
     def grab_ice(self, frame, goal_type):
         """
@@ -360,6 +369,9 @@ class StateController:
             else:
                 # function failure
                 return False
+        else:
+            # TODO add non-debug function body
+            pass
 
     def drop_ice(self, frame, goal_type):
         """
@@ -374,4 +386,7 @@ class StateController:
             else:
                 # function failure
                 return False
+        else:
+            # TODO add non-debug function body
+            pass
 
