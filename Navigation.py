@@ -15,7 +15,11 @@ class Navigation:
         self.HEADTURN = 3
         self.HEADTILT = 4
         self.ELBOW = 8
+        self.SHOULDER = 6
+        self.HAND = 11
+        self.hand = 6000
         self.elbow = 6000
+        self.shoulder = 6000
         self.body = 6000
         self.headTurn = 6000
         self.headTilt = 6000
@@ -150,6 +154,20 @@ class Navigation:
         # tilt head to movement position
         self.headTilt=4000
         self.tango.setTarget(self.HEADTILT, self.headTilt)
+        pass
+
+    def arm_reach(self):
+        if self.debug: print("arm reached out with open hand")
+        self.shoulder = 7500
+        self.hand = 6000
+        self.tango.setTarget(self.HAND, self.hand)
+        self.tango.setTarget(self.SHOULDER, self.shoulder)
+        pass
+
+    def arm_grab_ice(self):
+        if self.debug: print("arm grabbed ice")
+        self.hand = 7700
+        self.tango.setTarget(self.HAND, self.hand)
         pass
 
     def zero_motors(self):
