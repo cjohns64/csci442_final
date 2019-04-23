@@ -48,7 +48,7 @@ class StateController:
         self.goal = 0  # index for the current goal type to look for
         # face cascades
         if laptop:
-            base_path = "/Users/coryjohns/Desktop/School/CSCI/csci442_a2/venv/lib/python3.7/site-packages/cv2/"
+            base_path = "venv/lib/python3.7/site-packages/cv2/"
         else:
             base_path = "/home/pi/Desktop/pythonFiles/csci442_final/venv/lib/python3.7/site-packages/cv2/"
         self.face_cascade = cv.CascadeClassifier(base_path + 'data/haarcascade_frontalface_default.xml')
@@ -63,10 +63,15 @@ class StateController:
         # and the ratio of the current sensor value and this distance
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 140  # this value is for ~1 meter from the laptop camera
-        self.mining_area_standard = None
-        self.goal_small_standard = None
-        self.goal_medium_standard = None
-        self.goal_large_standard = None
+        self.mining_area_standard = 150  # TODO calibrate with actual values
+        self.goal_small_standard = 150  # TODO calibrate with actual values
+        self.goal_medium_standard = 150  # TODO calibrate with actual values
+        self.goal_large_standard = 150  # TODO calibrate with actual values
+        # color standard values based off of sampling
+        self.pink_standard = [113, 39, 235]
+        self.green_standard = [94, 222, 53]
+        self.orange_standard = [46, 139, 204]
+        self.mining_indicator_standard = [0, 0, 0]  # TODO assign a color to the mining area
 
     @staticmethod
     def exit():
@@ -100,7 +105,7 @@ class StateController:
                         if self.obstacle_avoidance_state(frame, self.target_mining_area):
                             # reached mining area since function returned True
                             # declare that mining area is reached
-                            client.sendData("The mining area has been reached")
+                            if not laptop: client.sendData("The mining area has been reached")
                             if self.debug: print("STATE = 1, mining area reached")
                             # set to next state
                             self.primary_state = PrmState.MINING
@@ -116,7 +121,7 @@ class StateController:
                         if self.traveling_state(frame, self.target_human):
                             # reached human since function returned True
                             # ask for ice.  TODO Need to test if this works.
-                            client.sendData("May I please have some ice")
+                            if not laptop: client.sendData("May I please have some ice")
                             time.sleep(1.5)
                             if self.debug: print("STATE = 3, asking for ice")
                             # set to next state
@@ -132,7 +137,7 @@ class StateController:
                         if self.obstacle_avoidance_state(frame, self.target_goal_area):
                             # reached start area since function returned True
                             # declare goal area is reached
-                            client.sendData("We have reached the goal area")
+                            if not laptop: client.sendData("We have reached the goal area")
                             time.sleep(1.5)
                             if self.debug: print("STATE = 6, goal area reached")
                             # set to next state
@@ -206,7 +211,7 @@ class StateController:
                         self.transition_to_search_state()
                     else:
                         # ask for correct ice
-                        client.sendData("Please give me the correct ice")
+                        if not laptop: client.sendData("Please give me the correct ice")
                         if self.debug: print("STATE = 4, grab failure")
 
                 elif self.primary_state == PrmState.GOAL:
@@ -397,8 +402,17 @@ class StateController:
                 # lost target
                 raise LostTargetException("TESTING, target lost in target_mining_area")
         else:
-            # TODO add non-debug function body
-            pass
+            try:
+                # get the width and location for the mining area indicator
+                width, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
+
+                # return distance ratio, and location of target
+                return width / self.mining_area_standard, center
+            except TypeError:
+                # failed to find target
+                # TypeErrors only occur when suppress_exception==True and the function failed to find the color
+                # so pass the bad news on, if suppress_exception==False the LostTargetException will continue up
+                return None
 
     def target_goal_area(self, frame,  goal_type, suppress_exception=False):
         """
@@ -428,8 +442,23 @@ class StateController:
                 # lost target
                 raise LostTargetException("TESTING, target lost in target_goal_area")
         else:
-            # TODO add non-debug function body
-            pass
+            try:
+                # get the width and location for the given color
+                if goal_type == 0:
+                    width, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
+                elif goal_type == 1:
+                    width, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
+                else:
+                    width, center = self.find_color_in_frame(frame, self.orange_standard, suppress_exception)
+
+                # return distance ratio, and location of target
+                # TODO assuming easiest color goes to largest bin
+                return width / self.goal_large_standard, center
+            except TypeError:
+                # failed to find target
+                # TypeErrors only occur when suppress_exception==True and the function failed to find the color
+                # so pass the bad news on, if suppress_exception==False the LostTargetException will continue up
+                return None
 
     def grab_ice(self, frame, goal_type):
         """
@@ -486,30 +515,49 @@ class StateController:
             # TODO add non-debug function body
             pass
 
-    def find_color_in_frame(self, frame, color):
-        # TODO remove testing code
-        if self.debug:
-            testing = 0
-            cv.namedWindow("Image " + str(testing))
+    def find_color_in_frame(self, frame, color, suppress_exception=False):
+        """
+        Finds if the color is in the frame and returns the width and center point location
+        :param frame: the current camera frame
+        :param color: the average color to look for, given as (B, G, R)
+        :param suppress_exception: if True, the exception will not be raised and the function will return None instead
+        :return: width of the detected color area, and the (x, y) location of its center
+        """
+        value = np.array(color)  # tolerance pivot point
+        # threshold on color within the bounds of the tolerance
+        detection = cv.inRange(frame, value - self.color_tolerance, value + self.color_tolerance)
+        # find the contours of the path area
+        contours, _ = cv.findContours(detection, mode=cv.RETR_TREE, method=cv.CHAIN_APPROX_SIMPLE)
+        if len(contours) > 0:
+            hull = []
+            area_hull = []
+            # get info on each detected contour
+            for i in range(len(contours)):
+                hull.append(cv.convexHull(contours[i], False))
+                area_hull.append(cv.contourArea(contours[i]))
 
-            if testing == 0: # pink
-                frame = cv.imread("/Users/coryjohns/Desktop/IMG_2942.JPG", cv.IMREAD_COLOR)
-                color = [113, 39, 235]
-            elif testing == 1: # green
-                frame = cv.imread("/Users/coryjohns/Desktop/IMG_2943.JPG", cv.IMREAD_COLOR)
-                color = [94, 222, 53]
-            else: # orange
-                frame = cv.imread("/Users/coryjohns/Desktop/IMG_2944.JPG", cv.IMREAD_COLOR)
-                color = [46, 139, 204]
+            # convert to numpy array
+            hull = np.array(hull)
+            # find the hull with the largest area
+            area_max_index = np.argmax(area_hull)
+            # find the location of the center of mass
+            M = cv.moments(contours[area_max_index])
+            x = int(M["m10"] / M["m00"])
+            y = int(M["m01"] / M["m00"])
 
-        value = np.array(color)
-        blur = cv.GaussianBlur(frame, (5, 5), cv.BORDER_DEFAULT)
-        detection = cv.inRange(blur, value - self.color_tolerance, value + self.color_tolerance)
+            # trim hull down to just the hull of interest
+            hull = hull[area_max_index]
+            # find the min and max x values
+            max_x = np.max(hull[:, :, 0])
+            min_x = np.min(hull[:, :, 0])
+            if self.debug: print("color detected, width =", max_x - min_x)
 
-        if self.debug:
-            cv.imshow("Image " + str(testing), detection)
-            cv.waitKey(0)
-            cv.destroyAllWindows()
-
-        return detection
+            # success, return width of hull and center of mass
+            return max_x - min_x, [x, y]
+        else:
+            # color not found
+            if suppress_exception:
+                return None
+            else:
+                raise LostTargetException("Color not found in frame")
 

@@ -58,6 +58,7 @@ class Navigation:
 
         # find the contours of the path area
         contours, _ = cv.findContours(filled_from_bottom, mode=cv.RETR_TREE, method=cv.CHAIN_APPROX_SIMPLE)
+
         if self.display:
             cv.drawContours(frame, contours, -1, (255, 0, 0))
         hull = []
@@ -139,36 +140,33 @@ class Navigation:
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def tilt_head_to_search(self):
-        if self.debug: print("head tilted up to search")
         # zero all motors
         self.zero_motors()
+        if self.debug: print("head tilted up to search")
         # tilt head to searching position
         self.headTilt=6500
-        self.tango.setTarget(self.HEADTILT, self.headTilt)
-        pass
+        if not laptop: self.tango.setTarget(self.HEADTILT, self.headTilt)
 
     def tilt_head_to_move(self):
-        if self.debug: print("head tilted down for movement")
         # zero all motors
         self.zero_motors()
+        if self.debug: print("head tilted down for movement")
         # tilt head to movement position
         self.headTilt=4000
-        self.tango.setTarget(self.HEADTILT, self.headTilt)
-        pass
+        if not laptop: self.tango.setTarget(self.HEADTILT, self.headTilt)
 
     def arm_reach(self):
         if self.debug: print("arm reached out with open hand")
         self.shoulder = 7500
         self.hand = 6000
-        self.tango.setTarget(self.HAND, self.hand)
-        self.tango.setTarget(self.SHOULDER, self.shoulder)
-        pass
+        if not laptop:
+            self.tango.setTarget(self.HAND, self.hand)
+            self.tango.setTarget(self.SHOULDER, self.shoulder)
 
     def arm_grab_ice(self):
         if self.debug: print("arm grabbed ice")
         self.hand = 7700
-        self.tango.setTarget(self.HAND, self.hand)
-        pass
+        if not laptop: self.tango.setTarget(self.HAND, self.hand)
 
     def zero_motors(self):
         if self.debug: print("zeroing motors")

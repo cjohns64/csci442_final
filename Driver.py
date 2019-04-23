@@ -75,5 +75,4 @@ if not laptop:
     Driver.pi_cam_loop(robot)
     robot.exit()
 else:
-    # Driver.laptop_cam_loop(robot)
-    robot.find_color_in_frame(5, [113, 39, 235])
+    Driver.laptop_cam_loop(robot)
