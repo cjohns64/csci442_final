@@ -76,13 +76,13 @@ class Navigation:
         if len(hull) > 0:
             area_max_index = np.argmax(area_hull)
             # get the highest two points
-            width_points = np.argpartition(hull[area_max_index][:,:,1].ravel(), 2)
+            width_points = np.argpartition(hull[area_max_index][:, :, 1].ravel(), 2)
             width_points = [hull[area_max_index][width_points[0]], hull[area_max_index][width_points[1]]]
             if self.display:
                 # draw the two target points
                 cv.drawContours(frame, np.array(width_points), -1, (0, 0, 255), thickness=10)
             # remove ugly cv formatting
-            width_points = [list(width_points[0][0,:]), list(width_points[1][0,:])]
+            width_points = [list(width_points[0][0, :]), list(width_points[1][0, :])]
             # get target point
             target_point = ((width_points[0][0] + width_points[1][0]) // 2, width_points[0][1])
             if self.display:
@@ -144,7 +144,7 @@ class Navigation:
         self.zero_motors()
         if self.debug: print("head tilted up to search")
         # tilt head to searching position
-        self.headTilt=6500
+        self.headTilt = 6500
         if not laptop: self.tango.setTarget(self.HEADTILT, self.headTilt)
 
     def tilt_head_to_move(self):
@@ -152,7 +152,7 @@ class Navigation:
         self.zero_motors()
         if self.debug: print("head tilted down for movement")
         # tilt head to movement position
-        self.headTilt=4000
+        self.headTilt = 4000
         if not laptop: self.tango.setTarget(self.HEADTILT, self.headTilt)
 
     def arm_reach(self):

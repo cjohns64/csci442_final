@@ -4,6 +4,7 @@ import queue
 
 globalVar = ""
 
+
 class ClientSocket(threading.Thread):
     def __init__(self, IP, PORT):
         super(ClientSocket, self).__init__()
@@ -39,27 +40,9 @@ class ClientSocket(threading.Thread):
             if(data == "0"):
                 self.killSocket()
             
-           
-            
     def killSocket(self):
         self.alive.clear()
         self.s.close()
         print("Goodbye")
         exit()
-            
 
-# IP = '10.152.168.109'
-# PORT = 5010
-# client = ClientSocket(IP, PORT)
-##client.start()
-
-#while(True):
-##    for i in ["hello human", "How are you", "Sorry, you must die now"]:
-#    answer = input("Give a string: ")
-#    if answer == "exit":
-#        break;
-#    time.sleep(1)
-#    client.sendData(answer)
-#
-# client.killSocket()
-# print("Exiting Sends")

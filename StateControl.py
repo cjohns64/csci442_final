@@ -390,7 +390,8 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug:
+        # TODO debug temporarily disabled
+        if False and self.debug:
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -430,7 +431,8 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug:
+        # TODO debug temporarily disabled
+        if False and self.debug:
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -523,7 +525,7 @@ class StateController:
                 # function failure
                 return False
         else:
-            #drops ice TODO test
+            # drops ice TODO test
             self.navigation_obj.arm_reach()
             pass
 
