@@ -121,3 +121,4 @@ if not laptop:
     robot.exit()
 else:
     #Driver.laptop_cam_loop(robot)
+    pass
