@@ -55,7 +55,7 @@ class StateController:
         self.face_cascade = cv.CascadeClassifier(base_path + 'haarcascade_frontalface_default.xml')
 
         # adjustable parameters
-        self.color_tolerance = 20
+        self.color_tolerance = 30
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9
@@ -70,7 +70,7 @@ class StateController:
         self.goal_large_standard = 150  # TODO calibrate with actual values
         # color standard values based off of sampling
         self.pink_standard = [150, 107, 182]
-        self.green_standard = [20, 170, 95]
+        self.green_standard = [100, 215, 165]
         self.orange_standard = [46, 139, 204]
         self.orange_line_standard = [92, 204, 234]
         self.mining_indicator_standard = self.orange_line_standard  # TODO assign a color to the mining area
