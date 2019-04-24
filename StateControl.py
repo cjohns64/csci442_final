@@ -491,19 +491,20 @@ class StateController:
             self.navigation_obj.arm_reach()
             self.navigation_obj.arm_grab_ice()
             # TODO add non-debug function body
+            width, ice = self.find_color_in_frame(roi, color, suppress_exception=False)
             # ice = roi_color TODO find roi and get color
             if goal_type == 0:
-                if ice != 0:
+                if ice != [113, 39, 235]:
                     self.navigation_obj.arm_reach()
                 # pink goal
                 pass
             elif goal_type == 1:
-                if ice != 1:
+                if ice != [94, 222, 53]:
                     self.navigation_obj.arm_reach()
                 # green goal
                 pass
             else:
-                if ice != 2:
+                if ice != [46, 139, 204]:
                     self.navigation_obj.arm_reach()
                 # orange goal
                 pass
