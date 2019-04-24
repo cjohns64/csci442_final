@@ -409,7 +409,7 @@ class StateController:
         else:
             try:
                 # get the width and location for the mining area indicator
-                width, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
+                width, _, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
 
                 # return distance ratio, and location of target
                 return width / self.mining_area_standard, center
@@ -451,11 +451,11 @@ class StateController:
             try:
                 # get the width and location for the given color
                 if goal_type == 0:
-                    width, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
+                    width, _, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
                 elif goal_type == 1:
-                    width, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
+                    width, _, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
                 else:
-                    width, center = self.find_color_in_frame(frame, self.orange_standard, suppress_exception)
+                    width, _, center = self.find_color_in_frame(frame, self.orange_standard, suppress_exception)
 
                 # return distance ratio, and location of target
                 # TODO assuming easiest color goes to largest bin
@@ -491,7 +491,7 @@ class StateController:
             self.navigation_obj.arm_reach()
             self.navigation_obj.arm_grab_ice()
             # TODO add non-debug function body
-            width, ice = self.find_color_in_frame(roi, color, suppress_exception=False)
+            width, _, ice = self.find_color_in_frame(roi, color, suppress_exception=False)
             # ice = roi_color TODO find roi and get color
             if goal_type == 0:
                 if ice != [113, 39, 235]:
@@ -536,11 +536,11 @@ class StateController:
 
     def find_color_in_frame(self, frame, color, suppress_exception=False):
         """
-        Finds if the color is in the frame and returns the width and center point location
+        Finds if the color is in the frame and returns the width, height, and center point location
         :param frame: the current camera frame
         :param color: the average color to look for, given as (B, G, R)
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
-        :return: width of the detected color area, and the (x, y) location of its center
+        :return: w, h, (x, y); width and height of the detected color area, and the (x, y) location of its center
         """
         value = np.array(color)  # tolerance pivot point
         # threshold on color within the bounds of the tolerance
@@ -569,11 +569,13 @@ class StateController:
                 # find the min and max x values
                 max_x = np.max(hull[:, :, 0])
                 min_x = np.min(hull[:, :, 0])
+                max_y = np.max(hull[:, :, 1])
+                min_y = np.min(hull[:, :, 1])
                 if self.debug:
                     print("color detected, width =", max_x - min_x)
                     cv.circle(frame, (x, y), (max_x-min_x)//2, color=(255, 0, 0), thickness=2)
                 # success, return width of hull and center of mass
-                return max_x - min_x, [x, y]
+                return max_x - min_x, max_y - min_y, [x, y]
             except ZeroDivisionError:
                 # color not found
                 if suppress_exception:
