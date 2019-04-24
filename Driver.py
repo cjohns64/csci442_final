@@ -85,7 +85,6 @@ class Driver:
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
                 frame = image.array
-                frame  = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
                 frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 color = frame[w//2, h//2]
                 #color = obj.pink_standard
