@@ -69,7 +69,7 @@ class StateController:
         self.goal_medium_standard = 150  # TODO calibrate with actual values
         self.goal_large_standard = 150  # TODO calibrate with actual values
         # color standard values based off of sampling
-        self.pink_standard = [113, 39, 235]
+        self.pink_standard = [150, 107, 182]
         self.green_standard = [60, 170, 95]
         self.orange_standard = [46, 139, 204]
         self.orange_line_standard = [92, 204, 234]
