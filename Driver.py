@@ -86,7 +86,7 @@ class Driver:
                 # and occupied/unoccupied text
                 frame = image.array
                 frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-                color = obj.green_standard
+                color = obj.pink_standard
 
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
