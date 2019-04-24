@@ -7,7 +7,7 @@ from global_settings import *
 import numpy as np
 
 if not laptop:
-    IP = '10.152.168.109'
+    IP = '10.200.50.179'
     PORT = 5010
     face = None
     # set up client and face searching
