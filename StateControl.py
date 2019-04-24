@@ -67,7 +67,7 @@ class StateController:
         self.mining_area_standard = 150  # TODO calibrate with actual values
         self.goal_small_standard = 150  # TODO calibrate with actual values
         self.goal_medium_standard = 150  # TODO calibrate with actual values
-        self.goal_large_standard = 150  # TODO calibrate with actual values
+        self.goal_large_standard = 163
         # color standard values based off of sampling
         self.pink_standard = [150, 107, 182]
         self.green_standard = [100, 215, 165]
