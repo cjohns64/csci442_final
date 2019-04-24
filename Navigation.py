@@ -2,6 +2,7 @@ import numpy as np
 import cv2 as cv
 from global_settings import *
 if not laptop: import maestro
+import time
 
 
 class Navigation:
@@ -162,6 +163,7 @@ class Navigation:
         if not laptop:
             self.tango.setTarget(self.HAND, self.hand)
             self.tango.setTarget(self.SHOULDER, self.shoulder)
+            time.sleep(1.5)
 
     def arm_lower(self):
         if self.debug: print("arm lowered without releasing hand")

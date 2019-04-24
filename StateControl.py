@@ -7,7 +7,7 @@ from global_settings import *
 import numpy as np
 
 if not laptop:
-    IP = '10.200.22.237'
+    IP = '10.200.3.102'
     PORT = 5010
     face = None
     # set up client and face searching
@@ -509,7 +509,6 @@ class StateController:
                 self.navigation_obj.arm_lower()
                 return True
             except LostTargetException or TypeError:
-                self.navigation_obj.arm_reach()
                 return False
             # ice = roi_color TODO find roi and get color
 
