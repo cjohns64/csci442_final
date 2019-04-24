@@ -7,7 +7,7 @@ from global_settings import *
 import numpy as np
 
 if not laptop:
-    IP = '10.200.3.102'
+    IP = '10.152.168.109'
     PORT = 5010
     face = None
     # set up client and face searching
@@ -65,8 +65,8 @@ class StateController:
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 140  # this value is for ~1 meter from the laptop camera
         self.mining_area_standard = 150  # TODO calibrate with actual values
-        self.goal_small_standard = 150  # TODO calibrate with actual values
-        self.goal_medium_standard = 150  # TODO calibrate with actual values
+        self.goal_small_standard = 150  # needs to be less TODO calibrate with actual values
+        self.goal_medium_standard = 150  # needs to be less TODO calibrate with actual values
         self.goal_large_standard = 163
         # color standard values based off of sampling
         self.pink_standard = [150, 107, 182]
