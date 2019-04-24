@@ -111,7 +111,8 @@ class Driver:
 robot = StateController(debug=True)
 # run w/ laptop/pi camera
 if not laptop:
-    Driver.pi_cam_loop(robot)
+    #Driver.pi_cam_loop(robot)
+    Driver.calibrate_color_size(robot)
     robot.exit()
 else:
     Driver.laptop_cam_loop(robot)
