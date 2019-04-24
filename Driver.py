@@ -67,6 +67,43 @@ class Driver:
                 obj.zero_motors()
                 break
 
+    @staticmethod
+    def calibrate_color_size(obj):
+        width = 0
+        n = 0
+        if not laptop:
+            # initialize the camera and grab a reference to the raw camera capture
+            camera = PiCamera()
+            cv.namedWindow("Video")
+            w, h = 320, 240
+            camera.resolution = (w, h)  # (640, 480)
+            camera.framerate = 32
+            rawCapture = PiRGBArray(camera, size=camera.resolution)
+            # capture frames from the camera
+            for image in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+                # grab the raw NumPy array representing the image, then initialize the timestamp
+                # and occupied/unoccupied text
+                frame = image.array
+
+                try:
+                    size, loc = obj.find_color_in_frame(frame, obj.green_standard)
+                    width += size
+                    n += 1
+                except:
+                    pass
+
+                cv.imshow("Video", frame)
+
+                key = cv.waitKey(1) & 0xFF
+                # clear the stream in preparation for the next frame
+                rawCapture.truncate(0)
+
+                # if the `q` key was pressed, break from the loop
+                if key == ord("q"):
+                    obj.zero_motors()
+                    break
+        print(width//n)
+
 
 # start robot state object
 robot = StateController(debug=True)

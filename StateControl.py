@@ -569,11 +569,10 @@ class StateController:
                 # find the min and max x values
                 max_x = np.max(hull[:, :, 0])
                 min_x = np.min(hull[:, :, 0])
-                if self.debug: print("color detected, width =", max_x - min_x)
-
-                # success, return width of hull and center of mass
                 if self.debug:
+                    print("color detected, width =", max_x - min_x)
                     cv.circle(frame, (x, y), (max_x-min_x)//2, color=(255, 0, 0), thickness=2)
+                # success, return width of hull and center of mass
                 return max_x - min_x, [x, y]
             except ZeroDivisionError:
                 # color not found
