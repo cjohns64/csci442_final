@@ -163,6 +163,18 @@ class Navigation:
             self.tango.setTarget(self.HAND, self.hand)
             self.tango.setTarget(self.SHOULDER, self.shoulder)
 
+    def arm_lower(self):
+        if self.debug: print("arm lowered without releasing hand")
+        self.shoulder = 6000
+        if not laptop:
+            self.tango.setTarget(self.SHOULDER, self.shoulder)
+
+    def arm_raise(self):
+        if self.debug: print("arm raised without releasing hand")
+        self.shoulder = 7500
+        if not laptop:
+            self.tango.setTarget(self.SHOULDER, self.shoulder)
+
     def arm_grab_ice(self):
         if self.debug: print("arm grabbed ice")
         self.hand = 7700

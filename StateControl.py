@@ -72,6 +72,7 @@ class StateController:
         self.pink_standard = [113, 39, 235]
         self.green_standard = [94, 222, 53]
         self.orange_standard = [46, 139, 204]
+        self.mining_indicator_standard = [ 94, 206, 236]  # TODO assign a color to the mining area
         self.mining_indicator_standard = self.orange_standard  # TODO assign a color to the mining area
         # timeout between returning to search state
         self.timeout = 1
@@ -490,24 +491,23 @@ class StateController:
             self.navigation_obj.arm_reach()
             self.navigation_obj.arm_grab_ice()
             # TODO add non-debug function body
+            # ice = roi_color TODO find roi and get color
             if goal_type == 0:
-                # TODO add roi to check for correct color marker
                 if ice != 0:
                     self.navigation_obj.arm_reach()
                 # pink goal
                 pass
             elif goal_type == 1:
-                # TODO add roi to check for correct color marker
                 if ice != 1:
                     self.navigation_obj.arm_reach()
                 # green goal
                 pass
             else:
-                # TODO add roi to check for correct color marker
                 if ice != 2:
                     self.navigation_obj.arm_reach()
                 # orange goal
                 pass
+            self.navigation_obj.arm_lower()
 
     def drop_ice(self, frame, goal_type):
         """
@@ -529,6 +529,7 @@ class StateController:
                 return False
         else:
             # drops ice TODO test
+            self.navigation_obj.arm_raise()
             self.navigation_obj.arm_reach()
             pass
 
