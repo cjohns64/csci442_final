@@ -85,9 +85,10 @@ class Driver:
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
                 frame = image.array
+                frame  = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
                 frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-                #color = frame[w//2, h//2]
-                color = obj.pink_standard
+                color = frame[w//2, h//2]
+                #color = obj.pink_standard
 
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
@@ -113,10 +114,10 @@ class Driver:
 
 # start robot state object
 robot = StateController(debug=True)
+Driver.calibrate_color_size(robot)
 # run w/ laptop/pi camera
 if not laptop:
     #Driver.pi_cam_loop(robot)
-    Driver.calibrate_color_size(robot)
     robot.exit()
 else:
-    Driver.laptop_cam_loop(robot)
+    #Driver.laptop_cam_loop(robot)
