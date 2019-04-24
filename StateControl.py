@@ -81,6 +81,9 @@ class StateController:
     def exit():
         client.killSocket()
 
+    def zero_motors(self):
+        self.navigation_obj.zero_motors()
+
     def main_loop_step(self, frame):
         """
         Performs one step of the current state and handles transitions between states
@@ -502,15 +505,13 @@ class StateController:
                 color = self.green_standard
             else:
                 color = self.orange_standard
-            roi = frame[200:300, 300:400]#TODO find actual roi for marker
-            # TODO add non-debug function body
+            roi = frame[200:300, 300:400]  # TODO find actual roi for marker
             try:
                 width, _, ice = self.find_color_in_frame(roi, color, suppress_exception)
                 self.navigation_obj.arm_lower()
                 return True
             except LostTargetException or TypeError:
                 return False
-            # ice = roi_color TODO find roi and get color
 
     def drop_ice(self, frame, goal_type):
         """
@@ -534,7 +535,8 @@ class StateController:
             # drops ice TODO test
             self.navigation_obj.arm_raise()
             self.navigation_obj.arm_reach()
-            pass
+            # ice is dropped
+            return True
 
     def find_color_in_frame(self, frame, color, suppress_exception=False):
         """
