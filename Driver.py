@@ -22,6 +22,7 @@ class Driver:
         while True:
             # get video info
             status, frame = cap.read()
+            frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
 
             # run one frame of the main operating loop
             if obj.main_loop_step(frame):
@@ -50,6 +51,7 @@ class Driver:
             # grab the raw NumPy array representing the image, then initialize the timestamp
             # and occupied/unoccupied text
             frame = image.array
+            frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
 
             # run one frame of the main operating loop
             if obj.main_loop_step(frame):
@@ -86,9 +88,9 @@ class Driver:
                 # and occupied/unoccupied text
                 frame = image.array
                 frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-                color = frame[w//2, h//2]
+                #color = frame[w//2, h//2]
                 #color = obj.green_standard
-                #color = obj.orange_line_standard
+                color = obj.mining_indicator_standard
                 frame = cv.circle(frame, (w//2, h//2), 3, (0,0,255), 5)
 
                 try:

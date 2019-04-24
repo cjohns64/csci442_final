@@ -73,7 +73,7 @@ class StateController:
         self.green_standard = [100, 215, 165]
         self.orange_standard = [46, 139, 204]
         self.orange_line_standard = [92, 204, 234]
-        self.mining_indicator_standard = self.orange_line_standard  # TODO assign a color to the mining area
+        self.mining_indicator_standard = [177, 119, 215]
         # timeout between returning to search state
         self.timeout = 1
 
