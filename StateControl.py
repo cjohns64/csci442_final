@@ -242,7 +242,7 @@ class StateController:
 
     def transition_to_search_state(self):
         # set head to search angle
-        self.navigation_obj.tilt_head_to_search()
+ #       self.navigation_obj.tilt_head_to_search()
         self.secondary_state = SecState.SEARCH
 
     def transition_to_move_state(self):
@@ -370,6 +370,7 @@ class StateController:
                 raise LostTargetException("TESTING, target lost in target_human")
         else:
             # look for a face in the frame
+            self.navigation_obj.tilt_head_to_search()
             gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
             faces = self.face_cascade.detectMultiScale(gray, 1.8, 5)
             if len(faces) > 0:
