@@ -38,14 +38,14 @@ class StateController:
 
     def __init__(self, debug=False):
         # set up objects
-        self.navigation_obj = Nav(display=False, debug=debug)
+        self.navigation_obj = Nav(display=True, debug=debug)
         self.debug = debug
         # initialize with base state
         self.primary_state = PrmState.TRAVEL_MINING
         self.secondary_state = SecState.SEARCH
         # global variables
         self.last_seen_time = -1  # default to negative value so that the first run always works
-        self.goal = 0  # index for the current goal type to look for
+        self.goal = 1  # index for the current goal type to look for
         # face cascades
         if laptop:
             base_path = "venv/lib/python3.7/site-packages/cv2/"
@@ -54,7 +54,7 @@ class StateController:
         self.face_cascade = cv.CascadeClassifier(base_path + 'data/haarcascade_frontalface_default.xml')
 
         # adjustable parameters
-        self.color_tolerance = 30
+        self.color_tolerance = 20
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9
@@ -71,7 +71,9 @@ class StateController:
         self.pink_standard = [113, 39, 235]
         self.green_standard = [94, 222, 53]
         self.orange_standard = [46, 139, 204]
-        self.mining_indicator_standard = [0, 0, 0]  # TODO assign a color to the mining area
+        self.mining_indicator_standard = self.orange_standard  # TODO assign a color to the mining area
+        # timeout between returning to search state
+        self.timeout = 1
 
     @staticmethod
     def exit():
@@ -102,7 +104,7 @@ class StateController:
                     # 1) travel to mining area = obstacle_avoidance_state + target_mining_area
                     if self.debug: print("STATE = 1, travel to mining area")
                     try:
-                        if self.obstacle_avoidance_state(frame, self.target_mining_area):
+                        if self.obstacle_avoidance_state(frame, self.target_mining_area, retargeting_timeout=self.timeout):
                             # reached mining area since function returned True
                             # declare that mining area is reached
                             if not laptop: client.sendData("The mining area has been reached")
@@ -118,7 +120,7 @@ class StateController:
                     # 3) travel to human = traveling_state + target_human -> ask for ice once there
                     if self.debug: print("STATE = 3, travel to human")
                     try:
-                        if self.traveling_state(frame, self.target_human):
+                        if self.traveling_state(frame, self.target_human, retargeting_timeout=self.timeout):
                             # reached human since function returned True
                             # ask for ice.  TODO Need to test if this works.
                             if not laptop: client.sendData("May I please have some ice")
@@ -134,7 +136,7 @@ class StateController:
                     # 6) return to start = obstacle_avoidance_state + target_goal_area
                     if self.debug: print("STATE = 6, return to start")
                     try:
-                        if self.obstacle_avoidance_state(frame, self.target_goal_area):
+                        if self.obstacle_avoidance_state(frame, self.target_goal_area, retargeting_timeout=self.timeout):
                             # reached start area since function returned True
                             # declare goal area is reached
                             if not laptop: client.sendData("We have reached the goal area")
@@ -151,7 +153,7 @@ class StateController:
                     # 8) travel to goal area = traveling_state + target_goal_area
                     if self.debug: print("STATE = 8, travel to goal area")
                     try:
-                        if self.traveling_state(frame, self.target_goal_area):
+                        if self.traveling_state(frame, self.target_goal_area, retargeting_timeout=self.timeout):
                             # reached goal area since function returned True
                             if self.debug: print("STATE = 8, goal area reached")
                             # set to next state
@@ -284,7 +286,7 @@ class StateController:
         move_function()
         return False
 
-    def traveling_state(self, frame, targeting_function, retargeting_timeout=0.5, suppress_exception=False):
+    def traveling_state(self, frame, targeting_function, retargeting_timeout=1, suppress_exception=False):
         """
         Continues to travel to target, must be given a targeting function
         :param frame: the current camera frame
@@ -556,18 +558,26 @@ class StateController:
             area_max_index = np.argmax(area_hull)
             # find the location of the center of mass
             M = cv.moments(contours[area_max_index])
-            x = int(M["m10"] / M["m00"])
-            y = int(M["m01"] / M["m00"])
+            try:
+                x = int(M["m10"] / M["m00"])
+                y = int(M["m01"] / M["m00"])
+                # trim hull down to just the hull of interest
+                hull = hull[area_max_index]
+                # find the min and max x values
+                max_x = np.max(hull[:, :, 0])
+                min_x = np.min(hull[:, :, 0])
+                if self.debug: print("color detected, width =", max_x - min_x)
 
-            # trim hull down to just the hull of interest
-            hull = hull[area_max_index]
-            # find the min and max x values
-            max_x = np.max(hull[:, :, 0])
-            min_x = np.min(hull[:, :, 0])
-            if self.debug: print("color detected, width =", max_x - min_x)
-
-            # success, return width of hull and center of mass
-            return max_x - min_x, [x, y]
+                # success, return width of hull and center of mass
+                if self.debug:
+                    cv.circle(frame, (x, y), (max_x-min_x)//2, color=(255, 0, 0), thickness=2)
+                return max_x - min_x, [x, y]
+            except ZeroDivisionError:
+                # color not found
+                if suppress_exception:
+                    return None
+                else:
+                    raise LostTargetException("Color not found in frame")
         else:
             # color not found
             if suppress_exception:
