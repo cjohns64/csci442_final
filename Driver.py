@@ -85,9 +85,9 @@ class Driver:
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
                 frame = image.array
-                #frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-                #color = frame[w//2, h//2]
-                color = obj.green_standard
+                frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
+                color = frame[w//2, h//2]
+                #color = obj.green_standard
 
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
@@ -120,5 +120,5 @@ if not laptop:
     Driver.calibrate_color_size(robot)
     robot.exit()
 else:
-    #Driver.laptop_cam_loop(robot)
+    Driver.laptop_cam_loop(robot)
     pass
