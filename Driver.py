@@ -85,9 +85,12 @@ class Driver:
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
                 frame = image.array
+                frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
+                color = frame[w//2, h//2]
 
                 try:
-                    wi, hi, loc = obj.find_color_in_frame(frame, obj.green_standard)
+                    wi, hi, loc = obj.find_color_in_frame(frame, color)
+                    print(color)
                     width += wi
                     height += hi
                     n += 1
