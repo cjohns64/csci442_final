@@ -70,6 +70,7 @@ class Driver:
     @staticmethod
     def calibrate_color_size(obj):
         width = 0
+        height = 0
         n = 0
         if not laptop:
             # initialize the camera and grab a reference to the raw camera capture
@@ -86,8 +87,9 @@ class Driver:
                 frame = image.array
 
                 try:
-                    size, loc = obj.find_color_in_frame(frame, obj.green_standard)
-                    width += size
+                    wi, hi, loc = obj.find_color_in_frame(frame, obj.green_standard)
+                    width += wi
+                    height += hi
                     n += 1
                 except:
                     pass
@@ -102,7 +104,7 @@ class Driver:
                 if key == ord("q"):
                     obj.zero_motors()
                     break
-        print(width//n)
+        print(width//n, height//n)
 
 
 # start robot state object

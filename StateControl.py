@@ -409,10 +409,16 @@ class StateController:
         else:
             try:
                 # get the width and location for the mining area indicator
-                width, _, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
-
-                # return distance ratio, and location of target
-                return width / self.mining_area_standard, center
+                width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
+                # detect line
+                if width > height * 2:
+                    # return distance ratio, and location of target
+                    return height / self.mining_area_standard, center
+                else:
+                    if suppress_exception:
+                        return None
+                    else:
+                        raise LostTargetException("No horizontal line detected")
             except TypeError:
                 # failed to find target
                 # TypeErrors only occur when suppress_exception==True and the function failed to find the color
