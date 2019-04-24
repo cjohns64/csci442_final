@@ -472,7 +472,7 @@ class StateController:
                 # so pass the bad news on, if suppress_exception==False the LostTargetException will continue up
                 return None
 
-    def grab_ice(self, frame, goal_type):
+    def grab_ice(self, frame, goal_type, suppress_exception = False):
         """
         Detects if the relevant ice is in the gripers, and closes them if it is.
         Must wait until an object enters the grippers
@@ -504,24 +504,14 @@ class StateController:
                 color = self.orange_standard
             roi = frame[200:300, 300:400]#TODO find actual roi for marker
             # TODO add non-debug function body
-            width, _, ice = self.find_color_in_frame(roi, color, suppress_exception=False)
+            try:
+                width, _, ice = self.find_color_in_frame(roi, color, suppress_exception)
+                self.navigation_obj.arm_lower()
+                return True
+            except LostTargetException or TypeError:
+                self.navigation_obj.arm_reach()
+                return False
             # ice = roi_color TODO find roi and get color
-            if goal_type == 0:
-                if ice != [113, 39, 235]:
-                    self.navigation_obj.arm_reach()
-                # pink goal
-                pass
-            elif goal_type == 1:
-                if ice != [94, 222, 53]:
-                    self.navigation_obj.arm_reach()
-                # green goal
-                pass
-            else:
-                if ice != [46, 139, 204]:
-                    self.navigation_obj.arm_reach()
-                # orange goal
-                pass
-            self.navigation_obj.arm_lower()
 
     def drop_ice(self, frame, goal_type):
         """
