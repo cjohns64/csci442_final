@@ -45,7 +45,7 @@ class StateController:
         self.secondary_state = SecState.SEARCH
         # global variables
         self.last_seen_time = -1  # default to negative value so that the first run always works
-        self.goal = 1  # index for the current goal type to look for
+        self.goal = 1  # index for the current goal type to look for (green == 0, pink == 1)
         # face cascades
         # if laptop:
         #     base_path = "venv/lib/python3.7/site-packages/cv2/data/"
@@ -64,16 +64,16 @@ class StateController:
         # and the ratio of the current sensor value and this distance
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 140  # this value is for ~1 meter from the laptop camera
-        self.mining_area_standard = 150  # TODO calibrate with actual values
+        self.mining_area_standard = 150
         self.goal_small_standard = 150  # TODO calibrate with actual values
         self.goal_medium_standard = 150  # TODO calibrate with actual values
         self.goal_large_standard = 163
         # color standard values based off of sampling
-        self.pink_standard = [150, 107, 182]
+        self.pink_standard = [177, 119, 215]
         self.green_standard = [100, 215, 165]
-        self.orange_standard = [46, 139, 204]
+        # self.orange_standard = [46, 139, 204]
         self.orange_line_standard = [92, 204, 234]
-        self.mining_indicator_standard = [177, 119, 215]
+        self.mining_indicator_standard = self.pink_standard
         # timeout between returning to search state
         self.timeout = 1
 
@@ -242,7 +242,6 @@ class StateController:
 
     def transition_to_search_state(self):
         # set head to search angle
- #       self.navigation_obj.tilt_head_to_search()
         self.secondary_state = SecState.SEARCH
 
     def transition_to_move_state(self):
@@ -461,15 +460,27 @@ class StateController:
             try:
                 # get the width and location for the given color
                 if goal_type == 0:
-                    width, _, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
-                elif goal_type == 1:
                     width, _, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
+                    if width < self.goal_large_standard / 4:
+                        # throw out cases where the detection was too small
+                        if suppress_exception:
+                            return None
+                        else:
+                            raise LostTargetException("detected target is too small")
+                    else:
+                        # return distance ratio, and location of target
+                        return width / self.goal_large_standard, center
                 else:
-                    width, _, center = self.find_color_in_frame(frame, self.orange_standard, suppress_exception)
-
-                # return distance ratio, and location of target
-                # TODO assuming easiest color goes to largest bin
-                return width / self.goal_large_standard, center
+                    width, _, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
+                    if width < self.goal_medium_standard / 4:
+                        # throw out cases where the detection was too small
+                        if suppress_exception:
+                            return None
+                        else:
+                            raise LostTargetException("detected target is too small")
+                    else:
+                        # return distance ratio, and location of target
+                        return width / self.goal_medium_standard, center
             except TypeError:
                 # failed to find target
                 # TypeErrors only occur when suppress_exception==True and the function failed to find the color
@@ -501,11 +512,9 @@ class StateController:
             self.navigation_obj.arm_reach()
             self.navigation_obj.arm_grab_ice()
             if goal_type == 0:
-                color = self.pink_standard
-            elif goal_type == 1:
                 color = self.green_standard
             else:
-                color = self.orange_standard
+                color = self.pink_standard
             roi = frame[200:300, 300:400]  # TODO find actual roi for marker
             try:
                 width, _, ice = self.find_color_in_frame(roi, color, suppress_exception)

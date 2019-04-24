@@ -1,5 +1,6 @@
 import cv2 as cv
 from StateControl import StateController
+import numpy as np
 
 # import differently for laptop camera
 from global_settings import *
@@ -19,10 +20,15 @@ class Driver:
         # set screen size
         cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
         cap.set(cv.CAP_PROP_FRAME_HEIGHT, 300)
+        _, frame = cap.read()
+        diff32 = np.zeros(frame.shape, np.float32)
         while True:
             # get video info
-            status, frame = cap.read()
+            _, frame = cap.read()
             frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
+            # stabilize image
+            cv.accumulateWeighted(frame, diff32, 0.32)
+            cv.convertScaleAbs(diff32, frame)
 
             # run one frame of the main operating loop
             if obj.main_loop_step(frame):
@@ -46,12 +52,20 @@ class Driver:
         camera.resolution = (w, h)  # (640, 480)
         camera.framerate = 32
         rawCapture = PiRGBArray(camera, size=camera.resolution)
+        doOnce = True
+
         # capture frames from the camera
         for image in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             # grab the raw NumPy array representing the image, then initialize the timestamp
             # and occupied/unoccupied text
             frame = image.array
+            if doOnce:
+                diff32 = np.zeros(frame.shape, np.float32)
+                doOnce = False
             frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
+            # stabilize image
+            cv.accumulateWeighted(frame, diff32, 0.32)
+            cv.convertScaleAbs(diff32, frame)
 
             # run one frame of the main operating loop
             if obj.main_loop_step(frame):
