@@ -47,11 +47,12 @@ class StateController:
         self.last_seen_time = -1  # default to negative value so that the first run always works
         self.goal = 1  # index for the current goal type to look for
         # face cascades
-        if laptop:
-            base_path = "venv/lib/python3.7/site-packages/cv2/"
-        else:
-            base_path = "/home/pi/Desktop/pythonFiles/csci442_final/venv/lib/python3.7/site-packages/cv2/"
-        self.face_cascade = cv.CascadeClassifier(base_path + 'data/haarcascade_frontalface_default.xml')
+        # if laptop:
+        #     base_path = "venv/lib/python3.7/site-packages/cv2/data/"
+        # else:
+        #     base_path = "/home/pi/Desktop/pythonFiles/csci442_final/venv/lib/python3.7/site-packages/cv2/data/"
+        base_path = ""
+        self.face_cascade = cv.CascadeClassifier(base_path + 'haarcascade_frontalface_default.xml')
 
         # adjustable parameters
         self.color_tolerance = 20
