@@ -490,6 +490,13 @@ class StateController:
         else:
             self.navigation_obj.arm_reach()
             self.navigation_obj.arm_grab_ice()
+            if goal_type == 0:
+                color = self.pink_standard
+            elif goal_type == 1:
+                color = self.green_standard
+            else:
+                color = self.orange_standard
+            roi = frame[200:300, 300:400]#TODO find actual roi for marker
             # TODO add non-debug function body
             width, _, ice = self.find_color_in_frame(roi, color, suppress_exception=False)
             # ice = roi_color TODO find roi and get color
