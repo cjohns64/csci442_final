@@ -90,6 +90,7 @@ class Driver:
 
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
+                    print(color)
                     width += wi
                     height += hi
                     n += 1
