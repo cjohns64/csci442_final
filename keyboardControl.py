@@ -8,12 +8,12 @@ HEADTILT = 4
 HEADTURN = 3
 
 
-##def sendCommand(x):
-##    if(x == '8'):
-##        tango.setTarget(MOTOR, 6800)
+# def sendCommand(x):
+#    if(x == '8'):
+#        tango.setTarget(MOTOR, 6800)
 class KeyControl():
     def __init__(self):
-        #self.tango = maestro.Controller()
+        self.tango = maestro.Controller()
         self.body = 6000
         self.headTurn = 6000
         self.headTilt = 6000
