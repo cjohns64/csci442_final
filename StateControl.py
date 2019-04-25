@@ -12,7 +12,7 @@ if not laptop:
     PORT = 5010
     face = None
     # set up client and face searching
-    if use_phone: client = ClientSocket(IP, PORT)
+
 
 
 class LostTargetException(Exception):
@@ -79,6 +79,7 @@ class StateController:
         # timeout between returning to search state
         self.timeout = 2
         client.sendData("You are connected")
+        if use_phone: self.client = ClientSocket(IP, PORT)
 
     @staticmethod
     def exit():
