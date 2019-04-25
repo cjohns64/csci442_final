@@ -26,10 +26,10 @@ class Driver:
         while True:
             # get video info
             _, frame = cap.read()
-            frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-            if obj.blur_frame:
+            if obj.get_frame_blur():
+                frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 # stabilize image
-                cv.accumulateWeighted(frame, diff32, 0.32)
+                cv.accumulateWeighted(frame, diff32, 0.60)
                 cv.convertScaleAbs(diff32, frame)
 
             # run one frame of the main operating loop
@@ -64,10 +64,10 @@ class Driver:
             if doOnce:
                 diff32 = np.zeros(frame.shape, np.float32)
                 doOnce = False
-            frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-            if obj.blur_frame:
+            if obj.get_frame_blur():
+                frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 # stabilize image
-                cv.accumulateWeighted(frame, diff32, 0.32)
+                cv.accumulateWeighted(frame, diff32, 0.60)
                 cv.convertScaleAbs(diff32, frame)
 
             # run one frame of the main operating loop
@@ -149,7 +149,7 @@ class Driver:
 
 
 # start robot state object
-robot = StateController(debug=False)
+robot = StateController(debug=True)
 # run w/ laptop/pi camera
 if not laptop:
     Driver.pi_cam_loop(robot)

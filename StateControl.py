@@ -88,6 +88,9 @@ class StateController:
     def zero_motors(self):
         self.navigation_obj.zero_motors()
 
+    def get_frame_blur(self):
+        return self.blur_frame
+
     def main_loop_step(self, frame):
         """
         Performs one step of the current state and handles transitions between states
