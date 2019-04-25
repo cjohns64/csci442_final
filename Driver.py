@@ -68,7 +68,7 @@ class Driver:
                 diff32 = np.zeros(frame.shape, np.float32)
                 doOnce = False
             if obj.get_frame_blur():
-                frame = cv.GaussianBlur(frame, (2, 2), cv.BORDER_DEFAULT)
+                frame = cv.GaussianBlur(frame, (3, 3), cv.BORDER_DEFAULT)
                 # stabilize image
                 cv.accumulateWeighted(frame, diff32, 0.80)
                 cv.convertScaleAbs(diff32, frame)
