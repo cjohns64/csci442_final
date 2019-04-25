@@ -44,7 +44,7 @@ class StateController:
         # initialize with base state
         self.primary_state = PrmState.TRAVEL_MINING
         self.secondary_state = SecState.SEARCH
-        self.transition_to_search_state()
+        self.navigation_obj.tilt_head_to_move()
         # global variables
         self.last_seen_time = -1  # default to negative value so that the first run always works
         self.goal = 1  # index for the current goal type to look for (green == 0, pink == 1)
@@ -142,6 +142,8 @@ class StateController:
                             time.sleep(1.5)
                             if self.debug: print("STATE = 3, asking for ice")
                             self.blur_frame = True
+                            # tilt head back to ground
+                            self.navigation_obj.tilt_head_to_move()
                             # set to next state
                             self.transition_to_acting_state()
                     except LostTargetException or TypeError:
@@ -254,21 +256,14 @@ class StateController:
         return False
 
     def transition_to_search_state(self):
-        # set head to search angle
-        self.navigation_obj.tilt_head_to_move()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.SEARCH
 
     def transition_to_move_state(self):
-        # set head to move angle
-        self.navigation_obj.tilt_head_to_move()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.MOVING
 
     def transition_to_acting_state(self):
-        # set head to acting angle,
-        # same as movement since we will be looking for the ice or looking for the bin
-        self.navigation_obj.tilt_head_to_move()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.ACTING
 
