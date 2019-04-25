@@ -288,8 +288,6 @@ class StateController:
                         self.transition_to_search_state()
                     else:
                         print("STATE = 4, grab failure")
-                    # ask for correct ice
-                    if not laptop and use_phone: client.sendData("Please give me the correct ice")
 
                 elif self.primary_state == PrmState.GOAL:
                     # 9) drop ice in correct goal area
@@ -591,10 +589,15 @@ class StateController:
                 color = self.pink_standard
             roi = frame[100:180, 200:300]
             try:
-                width, _, ice = self.find_color_in_frame(roi, color, suppress_exception)
-                self.navigation_obj.arm_grab_ice()
-                self.navigation_obj.arm_lower()
-                return True
+                found = self.find_any_color(roi, suppress_exception)
+                if found == color:
+                    self.navigation_obj.arm_grab_ice()
+                    self.navigation_obj.arm_lower()
+                    return True
+                else:
+                    # ask for correct ice
+                    if not laptop and use_phone: client.sendData("Please give me the correct ice")
+                    return False
             except LostTargetException or TypeError:
                 return False
 
@@ -622,6 +625,42 @@ class StateController:
             self.navigation_obj.arm_reach()
             # ice is dropped
             return True
+
+    def find_any_color(self, frame, suppress_exception=False):
+        """
+        searches the given frame for the standard green and pink, and returns the color it found.
+        :param frame: the current frame to search
+        :param suppress_exception: if True, the exception will not be raised and the function will return None instead
+        :return: The BGR standard for the color detected, or raises a LostTargetException if a color was not found
+        """
+        if self.debug and self.is_debug_ignore_state():
+            tmp = input("green/pink/lost:")
+            if tmp.__contains__("green"):
+                # green ice
+                return self.green_standard
+            elif tmp.__contains__("pink"):
+                # pink ice
+                return self.pink_standard
+            else:
+                # lost target
+                raise LostTargetException("TESTING, no ice detected")
+        else:
+            try:
+                # look for green
+                w, h, loc = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
+                return self.green_standard
+            except LostTargetException or TypeError:
+                # green not found
+                try:
+                    # look for pink
+                    w, h, loc = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
+                    return self.pink_standard
+                except LostTargetException or TypeError:
+                    # no colors found
+                    if suppress_exception:
+                        return None
+                    else:
+                        raise LostTargetException("No ice found")
 
     def find_color_in_frame(self, frame, color, suppress_exception=False):
         """
