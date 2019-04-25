@@ -583,6 +583,7 @@ class StateController:
                 return False
         else:
             self.navigation_obj.arm_reach()
+            self.navigation_obj.straighten_shoulder()
             if goal_type == 0:
                 color = self.green_standard
             else:
