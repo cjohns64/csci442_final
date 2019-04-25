@@ -126,7 +126,7 @@ class Driver:
                 cv.setMouseCallback('picture', get_bgr, param=frame)
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
-                    print(color)
+                    #print(color)
                     width += wi
                     height += hi
                     n += 1
@@ -143,7 +143,7 @@ class Driver:
                 if key == ord("q"):
                     obj.zero_motors()
                     break
-        print(width//n, height//n)
+        #print(width//n, height//n)
 
 
 # start robot state object
