@@ -132,6 +132,14 @@ class Navigation:
             self.turn = 5000
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
+    def zero_wheels(self):
+        if self.debug: print("stopping movement")
+        self.turn = 6000
+        self.motors = 6000
+        if not laptop:
+            self.tango.setTarget(self.TURN, self.turn)
+            self.tango.setTarget(self.MOTORS, self.motors)
+
     def rotate_left(self):
         if self.debug: print("rotating left")
         # one step increase in left turning speed

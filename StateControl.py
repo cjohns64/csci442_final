@@ -247,17 +247,20 @@ class StateController:
     def transition_to_search_state(self):
         # set head to search angle
         self.navigation_obj.tilt_head_to_move()
+        self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.SEARCH
 
     def transition_to_move_state(self):
         # set head to move angle
         self.navigation_obj.tilt_head_to_move()
+        self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.MOVING
 
     def transition_to_acting_state(self):
         # set head to acting angle,
         # same as movement since we will be looking for the ice or looking for the bin
         self.navigation_obj.tilt_head_to_move()
+        self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.ACTING
 
     def obstacle_avoidance_state(self, frame, targeting_function, retargeting_timeout=0.5, suppress_exception=False):
