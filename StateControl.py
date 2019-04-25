@@ -1,17 +1,18 @@
+from global_settings import *
 from Navigation import Navigation as Nav
 from enum import Enum
 import time
 import cv2 as cv
-from client import ClientSocket
-from global_settings import *
 import numpy as np
+if use_phone: from client import ClientSocket
+
 
 if not laptop:
     IP = '10.200.50.179'
     PORT = 5010
     face = None
     # set up client and face searching
-    client = ClientSocket(IP, PORT)
+    if use_phone: client = ClientSocket(IP, PORT)
 
 
 class LostTargetException(Exception):
@@ -79,7 +80,7 @@ class StateController:
 
     @staticmethod
     def exit():
-        client.killSocket()
+        if use_phone: client.killSocket()
 
     def zero_motors(self):
         self.navigation_obj.zero_motors()
@@ -112,7 +113,7 @@ class StateController:
                         if self.obstacle_avoidance_state(frame, self.target_mining_area, retargeting_timeout=self.timeout):
                             # reached mining area since function returned True
                             # declare that mining area is reached
-                            if not laptop: client.sendData("The mining area has been reached")
+                            if not laptop and use_phone: client.sendData("The mining area has been reached")
                             if self.debug: print("STATE = 1, mining area reached")
                             # set to next state
                             self.primary_state = PrmState.MINING
@@ -128,7 +129,7 @@ class StateController:
                         if self.traveling_state(frame, self.target_human, retargeting_timeout=self.timeout):
                             # reached human since function returned True
                             # ask for ice.  TODO Need to test if this works.
-                            if not laptop: client.sendData("May I please have some ice")
+                            if not laptop and use_phone: client.sendData("May I please have some ice")
                             time.sleep(1.5)
                             if self.debug: print("STATE = 3, asking for ice")
                             # set to next state
@@ -144,7 +145,7 @@ class StateController:
                         if self.obstacle_avoidance_state(frame, self.target_goal_area, retargeting_timeout=self.timeout):
                             # reached start area since function returned True
                             # declare goal area is reached
-                            if not laptop: client.sendData("We have reached the goal area")
+                            if not laptop and use_phone: client.sendData("We have reached the goal area")
                             time.sleep(1.5)
                             if self.debug: print("STATE = 6, goal area reached")
                             # set to next state
@@ -218,7 +219,7 @@ class StateController:
                         self.transition_to_search_state()
                     else:
                         # ask for correct ice
-                        if not laptop: client.sendData("Please give me the correct ice")
+                        if not laptop and use_phone: client.sendData("Please give me the correct ice")
                         if self.debug: print("STATE = 4, grab failure")
 
                 elif self.primary_state == PrmState.GOAL:
