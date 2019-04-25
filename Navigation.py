@@ -34,6 +34,11 @@ class Navigation:
         self.debug = debug
         self.moving_forward = False
 
+    def set_arm_motors(self, elbow, hand, shoulder):
+        self.ELBOW = elbow
+        self.HAND = hand
+        self.SHOULDER = shoulder
+
     def get_path(self, frame):
         """
         Gets the target direction from the given frame
