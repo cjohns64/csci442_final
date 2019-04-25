@@ -1,6 +1,7 @@
 import cv2 as cv
 from StateControl import StateController
 import numpy as np
+from Navigation import Navigation
 
 # import differently for laptop camera
 from global_settings import *
@@ -106,6 +107,9 @@ class Driver:
                 #color = obj.green_standard
                 color = obj.mining_indicator_standard
                 frame = cv.circle(frame, (w//2, h//2), 3, (0,0,255), 5)
+                cv.rectangle(frame,(200, 300),(300, 400),(0, 255, 255), 2)
+                nav_obj=Navigation()
+                nav_obj.arm_reach()
 
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
