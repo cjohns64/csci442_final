@@ -115,7 +115,7 @@ class Driver:
                     pass
 
 
-                cv.circle(frame, ((w//1.28), (h//1.71)), 30, (0, 255, 255), 2)
+                cv.circle(frame, ((int)(w/1.28), (int)(h/1.71)), 30, (0, 255, 255), 2)
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
                     print(color)
