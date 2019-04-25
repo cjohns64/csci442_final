@@ -17,7 +17,7 @@ class Navigation:
         self.HEADTILT = 4
         self.ELBOW = 8
         self.SHOULDER = 6
-        self.HAND = 11
+        self.HAND = 10
         self.hand = 6000
         self.elbow = 6000
         self.shoulder = 6000
