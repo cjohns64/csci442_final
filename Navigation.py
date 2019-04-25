@@ -137,7 +137,7 @@ class Navigation:
 
     def rotate_right(self):
         if self.slow:
-            motor_max = 5200
+            motor_max = 5100
         else:
             motor_max = 4800
 
