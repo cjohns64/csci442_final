@@ -44,7 +44,7 @@ class StateController:
         # initialize with base state
         self.primary_state = PrmState.TRAVEL_MINING
         self.secondary_state = SecState.SEARCH
-        self.navigation_obj.tilt_head_to_move()
+        self.navigation_obj.tilt_head_to_search()
         # global variables
         self.last_seen_time = -1  # default to negative value so that the first run always works
         self.goal = 1  # index for the current goal type to look for (green == 0, pink == 1)
@@ -123,9 +123,7 @@ class StateController:
                             if self.debug: print("STATE = 1, mining area reached")
                             # set to next state
                             self.primary_state = PrmState.MINING
-                            self.transition_to_search_state()
-                            # move head to face search angle
-                            self.navigation_obj.tilt_head_to_search()
+                            self.transition_to_search_state(True)
                     except LostTargetException or TypeError:
                         # revert back to search state
                         self.transition_to_search_state()
@@ -139,8 +137,6 @@ class StateController:
                             # reached human since function returned True
                             if self.debug: print("STATE = 3, asking for ice")
                             self.blur_frame = True
-                            # tilt head back to ground
-                            self.navigation_obj.tilt_head_to_move()
                             # set to next state
                             self.transition_to_acting_state()
                     except LostTargetException or TypeError:
@@ -254,15 +250,21 @@ class StateController:
         # cycle incomplete
         return False
 
-    def transition_to_search_state(self):
+    def transition_to_search_state(self, human=False):
+        if human:
+            self.navigation_obj.tilt_head_to_human()
+        else:
+            self.navigation_obj.tilt_head_to_search()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.SEARCH
 
     def transition_to_move_state(self):
+        self.navigation_obj.tilt_head_to_move()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.MOVING
 
     def transition_to_acting_state(self):
+        self.navigation_obj.tilt_head_to_move()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.ACTING
 

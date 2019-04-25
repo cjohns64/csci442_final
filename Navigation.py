@@ -137,7 +137,7 @@ class Navigation:
 
     def rotate_right(self):
         if self.slow:
-            motor_max = 5100
+            motor_max = 5000
         else:
             motor_max = 4800
 
@@ -162,7 +162,7 @@ class Navigation:
 
     def rotate_left(self):
         if self.slow:
-            motor_max = 6700
+            motor_max = 6800
         else:
             motor_max = 6900
 
@@ -182,7 +182,7 @@ class Navigation:
         self.zero_motors()
         if self.debug: print("head tilted up to search")
         # tilt head to searching position
-        self.headTilt = 6500
+        self.headTilt = 6000
         if not laptop: self.tango.setTarget(self.HEADTILT, self.headTilt)
 
     def tilt_head_to_move(self):
@@ -191,6 +191,13 @@ class Navigation:
         if self.debug: print("head tilted down for movement")
         # tilt head to movement position
         self.headTilt = 4000
+        if not laptop: self.tango.setTarget(self.HEADTILT, self.headTilt)
+
+    def tilt_head_to_human(self):
+        # zero all motors
+        self.zero_motors()
+        if self.debug: print("head tilted up to find human")
+        self.headTilt = 6200
         if not laptop: self.tango.setTarget(self.HEADTILT, self.headTilt)
 
     def arm_reach(self):
