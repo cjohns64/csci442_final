@@ -192,6 +192,7 @@ class Navigation:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
+        self.arm_lower()
         if not laptop:
             self.tango.setTarget(self.TURN, self.turn)
             self.tango.setTarget(self.MOTORS, self.motors)
