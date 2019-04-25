@@ -590,7 +590,7 @@ class StateController:
             else:
                 color = self.pink_standard
             roi = frame[100:180, 200:300]
-            cv.rectangle(frame,(180, 300),(100,200), (255, 0, 0), 3)
+            cv.rectangle(frame,(200, 100),(300,180), (255, 0, 0), 3)
             try:
                 width, _, ice = self.find_color_in_frame(roi, color, suppress_exception)
                 self.navigation_obj.arm_grab_ice()
