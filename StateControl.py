@@ -55,6 +55,7 @@ class StateController:
         #     base_path = "/home/pi/Desktop/pythonFiles/csci442_final/venv/lib/python3.7/site-packages/cv2/data/"
         base_path = ""
         self.face_cascade = cv.CascadeClassifier(base_path + 'haarcascade_frontalface_default.xml')
+        self.blur_frame = True
 
         # adjustable parameters
         self.color_tolerance = 30
@@ -129,6 +130,7 @@ class StateController:
                 elif self.primary_state == PrmState.MINING:
                     # 3) travel to human = traveling_state + target_human -> ask for ice once there
                     if self.debug: print("STATE = 3, travel to human")
+                    self.blur_frame = False  # turn off frame blurring for face detection
                     try:
                         if self.traveling_state(frame, self.target_human, retargeting_timeout=self.timeout):
                             # reached human since function returned True
@@ -136,6 +138,7 @@ class StateController:
                             if not laptop and use_phone: client.sendData("May I please have some ice")
                             time.sleep(1.5)
                             if self.debug: print("STATE = 3, asking for ice")
+                            self.blur_frame = True
                             # set to next state
                             self.transition_to_acting_state()
                     except LostTargetException or TypeError:
@@ -186,10 +189,12 @@ class StateController:
                 elif self.primary_state == PrmState.MINING:
                     # 2) find human = find_state + target_human
                     if self.debug: print("STATE = 2, find human")
+                    self.blur_frame = False  # turn off frame blurring for face detection
                     if self.find_state(frame, self.target_human):
                         # detected human since function returned True
                         if self.debug: print("STATE = 2, human found")
                         # set to next state
+                        self.blur_frame = True
                         self.transition_to_move_state()
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:

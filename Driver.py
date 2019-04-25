@@ -27,9 +27,10 @@ class Driver:
             # get video info
             _, frame = cap.read()
             frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-            # stabilize image
-            cv.accumulateWeighted(frame, diff32, 0.32)
-            cv.convertScaleAbs(diff32, frame)
+            if obj.blur_frame:
+                # stabilize image
+                cv.accumulateWeighted(frame, diff32, 0.32)
+                cv.convertScaleAbs(diff32, frame)
 
             # run one frame of the main operating loop
             if obj.main_loop_step(frame):
@@ -64,9 +65,10 @@ class Driver:
                 diff32 = np.zeros(frame.shape, np.float32)
                 doOnce = False
             frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-            # stabilize image
-            cv.accumulateWeighted(frame, diff32, 0.32)
-            cv.convertScaleAbs(diff32, frame)
+            if obj.blur_frame:
+                # stabilize image
+                cv.accumulateWeighted(frame, diff32, 0.32)
+                cv.convertScaleAbs(diff32, frame)
 
             # run one frame of the main operating loop
             if obj.main_loop_step(frame):
