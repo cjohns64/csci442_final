@@ -137,9 +137,6 @@ class StateController:
                     try:
                         if self.traveling_state(frame, self.target_human, retargeting_timeout=self.timeout):
                             # reached human since function returned True
-                            # ask for ice.
-                            if not laptop and use_phone: client.sendData("May I please have some ice")
-                            time.sleep(1.5)
                             if self.debug: print("STATE = 3, asking for ice")
                             self.blur_frame = True
                             # tilt head back to ground
@@ -200,6 +197,8 @@ class StateController:
                         if self.debug: print("STATE = 2, human found")
                         # set to next state
                         self.blur_frame = True
+                        # ask for ice.
+                        if not laptop and use_phone: client.sendData("May I please have some ice")
                         self.transition_to_move_state()
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
@@ -232,9 +231,9 @@ class StateController:
                         self.primary_state = PrmState.TRAVEL_GOAL
                         self.transition_to_search_state()
                     else:
-                        # ask for correct ice
-                        if not laptop and use_phone: client.sendData("Please give me the correct ice")
                         if self.debug: print("STATE = 4, grab failure")
+                    # ask for correct ice
+                    if not laptop and use_phone: client.sendData("Please give me the correct ice")
 
                 elif self.primary_state == PrmState.GOAL:
                     # 9) drop ice in correct goal area
