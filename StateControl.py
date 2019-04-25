@@ -118,6 +118,8 @@ class StateController:
                             # set to next state
                             self.primary_state = PrmState.MINING
                             self.transition_to_search_state()
+                            # move head to face search angle
+                            self.navigation_obj.tilt_head_to_search()
                     except LostTargetException or TypeError:
                         # revert back to search state
                         self.transition_to_search_state()
@@ -243,6 +245,7 @@ class StateController:
 
     def transition_to_search_state(self):
         # set head to search angle
+        self.navigation_obj.tilt_head_to_move()
         self.secondary_state = SecState.SEARCH
 
     def transition_to_move_state(self):
@@ -370,7 +373,6 @@ class StateController:
                 raise LostTargetException("TESTING, target lost in target_human")
         else:
             # look for a face in the frame
-            self.navigation_obj.tilt_head_to_search()
             gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
             faces = self.face_cascade.detectMultiScale(gray, 1.8, 5)
             if len(faces) > 0:
