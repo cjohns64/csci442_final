@@ -125,9 +125,9 @@ class Navigation:
 
     def move_forward(self):
         if self.slow:
-            motor_max = 5400
+            motor_max = 5600
         else:
-            motor_max = 5000
+            motor_max = 5200
 
         if self.debug: print("moving forward")
         # stop turning
@@ -142,9 +142,9 @@ class Navigation:
 
     def rotate_right(self):
         if self.slow:
-            motor_max = 5000
+            motor_max = 5600
         else:
-            motor_max = 4400
+            motor_max = 5000
 
         if self.debug: print("rotating right")
         # stop going forward
@@ -167,9 +167,9 @@ class Navigation:
 
     def rotate_left(self):
         if self.slow:
-            motor_max = 6800
+            motor_max = 6600
         else:
-            motor_max = 7200
+            motor_max = 6800
 
         if self.debug: print("rotating left")
         # stop going forward
