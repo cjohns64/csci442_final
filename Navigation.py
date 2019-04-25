@@ -160,7 +160,7 @@ class Navigation:
         if self.debug: print("arm reached out with open hand")
         self.shoulder = 7500
         self.elbow = 5500
-        self.hand = 6000
+        self.hand = 5000
         if not laptop:
             self.tango.setTarget(self.HAND, self.hand)
             self.tango.setTarget(self.SHOULDER, self.shoulder)
