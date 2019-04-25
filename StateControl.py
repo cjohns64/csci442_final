@@ -585,7 +585,6 @@ class StateController:
                 return False
         else:
             self.navigation_obj.arm_reach()
-            self.navigation_obj.arm_grab_ice()
             if goal_type == 0:
                 color = self.green_standard
             else:
@@ -593,6 +592,7 @@ class StateController:
             roi = frame[100:180, 200:300]
             try:
                 width, _, ice = self.find_color_in_frame(roi, color, suppress_exception)
+                self.navigation_obj.arm_grab_ice()
                 self.navigation_obj.arm_lower()
                 return True
             except LostTargetException or TypeError:
