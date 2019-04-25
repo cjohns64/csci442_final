@@ -223,7 +223,6 @@ class Navigation:
             self.tango.setTarget(self.HAND, self.hand)
             self.tango.setTarget(self.SHOULDER, self.shoulder)
             self.tango.setTarget(self.ELBOW, self.elbow)
-            time.sleep(1.5)
 
     def arm_lower(self):
         if self.debug: print("arm lowered without releasing hand")

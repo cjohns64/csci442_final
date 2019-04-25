@@ -587,7 +587,8 @@ class StateController:
                 color = self.green_standard
             else:
                 color = self.pink_standard
-            roi = frame[100:180, 200:300]
+            roi = frame[90:180, 250:320]
+            cv.rectangle(frame,(250, 90),(320,180), (255, 0, 0), 3)
             try:
                 found = self.find_any_color(roi, suppress_exception)
                 if found == color:
