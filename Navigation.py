@@ -17,10 +17,12 @@ class Navigation:
         self.HEADTILT = 4
         self.ELBOW = 8
         self.SHOULDER = 6
+        self.SHOULDER_SIDE = 7
         self.HAND = 11
         self.hand = 6000
         self.elbow = 6000
         self.shoulder = 6000
+        self.shoulder_side = 7000#TODO 5400
         self.body = 6000
         self.headTurn = 6000
         self.headTilt = 6000
@@ -226,15 +228,21 @@ class Navigation:
 
     def arm_lower(self):
         if self.debug: print("arm lowered without releasing hand")
+        self.shoulder_side = 7000
         self.shoulder = 6000
         if not laptop:
+            self.tango.setTarget(self.SHOULDER_SIDE, self.shoulder_side)
+            time.sleep(.5)
             self.tango.setTarget(self.SHOULDER, self.shoulder)
 
     def arm_raise(self):
         if self.debug: print("arm raised without releasing hand")
         self.shoulder = 7500
+        self.shoulder_side = 5400
         if not laptop:
             self.tango.setTarget(self.SHOULDER, self.shoulder)
+            time.sleep(.75)
+            self.tango.setTarget(self.SHOULDER_SIDE, self.shoulder_side)
 
     def arm_grab_ice(self):
         if self.debug: print("arm grabbed ice")
