@@ -77,7 +77,7 @@ class StateController:
         self.orange_line_standard = [92, 204, 234]
         self.mining_indicator_standard = self.pink_standard
         # timeout between returning to search state
-        self.timeout = 1
+        self.timeout = 2
 
     @staticmethod
     def exit():
