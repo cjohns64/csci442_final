@@ -1,8 +1,8 @@
 import numpy as np
 import cv2 as cv
+import time
 from global_settings import *
 if not laptop: import maestro
-import time
 
 
 class Navigation:

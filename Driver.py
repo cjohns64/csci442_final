@@ -104,8 +104,8 @@ class Driver:
                 frame = image.array
                 frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 #color = frame[w//2, h//2]
-                #color = obj.green_standard
-                color = obj.mining_indicator_standard
+                color = obj.green_standard
+                #color = obj.mining_indicator_standard
                 frame = cv.circle(frame, (w//2, h//2), 3, (0,0,255), 5)
                 cv.rectangle(frame,(200, 300),(300, 400),(0, 255, 255), 2)
                 nav_obj=Navigation()
