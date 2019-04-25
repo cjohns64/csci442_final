@@ -465,7 +465,7 @@ class StateController:
                 # get the width and location for the given color
                 if goal_type == 0:
                     width, _, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
-                    if width < self.goal_large_standard / 4:
+                    if width < self.goal_large_standard / 10:
                         # throw out cases where the detection was too small
                         if suppress_exception:
                             return None
@@ -476,7 +476,7 @@ class StateController:
                         return width / self.goal_large_standard, center
                 else:
                     width, _, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
-                    if width < self.goal_medium_standard / 4:
+                    if width < self.goal_medium_standard / 10:
                         # throw out cases where the detection was too small
                         if suppress_exception:
                             return None
