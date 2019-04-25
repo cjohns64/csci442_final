@@ -139,7 +139,7 @@ class Navigation:
         if self.slow:
             motor_max = 5000
         else:
-            motor_max = 4800
+            motor_max = 4600
 
         if self.debug: print("rotating right")
         # stop going forward
@@ -164,7 +164,7 @@ class Navigation:
         if self.slow:
             motor_max = 6800
         else:
-            motor_max = 6900
+            motor_max = 7000
 
         if self.debug: print("rotating left")
         # stop going forward
@@ -182,7 +182,7 @@ class Navigation:
         self.zero_motors()
         if self.debug: print("head tilted up to search")
         # tilt head to searching position
-        self.headTilt = 6000
+        self.headTilt = 5000
         if not laptop: self.tango.setTarget(self.HEADTILT, self.headTilt)
 
     def tilt_head_to_move(self):
