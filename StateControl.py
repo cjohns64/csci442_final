@@ -356,11 +356,16 @@ class StateController:
             return True
         # catch event that we lost the target, if exceptions are suppressed TypeError will catch the None type return
         except LostTargetException or TypeError:
-            # target not found, rotate right
-            self.navigation_obj.slow = True
-            self.navigation_obj.rotate_right()
-            self.navigation_obj.slow = False
-            return False
+            # delay between rotations
+            if time.process_time() - self.last_rotate_time > self.face_search_pause:
+                return False
+            else:
+                self.last_rotate_time = time.process_time()
+                # target not found, rotate right
+                self.navigation_obj.slow = True
+                self.navigation_obj.rotate_right()
+                self.navigation_obj.slow = False
+                return False
 
     def target_human(self, frame, suppress_exception=False):
         """
