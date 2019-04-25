@@ -22,22 +22,25 @@ class Driver:
         cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
         cap.set(cv.CAP_PROP_FRAME_HEIGHT, 300)
         _, frame = cap.read()
-        diff32 = np.zeros(frame.shape, np.float32)
+        n = 100
         while True:
             # get video info
             _, frame = cap.read()
-            if obj.get_frame_blur():
-                frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
+            #if obj.get_frame_blur():
+                #frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 # stabilize image
-                #cv.accumulateWeighted(frame, diff32, 0.60)
-                cv.convertScaleAbs(diff32, frame)
-                img = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-                cv.Canny(frame, 125, 255, img)
 
-            # run one frame of the main operating loop
-            if obj.main_loop_step(frame):
-                # cycle complete
-                break
+            # # run one frame of the main operating loop
+            # if obj.main_loop_step(frame):
+            #     # cycle complete
+            #     break
+            i, j = 1.8, 5
+            if n > 500:
+                n = 0
+                #val = input("Enter face detection setting 1,2")
+                #i, j = val.split(",")
+            obj.calibrate_face_detection(frame, float(i), int(j))
+            n += 1
 
             cv.imshow("Video", frame)
 

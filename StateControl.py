@@ -56,8 +56,13 @@ class StateController:
         base_path = ""
         self.face_cascade = cv.CascadeClassifier(base_path + 'haarcascade_frontalface_default.xml')
         self.blur_frame = True
+        # pause between rotation and looking while searching for a face
         self.face_search_pause = 1
         self.last_rotate_time = -1
+        # time to wait before reverting back to searching for a face state
+        self.lost_face_state_timeout = 1
+        self.last_face_state_time = -1
+
 
         # adjustable parameters
         self.color_tolerance = 20
@@ -129,6 +134,21 @@ class StateController:
                 return True
         return False
 
+    def calibrate_face_detection(self, frame, one, two):
+        # look for a face in the frame
+        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        faces = self.face_cascade.detectMultiScale(gray, one, two)
+        if len(faces) > 0:
+            print("faces", len(faces))
+            # identify face to use
+            (x, y, w, h) = faces[0]
+            if self.debug: cv.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            # get est. distance to face
+            dis_ratio = w / self.face_width_standard
+            # get face location
+            face_loc = [x + w // 2, y + h // 2]
+            return dis_ratio, face_loc
+
     def main_loop_step(self, frame):
         """
         Performs one step of the current state and handles transitions between states
@@ -178,8 +198,9 @@ class StateController:
                             # set to next state
                             self.transition_to_acting_state()
                     except LostTargetException or TypeError:
-                        # revert back to search state
-                        self.transition_to_search_state()
+                        if time.process_time() - self.last_face_state_time > self.lost_face_state_timeout:
+                            # revert back to search state
+                            self.transition_to_search_state(True)
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
                     # 6) return to start = obstacle_avoidance_state + target_goal_area
@@ -227,6 +248,7 @@ class StateController:
                     print("STATE = 2, find human")
                     self.blur_frame = False  # turn off frame blurring for face detection
                     if self.find_state(frame, self.target_human):
+                        self.last_face_state_time = time.process_time()
                         # detected human since function returned True
                         print("STATE = 2, human found")
                         # set to next state
@@ -432,7 +454,7 @@ class StateController:
         else:
             # look for a face in the frame
             gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-            faces = self.face_cascade.detectMultiScale(gray, 1.8, 5)
+            faces = self.face_cascade.detectMultiScale(gray, 1.1, 5)
             if len(faces) > 0:
                 print("faces", len(faces))
                 # identify face to use
