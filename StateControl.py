@@ -526,7 +526,7 @@ class StateController:
                 color = self.green_standard
             else:
                 color = self.pink_standard
-            roi = frame[200:300, 300:400]  # TODO find actual roi for marker
+            roi = frame[100:180, 200:300]  # TODO find actual roi for marker
             try:
                 width, _, ice = self.find_color_in_frame(roi, color, suppress_exception)
                 self.navigation_obj.arm_lower()
