@@ -397,16 +397,16 @@ class StateController:
         # catch event that we lost the target, if exceptions are suppressed TypeError will catch the None type return
         except LostTargetException or TypeError:
             if targeting_function is self.target_human:
-                # target not found, rotate right
-                self.navigation_obj.slow = True
-                self.navigation_obj.rotate_right()
-                self.navigation_obj.slow = False
-                return False
-            else:
                 if time.process_time() - self.last_rotate_time > self.face_search_pause:
                     # target not found, rotate right
+                    self.navigation_obj.slow = True
                     self.navigation_obj.burst_right()
+                    self.navigation_obj.slow = False
                     self.last_rotate_time = time.process_time()
+                return False
+            else:
+                # target not found, rotate right
+                self.navigation_obj.rotate_right()
                 return False
 
     def target_human(self, frame, suppress_exception=False):
@@ -434,7 +434,7 @@ class StateController:
             gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
             faces = self.face_cascade.detectMultiScale(gray, 1.8, 5)
             if len(faces) > 0:
-                print(len(faces))
+                print("faces", len(faces))
                 # identify face to use
                 (x, y, w, h) = faces[0]
                 if self.debug: cv.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
