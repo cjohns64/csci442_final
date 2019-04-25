@@ -418,7 +418,7 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug and self.is_debug_ignore_state():
+        if self.debug and not self.is_debug_ignore_state():
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -459,7 +459,7 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug and self.is_debug_ignore_state():
+        if self.debug and not self.is_debug_ignore_state():
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -498,7 +498,7 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug and self.is_debug_ignore_state():
+        if self.debug and not self.is_debug_ignore_state():
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -553,7 +553,7 @@ class StateController:
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :return: True if ice was acquired, False otherwise
         """
-        if self.debug and self.is_debug_ignore_state():
+        if self.debug and not self.is_debug_ignore_state():
             tmp = input("T/F:").__contains__("T")
             if tmp:
                 # function success
@@ -586,7 +586,7 @@ class StateController:
 
         :return: True if ice was dropped, False otherwise
         """
-        if self.debug and self.is_debug_ignore_state():
+        if self.debug and not self.is_debug_ignore_state():
             tmp = input("T/F:").__contains__("T")
             if tmp:
                 # function success
