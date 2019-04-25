@@ -119,18 +119,26 @@ class Navigation:
     def move_forward(self):
         if self.debug: print("moving forward")
         # one step increase in motor speed
-        self.motors -= 300
-        if self.motors < 2500:
-            self.motors = 2600
+        self.motors -= 200
+        if self.motors < 5000:
+            self.motors = 5000
         if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_right(self):
         if self.debug: print("rotating right")
         # one step increase in right turning speed
         self.turn -= 200
-        if self.turn < 4500:
-            self.turn = 4500
+        if self.turn < 5000:
+            self.turn = 5000
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
+
+    def zero_wheels(self):
+        if self.debug: print("stopping movement")
+        self.turn = 6000
+        self.motors = 6000
+        if not laptop:
+            self.tango.setTarget(self.TURN, self.turn)
+            self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_left(self):
         if self.debug: print("rotating left")
