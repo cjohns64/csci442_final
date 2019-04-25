@@ -119,9 +119,9 @@ class Navigation:
     def move_forward(self):
         if self.debug: print("moving forward")
         # one step increase in motor speed
-        self.motors -= 300
-        if self.motors < 4000:
-            self.motors = 4000
+        self.motors -= 200
+        if self.motors < 5000:
+            self.motors = 5000
         if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_right(self):
