@@ -58,7 +58,7 @@ class StateController:
         self.blur_frame = True
 
         # adjustable parameters
-        self.color_tolerance = 30
+        self.color_tolerance = 20
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9

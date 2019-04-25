@@ -100,7 +100,7 @@ class Navigation:
         # return target point
         return np.array(target_point)
 
-    def get_needed_action(self, target_x_from_center, min_action_value=50):
+    def get_needed_action(self, target_x_from_center, min_action_value=60):
         """
         Gets whether the robot should rotate or not and in what direction
         :param target_x_from_center: the target horizontal location as measured from the center of the screen
@@ -139,7 +139,7 @@ class Navigation:
         if self.slow:
             motor_max = 5000
         else:
-            motor_max = 4600
+            motor_max = 4400
 
         if self.debug: print("rotating right")
         # stop going forward
@@ -164,7 +164,7 @@ class Navigation:
         if self.slow:
             motor_max = 6800
         else:
-            motor_max = 7000
+            motor_max = 7200
 
         if self.debug: print("rotating left")
         # stop going forward
