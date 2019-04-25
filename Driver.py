@@ -26,14 +26,12 @@ class Driver:
         while True:
             # get video info
             _, frame = cap.read()
-            #if obj.get_frame_blur():
-                #frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-                # stabilize image
 
             # # run one frame of the main operating loop
             # if obj.main_loop_step(frame):
             #     # cycle complete
             #     break
+            frame = cv.normalize(frame, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX, dtype=cv.CV_8U)
             i, j = 1.8, 5
             if n > 500:
                 n = 0
@@ -70,10 +68,11 @@ class Driver:
                 diff32 = np.zeros(frame.shape, np.float32)
                 doOnce = False
             if obj.get_frame_blur():
-                frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
+                frame = cv.GaussianBlur(frame, (2, 2), cv.BORDER_DEFAULT)
                 # stabilize image
-                cv.accumulateWeighted(frame, diff32, 0.60)
+                cv.accumulateWeighted(frame, diff32, 0.80)
                 cv.convertScaleAbs(diff32, frame)
+                frame = cv.normalize(frame, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX, dtype=cv.CV_8U)
 
             # run one frame of the main operating loop
             if obj.main_loop_step(frame):
@@ -133,7 +132,6 @@ class Driver:
                 cv.setMouseCallback('picture', get_bgr, param=frame)
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
-                    #print(color)
                     width += wi
                     height += hi
                     n += 1
@@ -150,7 +148,6 @@ class Driver:
                 if key == ord("q"):
                     obj.zero_motors()
                     break
-        #print(width//n, height//n)
 
 
 # start robot state object
