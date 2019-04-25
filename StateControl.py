@@ -44,6 +44,7 @@ class StateController:
         # initialize with base state
         self.primary_state = PrmState.TRAVEL_MINING
         self.secondary_state = SecState.SEARCH
+        self.transition_to_search_state()
         # global variables
         self.last_seen_time = -1  # default to negative value so that the first run always works
         self.goal = 1  # index for the current goal type to look for (green == 0, pink == 1)
