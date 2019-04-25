@@ -226,6 +226,12 @@ class Navigation:
             self.tango.setTarget(self.SHOULDER, self.shoulder)
             self.tango.setTarget(self.ELBOW, self.elbow)
 
+    def straighten_shoulder(self):
+        if self.debug: print("shoulder straightened")
+        self.shoulder_side = 7000
+        if not laptop:
+            self.tango.setTarget(self.SHOULDER_SIDE, self.shoulder_side)
+
     def arm_lower(self):
         if self.debug: print("arm lowered without releasing hand")
         self.shoulder_side = 7000
