@@ -195,7 +195,7 @@ class StateController:
                         self.blur_frame = True
                         # ask for ice.
                         if not laptop and use_phone: client.sendData("May I please have some ice")
-                        self.transition_to_move_state()
+                        self.transition_to_search_state(True)
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
                     # 5) find start area = find_state + target_goal_area
