@@ -78,8 +78,8 @@ class StateController:
         self.mining_indicator_standard = self.pink_standard
         # timeout between returning to search state
         self.timeout = 2
-        client.sendData("You are connected")
         if use_phone: self.client = ClientSocket(IP, PORT)
+        self.client.sendData("You are connected")
 
     @staticmethod
     def exit():
