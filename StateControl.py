@@ -623,6 +623,7 @@ class StateController:
         else:
             # drops ice TODO test
             self.navigation_obj.arm_raise()
+            time.sleep(.5)
             self.navigation_obj.arm_reach()
             # ice is dropped
             return True
