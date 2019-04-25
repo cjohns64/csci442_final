@@ -31,6 +31,7 @@ class Navigation:
         self.display = display
         # enable/disable debug printouts/testing
         self.debug = debug
+        self.moving_forward = False
 
     def get_path(self, frame):
         """
@@ -118,6 +119,10 @@ class Navigation:
 
     def move_forward(self):
         if self.debug: print("moving forward")
+        # stop turning
+        if not self.moving_forward:
+            self.zero_wheels()
+        self.moving_forward = True
         # one step increase in motor speed
         self.motors -= 200
         if self.motors < 5000:
@@ -126,10 +131,14 @@ class Navigation:
 
     def rotate_right(self):
         if self.debug: print("rotating right")
+        # stop going forward
+        if self.moving_forward:
+            self.zero_wheels()
+        self.moving_forward = False
         # one step increase in right turning speed
         self.turn -= 200
-        if self.turn < 5200:
-            self.turn = 5200
+        if self.turn < 5000:
+            self.turn = 5000
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def zero_wheels(self):
@@ -142,6 +151,10 @@ class Navigation:
 
     def rotate_left(self):
         if self.debug: print("rotating left")
+        # stop going forward
+        if self.moving_forward:
+            self.zero_wheels()
+        self.moving_forward = False
         # one step increase in left turning speed
         self.turn += 200
         if self.turn > 6900:
