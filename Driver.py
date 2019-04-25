@@ -85,7 +85,7 @@ class Driver:
                 break
 
     @staticmethod
-    def calibrate_color_size(obj):
+    def calibrate_color_size(obj, sampling=False):
         width = 0
         height = 0
         n = 0
@@ -106,10 +106,15 @@ class Driver:
                 # and occupied/unoccupied text
                 frame = image.array
                 frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
-                #color = frame[w//2, h//2]
-                color = obj.green_standard
-                #color = obj.mining_indicator_standard
-                frame = cv.circle(frame, (w//2, h//2), 3, (0,0,255), 5)
+                if sampling:
+                    color = frame[w//2, h//2]
+                    cv.circle(frame, (w // 2, h // 2), 3, (0, 0, 255), 5)
+                else:
+                    color = obj.green_standard
+                    # color = obj.mining_indicator_standard
+                    pass
+
+
                 cv.circle(frame, (250, 140), 30, (0, 255, 255), 2)
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
