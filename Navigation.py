@@ -26,6 +26,7 @@ class Navigation:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
+        self.slow = False
 
         # enable/disable displaying the detected path
         self.display = display
@@ -99,7 +100,7 @@ class Navigation:
         # return target point
         return np.array(target_point)
 
-    def get_needed_action(self, target_x_from_center, min_action_value=60):
+    def get_needed_action(self, target_x_from_center, min_action_value=50):
         """
         Gets whether the robot should rotate or not and in what direction
         :param target_x_from_center: the target horizontal location as measured from the center of the screen
@@ -118,6 +119,11 @@ class Navigation:
             return self.rotate_right  # rotate right
 
     def move_forward(self):
+        if self.slow:
+            motor_max = 5400
+        else:
+            motor_max = 5000
+
         if self.debug: print("moving forward")
         # stop turning
         if not self.moving_forward:
@@ -125,11 +131,16 @@ class Navigation:
         self.moving_forward = True
         # one step increase in motor speed
         self.motors -= 200
-        if self.motors < 5000:
-            self.motors = 5000
+        if self.motors < motor_max:
+            self.motors = motor_max
         if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_right(self):
+        if self.slow:
+            motor_max = 5000
+        else:
+            motor_max = 4800
+
         if self.debug: print("rotating right")
         # stop going forward
         if self.moving_forward:
@@ -137,8 +148,8 @@ class Navigation:
         self.moving_forward = False
         # one step increase in right turning speed
         self.turn -= 200
-        if self.turn < 4800:
-            self.turn = 4800
+        if self.turn < motor_max:
+            self.turn = motor_max
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def zero_wheels(self):
@@ -150,6 +161,11 @@ class Navigation:
             self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_left(self):
+        if self.slow:
+            motor_max = 6700
+        else:
+            motor_max = 6900
+
         if self.debug: print("rotating left")
         # stop going forward
         if self.moving_forward:
@@ -157,8 +173,8 @@ class Navigation:
         self.moving_forward = False
         # one step increase in left turning speed
         self.turn += 200
-        if self.turn > 6900:
-            self.turn = 6900
+        if self.turn > motor_max:
+            self.turn = motor_max
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def tilt_head_to_search(self):

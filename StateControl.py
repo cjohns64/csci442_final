@@ -56,7 +56,6 @@ class StateController:
         base_path = ""
         self.face_cascade = cv.CascadeClassifier(base_path + 'haarcascade_frontalface_default.xml')
         self.blur_frame = True
-        self.no_rotate = False
 
         # adjustable parameters
         self.color_tolerance = 30
@@ -354,15 +353,11 @@ class StateController:
             return True
         # catch event that we lost the target, if exceptions are suppressed TypeError will catch the None type return
         except LostTargetException or TypeError:
-            if not self.blur_frame and self.no_rotate:
-                # detail required
-                self.navigation_obj.zero_wheels()
-                self.no_rotate = False
-                return False
-            else:
-                # target not found, rotate right
-                self.navigation_obj.rotate_right()
-                return False
+            # target not found, rotate right
+            self.navigation_obj.slow = True
+            self.navigation_obj.rotate_right()
+            self.navigation_obj.slow = False
+            return False
 
     def target_human(self, frame, suppress_exception=False):
         """
