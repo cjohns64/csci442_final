@@ -98,6 +98,9 @@ class Driver:
             camera.framerate = 32
             rawCapture = PiRGBArray(camera, size=camera.resolution)
             # capture frames from the camera
+            # reach out arm
+            nav_obj = Navigation()
+            nav_obj.arm_reach()
             for image in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
@@ -107,9 +110,8 @@ class Driver:
                 color = obj.green_standard
                 #color = obj.mining_indicator_standard
                 frame = cv.circle(frame, (w//2, h//2), 3, (0,0,255), 5)
-                cv.rectangle(frame,(200, 300),(300, 400),(0, 255, 255), 2)
-                nav_obj=Navigation()
-                nav_obj.arm_reach()
+                cv.rectangle(frame, (100, 200), (100, 200), (0, 255, 255), 2)
+
 
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
