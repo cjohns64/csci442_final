@@ -68,7 +68,6 @@ class StateController:
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 1  # this value is for ~1 meter from the laptop camera
         self.mining_area_standard = 100
-        self.goal_small_standard = 150  # TODO calibrate with actual values
         self.goal_medium_standard = 150  # TODO calibrate with actual values
         self.goal_large_standard = 163
         # color standard values based off of sampling
@@ -120,7 +119,7 @@ class StateController:
                             # reached mining area since function returned True
                             # declare that mining area is reached
                             if not laptop and use_phone: client.sendData("The mining area has been reached")
-                            if self.debug: print("STATE = 1, mining area reached")
+                            print("STATE = 1, mining area reached")
                             # set to next state
                             self.primary_state = PrmState.MINING
                             self.transition_to_search_state(True)
@@ -130,12 +129,12 @@ class StateController:
 
                 elif self.primary_state == PrmState.MINING:
                     # 3) travel to human = traveling_state + target_human -> ask for ice once there
-                    if self.debug: print("STATE = 3, travel to human")
+                    print("STATE = 3, travel to human")
                     self.blur_frame = False  # turn off frame blurring for face detection
                     try:
                         if self.traveling_state(frame, self.target_human, retargeting_timeout=self.timeout):
                             # reached human since function returned True
-                            if self.debug: print("STATE = 3, asking for ice")
+                            print("STATE = 3, asking for ice")
                             self.blur_frame = True
                             # set to next state
                             self.transition_to_acting_state()
@@ -145,14 +144,14 @@ class StateController:
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
                     # 6) return to start = obstacle_avoidance_state + target_goal_area
-                    if self.debug: print("STATE = 6, return to start")
+                    print("STATE = 6, return to start")
                     try:
                         if self.obstacle_avoidance_state(frame, self.target_goal_area, retargeting_timeout=self.timeout):
                             # reached start area since function returned True
                             # declare goal area is reached
                             if not laptop and use_phone: client.sendData("We have reached the goal area")
                             time.sleep(1.5)
-                            if self.debug: print("STATE = 6, goal area reached")
+                            print("STATE = 6, goal area reached")
                             # set to next state
                             self.primary_state = PrmState.GOAL
                             self.transition_to_search_state()
@@ -162,11 +161,11 @@ class StateController:
 
                 else:  # PimState == GOAL
                     # 8) travel to goal area = traveling_state + target_goal_area
-                    if self.debug: print("STATE = 8, travel to goal area")
+                    print("STATE = 8, travel to goal area")
                     try:
                         if self.traveling_state(frame, self.target_goal_area, retargeting_timeout=self.timeout):
                             # reached goal area since function returned True
-                            if self.debug: print("STATE = 8, goal area reached")
+                            print("STATE = 8, goal area reached")
                             # set to next state
                             self.transition_to_acting_state()
                     except LostTargetException or TypeError:
@@ -177,20 +176,20 @@ class StateController:
             elif self.secondary_state == SecState.SEARCH:
                 if self.primary_state == PrmState.TRAVEL_MINING:
                     # 0) find mining area = find_state + target_mining_area
-                    if self.debug: print("STATE = 0, find mining area")
+                    print("STATE = 0, find mining area")
                     if self.find_state(frame, self.target_mining_area):
                         # detected mining area since function returned True
-                        if self.debug: print("STATE = 0, mining area found")
+                        print("STATE = 0, mining area found")
                         # set to next state
                         self.transition_to_move_state()
 
                 elif self.primary_state == PrmState.MINING:
                     # 2) find human = find_state + target_human
-                    if self.debug: print("STATE = 2, find human")
+                    print("STATE = 2, find human")
                     self.blur_frame = False  # turn off frame blurring for face detection
                     if self.find_state(frame, self.target_human):
                         # detected human since function returned True
-                        if self.debug: print("STATE = 2, human found")
+                        print("STATE = 2, human found")
                         # set to next state
                         self.blur_frame = True
                         # ask for ice.
@@ -199,19 +198,19 @@ class StateController:
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
                     # 5) find start area = find_state + target_goal_area
-                    if self.debug: print("STATE = 5, find start area")
+                    print("STATE = 5, find start area")
                     if self.find_state(frame, self.target_goal_area):
                         # detected start area since function returned True
-                        if self.debug: print("STATE = 5, start area found")
+                        print("STATE = 5, start area found")
                         # set to next state
                         self.transition_to_move_state()
 
                 else:  # PimState == GOAL
                     # 7) find goal area = find_state + target_goal_area for current ice target
-                    if self.debug: print("STATE = 7, find goal area")
+                    print("STATE = 7, find goal area")
                     if self.find_state(frame, self.target_goal_area):
                         # detected goal area since function returned True
-                        if self.debug: print("STATE = 7, goal area found")
+                        print("STATE = 7, goal area found")
                         # set to next state
                         self.transition_to_move_state()
 
@@ -219,24 +218,24 @@ class StateController:
             else:  # SecState == ACTING
                 if self.primary_state == PrmState.MINING:
                     # 4) identify ice -> grab ice once correct
-                    if self.debug: print("STATE = 4, grabbing ice")
+                    print("STATE = 4, grabbing ice")
                     if self.grab_ice(frame, self.goal):
                         # grab ice success
-                        if self.debug: print("STATE = 4, grab success")
+                        print("STATE = 4, grab success")
                         # set to next state
                         self.primary_state = PrmState.TRAVEL_GOAL
                         self.transition_to_search_state()
                     else:
-                        if self.debug: print("STATE = 4, grab failure")
+                        print("STATE = 4, grab failure")
                     # ask for correct ice
                     if not laptop and use_phone: client.sendData("Please give me the correct ice")
 
                 elif self.primary_state == PrmState.GOAL:
                     # 9) drop ice in correct goal area
-                    if self.debug: print("STATE = 9, dropping ice")
+                    print("STATE = 9, dropping ice")
                     if self.drop_ice(frame, self.goal):
                         # drop ice success
-                        if self.debug: print("STATE = 9, drop success")
+                        print("STATE = 9, drop success")
                         # set to default state
                         self.primary_state = PrmState.TRAVEL_MINING
                         self.transition_to_search_state()
@@ -244,7 +243,7 @@ class StateController:
                         return True
                     else:
                         # drop ice failure
-                        if self.debug: print("STATE = 9, drop failure")
+                        print("STATE = 9, drop failure")
                 else:
                     raise Warning("TRAVEL_* primary states not defined for ACTING secondary state")
         # cycle incomplete
@@ -370,8 +369,7 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        # TODO debug temporarily disabled
-        if False and self.debug:
+        if self.debug:
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -411,8 +409,7 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        # TODO debug temporarily disabled
-        if False and self.debug:
+        if self.debug:
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -451,8 +448,7 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        # TODO debug temporarily disabled
-        if False and self.debug:
+        if self.debug:
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -507,8 +503,7 @@ class StateController:
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :return: True if ice was acquired, False otherwise
         """
-        # TODO debug temporarily disabled
-        if False and self.debug:
+        if self.debug:
             tmp = input("T/F:").__contains__("T")
             if tmp:
                 # function success
@@ -523,7 +518,7 @@ class StateController:
                 color = self.green_standard
             else:
                 color = self.pink_standard
-            roi = frame[100:180, 200:300]  # TODO find actual roi for marker
+            roi = frame[100:180, 200:300]
             try:
                 width, _, ice = self.find_color_in_frame(roi, color, suppress_exception)
                 self.navigation_obj.arm_lower()
@@ -541,8 +536,7 @@ class StateController:
 
         :return: True if ice was dropped, False otherwise
         """
-        # TODO debug temporarily disabled
-        if False and self.debug:
+        if self.debug:
             tmp = input("T/F:").__contains__("T")
             if tmp:
                 # function success
