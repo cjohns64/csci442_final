@@ -79,7 +79,7 @@ class StateController:
         self.orange_line_standard = [92, 204, 234]
         self.mining_indicator_standard = self.pink_standard
         # timeout between returning to search state
-        self.timeout = 2
+        self.timeout = 1.3
         if use_phone: client.sendData("You are connected")
 
     @staticmethod
@@ -196,7 +196,7 @@ class StateController:
                         self.blur_frame = True
                         # ask for ice.
                         if not laptop and use_phone: client.sendData("May I please have some ice")
-                        self.transition_to_search_state(True)
+                        self.transition_to_move_state(True)
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
                     # 5) find start area = find_state + target_goal_area
@@ -259,8 +259,11 @@ class StateController:
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.SEARCH
 
-    def transition_to_move_state(self):
-        self.navigation_obj.tilt_head_to_move()
+    def transition_to_move_state(self, human=False):
+        if human:
+            self.navigation_obj.tilt_head_to_human()
+        else:
+            self.navigation_obj.tilt_head_to_move()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.MOVING
 
@@ -304,7 +307,7 @@ class StateController:
         move_function()
         return False
 
-    def traveling_state(self, frame, targeting_function, retargeting_timeout=1, suppress_exception=False):
+    def traveling_state(self, frame, targeting_function, retargeting_timeout=1.0, suppress_exception=False):
         """
         Continues to travel to target, must be given a targeting function
         :param frame: the current camera frame
@@ -363,8 +366,10 @@ class StateController:
                 self.navigation_obj.slow = False
                 return False
             else:
-                # target not found, rotate right
-                self.navigation_obj.rotate_right()
+                if time.process_time() - self.last_rotate_time > self.face_search_pause:
+                    # target not found, rotate right
+                    self.navigation_obj.burst_right()
+                    self.last_rotate_time = time.process_time()
                 return False
 
     def target_human(self, frame, suppress_exception=False):

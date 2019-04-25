@@ -157,6 +157,12 @@ class Navigation:
             self.turn = motor_max
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
+    def burst_right(self):
+        for value in range(6000, 4900, -200):
+            self.turn = value
+            if not laptop: self.tango.setTarget(self.TURN, self.turn)
+            time.sleep(0.01)
+
     def zero_wheels(self):
         if self.debug: print("stopping movement")
         self.turn = 6000
