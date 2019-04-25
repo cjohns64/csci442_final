@@ -31,6 +31,8 @@ class Driver:
                 # stabilize image
                 #cv.accumulateWeighted(frame, diff32, 0.60)
                 cv.convertScaleAbs(diff32, frame)
+                img = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+                cv.Canny(frame, 125, 255, img)
 
             # run one frame of the main operating loop
             if obj.main_loop_step(frame):

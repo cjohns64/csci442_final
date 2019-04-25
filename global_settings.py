@@ -1,2 +1,3 @@
 laptop = False
-use_phone = True
+use_phone = False
+move_enabled = False

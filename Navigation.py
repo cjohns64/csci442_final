@@ -124,44 +124,47 @@ class Navigation:
             return self.rotate_right  # rotate right
 
     def move_forward(self):
-        if self.slow:
-            motor_max = 5600
-        else:
-            motor_max = 5200
+        if move_enabled:
+            if self.slow:
+                motor_max = 5600
+            else:
+                motor_max = 5200
 
-        if self.debug: print("moving forward")
-        # stop turning
-        if not self.moving_forward:
-            self.zero_wheels()
-        self.moving_forward = True
-        # one step increase in motor speed
-        self.motors -= 200
-        if self.motors < motor_max:
-            self.motors = motor_max
-        if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
+            if self.debug: print("moving forward")
+            # stop turning
+            if not self.moving_forward:
+                self.zero_wheels()
+            self.moving_forward = True
+            # one step increase in motor speed
+            self.motors -= 200
+            if self.motors < motor_max:
+                self.motors = motor_max
+            if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_right(self):
-        if self.slow:
-            motor_max = 5600
-        else:
-            motor_max = 5000
+        if move_enabled:
+            if self.slow:
+                motor_max = 5600
+            else:
+                motor_max = 5000
 
-        if self.debug: print("rotating right")
-        # stop going forward
-        if self.moving_forward:
-            self.zero_wheels()
-        self.moving_forward = False
-        # one step increase in right turning speed
-        self.turn -= 200
-        if self.turn < motor_max:
-            self.turn = motor_max
-        if not laptop: self.tango.setTarget(self.TURN, self.turn)
+            if self.debug: print("rotating right")
+            # stop going forward
+            if self.moving_forward:
+                self.zero_wheels()
+            self.moving_forward = False
+            # one step increase in right turning speed
+            self.turn -= 200
+            if self.turn < motor_max:
+                self.turn = motor_max
+            if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def burst_right(self):
-        for value in range(6000, 4900, -200):
-            self.turn = value
-            if not laptop: self.tango.setTarget(self.TURN, self.turn)
-            time.sleep(0.01)
+        if move_enabled:
+            for value in range(6000, 4900, -200):
+                self.turn = value
+                if not laptop: self.tango.setTarget(self.TURN, self.turn)
+                time.sleep(0.01)
 
     def zero_wheels(self):
         if self.debug: print("stopping movement")
@@ -172,21 +175,22 @@ class Navigation:
             self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_left(self):
-        if self.slow:
-            motor_max = 6600
-        else:
-            motor_max = 6800
+        if move_enabled:
+            if self.slow:
+                motor_max = 6600
+            else:
+                motor_max = 6800
 
-        if self.debug: print("rotating left")
-        # stop going forward
-        if self.moving_forward:
-            self.zero_wheels()
-        self.moving_forward = False
-        # one step increase in left turning speed
-        self.turn += 200
-        if self.turn > motor_max:
-            self.turn = motor_max
-        if not laptop: self.tango.setTarget(self.TURN, self.turn)
+            if self.debug: print("rotating left")
+            # stop going forward
+            if self.moving_forward:
+                self.zero_wheels()
+            self.moving_forward = False
+            # one step increase in left turning speed
+            self.turn += 200
+            if self.turn > motor_max:
+                self.turn = motor_max
+            if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def tilt_head_to_search(self):
         # zero all motors
