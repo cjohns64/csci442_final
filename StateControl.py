@@ -78,7 +78,7 @@ class StateController:
         self.mining_indicator_standard = self.pink_standard
         # timeout between returning to search state
         self.timeout = 2
-        client.sendData("You are connected")
+        if use_phone: client.sendData("You are connected")
 
     @staticmethod
     def exit():
@@ -132,7 +132,7 @@ class StateController:
                     try:
                         if self.traveling_state(frame, self.target_human, retargeting_timeout=self.timeout):
                             # reached human since function returned True
-                            # ask for ice.  TODO Need to test if this works.
+                            # ask for ice.
                             if not laptop and use_phone: client.sendData("May I please have some ice")
                             time.sleep(1.5)
                             if self.debug: print("STATE = 3, asking for ice")
@@ -421,15 +421,8 @@ class StateController:
             try:
                 # get the width and location for the mining area indicator
                 width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
-                # detect line
-                if width > height * 2:
-                    # return distance ratio, and location of target
-                    return height / self.mining_area_standard, center
-                else:
-                    if suppress_exception:
-                        return None
-                    else:
-                        raise LostTargetException("No horizontal line detected")
+                # return distance ratio, and location of target
+                return height / self.mining_area_standard, center
             except TypeError:
                 # failed to find target
                 # TypeErrors only occur when suppress_exception==True and the function failed to find the color

@@ -138,7 +138,7 @@ class Driver:
 
 
 # start robot state object
-robot = StateController(debug=True)
+robot = StateController(debug=False)
 # run w/ laptop/pi camera
 if not laptop:
     Driver.pi_cam_loop(robot)
