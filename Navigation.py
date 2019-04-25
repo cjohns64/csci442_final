@@ -136,8 +136,8 @@ class Navigation:
         if self.debug: print("rotating left")
         # one step increase in left turning speed
         self.turn += 200
-        if self.turn > 7010:
-            self.turn = 7000
+        if self.turn > 6900:
+            self.turn = 6900
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def tilt_head_to_search(self):
