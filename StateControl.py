@@ -66,7 +66,7 @@ class StateController:
         # 1 distance value is recorded at the optimum distance
         # and the ratio of the current sensor value and this distance
         # will be compared to the distance_ratio to determine if we have reached the target or not
-        self.face_width_standard = 140  # this value is for ~1 meter from the laptop camera
+        self.face_width_standard = 14  # this value is for ~1 meter from the laptop camera
         self.mining_area_standard = 150
         self.goal_small_standard = 150  # TODO calibrate with actual values
         self.goal_medium_standard = 150  # TODO calibrate with actual values
