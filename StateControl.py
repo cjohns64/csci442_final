@@ -29,7 +29,7 @@ class PrmState(Enum):
 class SecState(Enum):
     SEARCH = 0
     MOVING = 1
-    ACTING = 3
+    ACTING = 2
 
 
 class StateController:
@@ -91,6 +91,43 @@ class StateController:
 
     def get_frame_blur(self):
         return self.blur_frame
+
+    def get_state_index(self):
+        s = self.secondary_state.value
+        p = self.primary_state.value
+        if s == 0:
+            if p == 0:
+                return 0
+            elif p == 1:
+                return 2
+            elif p == 2:
+                return 5
+            else:
+                return 7
+        elif s == 1:
+            if p == 0:
+                return 1
+            elif p == 1:
+                return 3
+            elif p == 2:
+                return 6
+            else:
+                return 8
+        else:
+            if p == 1:
+                return 4
+            elif p == 3:
+                return 9
+            else:
+                print("get state error")
+                pass
+
+    def is_debug_ignore_state(self):
+        state = self.get_state_index()
+        for i in no_debug_states:
+            if i == state:
+                return True
+        return False
 
     def main_loop_step(self, frame):
         """
@@ -381,7 +418,7 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug:
+        if self.debug and self.is_debug_ignore_state():
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -422,7 +459,7 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug:
+        if self.debug and self.is_debug_ignore_state():
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -461,7 +498,7 @@ class StateController:
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
         """
-        if self.debug:
+        if self.debug and self.is_debug_ignore_state():
             tmp = input("at/not/lost:")
             if tmp.__contains__("at"):
                 # at target
@@ -516,8 +553,7 @@ class StateController:
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :return: True if ice was acquired, False otherwise
         """
-        # TODO remove False
-        if False and self.debug:
+        if self.debug and self.is_debug_ignore_state():
             tmp = input("T/F:").__contains__("T")
             if tmp:
                 # function success
@@ -550,7 +586,7 @@ class StateController:
 
         :return: True if ice was dropped, False otherwise
         """
-        if self.debug:
+        if self.debug and self.is_debug_ignore_state():
             tmp = input("T/F:").__contains__("T")
             if tmp:
                 # function success

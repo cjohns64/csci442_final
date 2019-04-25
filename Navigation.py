@@ -53,7 +53,7 @@ class Navigation:
         # convert to gray scale
         blur = cv.cvtColor(blur, cv.COLOR_BGR2GRAY)
         # Canny
-        cv.Canny(blur, 125, 255, blur)
+        cv.Canny(blur, 100, 255, blur)
         # vertical fill
         max_row_inds = h - np.argmax(blur[::-1], axis=0)
         row_inds = np.indices((h, w))[0]
