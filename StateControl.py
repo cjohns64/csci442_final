@@ -516,7 +516,8 @@ class StateController:
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :return: True if ice was acquired, False otherwise
         """
-        if self.debug:
+        # TODO remove False
+        if False and self.debug:
             tmp = input("T/F:").__contains__("T")
             if tmp:
                 # function success
