@@ -110,7 +110,7 @@ class Driver:
                 color = obj.green_standard
                 #color = obj.mining_indicator_standard
                 frame = cv.circle(frame, (w//2, h//2), 3, (0,0,255), 5)
-                cv.rectangle(frame, (100, 200), (100, 200), (0, 255, 255), 2)
+                frame = cv.rectangle(frame, (100, 200), (100, 200), (0, 255, 255), 2)
 
 
                 try:
