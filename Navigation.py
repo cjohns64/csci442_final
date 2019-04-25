@@ -128,8 +128,8 @@ class Navigation:
         if self.debug: print("rotating right")
         # one step increase in right turning speed
         self.turn -= 200
-        if self.turn < 3390:
-            self.turn = 3400
+        if self.turn < 4500:
+            self.turn = 4500
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def rotate_left(self):
