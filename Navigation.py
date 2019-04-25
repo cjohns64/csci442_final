@@ -202,7 +202,7 @@ class Navigation:
         # zero all motors
         self.zero_motors()
         if self.debug: print("head tilted up to find human")
-        self.headTilt = 6200
+        self.headTilt = 6600
         if not laptop: self.tango.setTarget(self.HEADTILT, self.headTilt)
 
     def arm_reach(self):

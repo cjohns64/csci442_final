@@ -56,6 +56,8 @@ class StateController:
         base_path = ""
         self.face_cascade = cv.CascadeClassifier(base_path + 'haarcascade_frontalface_default.xml')
         self.blur_frame = True
+        self.face_search_pause = 1  # TODO implement
+        self.last_rotate_time = -1
 
         # adjustable parameters
         self.color_tolerance = 20
@@ -337,7 +339,7 @@ class StateController:
                 else:
                     raise LostTargetException("Target lost after timeout")
 
-    def find_state(self, frame, targeting_function, suppress_exception=False):
+    def find_state(self, frame, targeting_function, suppress_exception=False, delay=False):
         """
         Continues to search for the target, given by the targeting_function.
         Assumes the head is already in the correct orientation
@@ -385,6 +387,7 @@ class StateController:
             gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
             faces = self.face_cascade.detectMultiScale(gray, 1.8, 5)
             if len(faces) > 0:
+                print(len(faces))
                 # identify face to use
                 (x, y, w, h) = faces[0]
                 if self.debug: cv.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
