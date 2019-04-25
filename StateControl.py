@@ -634,7 +634,7 @@ class StateController:
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
         :return: The BGR standard for the color detected, or raises a LostTargetException if a color was not found
         """
-        if self.debug and self.is_debug_ignore_state():
+        if self.debug and not self.is_debug_ignore_state():
             tmp = input("green/pink/lost:")
             if tmp.__contains__("green"):
                 # green ice
