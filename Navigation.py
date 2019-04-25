@@ -110,7 +110,7 @@ class Navigation:
         if self.debug: print(target_x_from_center, min_action_value)
         if np.abs(target_x_from_center) < min_action_value:
             return self.move_forward  # no rotation
-        elif target_x_from_center > 0:
+        elif target_x_from_center < 0:
             # rotate left
             return self.rotate_left  # rotate left
         else:
@@ -137,8 +137,8 @@ class Navigation:
         self.moving_forward = False
         # one step increase in right turning speed
         self.turn -= 200
-        if self.turn < 5000:
-            self.turn = 5000
+        if self.turn < 4800:
+            self.turn = 4800
         if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def zero_wheels(self):
