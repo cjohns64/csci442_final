@@ -113,7 +113,7 @@ class Driver:
                     color = frame[h//2, w//2]
                     try:
                         wi, hi, loc = obj.find_color_in_frame(frame, color)
-                        cv.circle(frame, (w // 2, h // 2), 3, (0, 0, 255), 5)
+                        cv.circle(frame, (w // 2, h // 2), 15, (0, 0, 255), 5)
                     except:
                         pass
                 else:
