@@ -127,16 +127,19 @@ class Driver:
                 # cv.setMouseCallback('picture', get_bgr, param=frame)
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, obj.pink_standard)
+                    print("detected PINK")
                     cv.circle(frame, loc, wi//2, tuple(obj.pink_standard), 2)
                 except:
                     pass
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, obj.green_standard)
+                    print("detected GREEN")
                     cv.circle(frame, loc, wi // 2, tuple(obj.green_standard), 2)
                 except:
                     pass
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, obj.orange_line_standard)
+                    print("detected ORANGE")
                     cv.circle(frame, loc, wi // 2, tuple(obj.orange_line_standard), 2)
                 except:
                     pass
