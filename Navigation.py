@@ -232,10 +232,10 @@ class Navigation:
     def burst_right(self):
         if self.debug: print("burst right")
         if move_enabled:
-            for value in range(6000, self.slow_lower_value, -self.motor_step):
+            for value in range(6000, self.fast_lower_value, -self.motor_step):
                 self.turn = value
                 if not laptop: self.tango.setTarget(self.TURN, self.turn)
-                time.sleep(0.01)
+                time.sleep(0.1)
             self.zero_wheels()
 
     def turn_180(self):
