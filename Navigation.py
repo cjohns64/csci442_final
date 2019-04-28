@@ -66,7 +66,6 @@ class Navigation:
                 for line in lines:
                     cv.line(frame, tuple(line[0][:2]), tuple(line[0][2:]), (255, 0, 255))
             # order by y coordinates into 2 sets
-            print(">>>>", lines, "<<<<")
             if len(lines[0]) > 1:
                 y_ind = np.argpartition(lines[:, 0, 1], 2)
                 # take the y coordinates of the start of partition 1 and the end of partition 2
@@ -75,12 +74,13 @@ class Navigation:
                                        (0, lines[y_ind[-1]][0][1]), (w, lines[y_ind[-1]][0][3])])
             else:
                 # only one line was detected
-                zone_lines = np.array([[lines[0][:2]], [lines[2:]]])
+                zone_lines = np.array([(0, lines[0][0][1]), (w, lines[0][0][3])])
 
             # check if 2 lines are truly present,
+            print(zone_lines)
             # if there are 2 lines, they will have different y locations
-            if len(zone_lines) == 1 or np.abs(zone_lines[0][1] - zone_lines[2][1]) < line_tolerance \
-                    or np.abs(zone_lines[1][1] - zone_lines[3][1]) < line_tolerance:
+            if len(zone_lines) <= 2 or np.abs(zone_lines[0][0][1] - zone_lines[2][0][1]) < line_tolerance \
+                    or np.abs(zone_lines[1][0][1] - zone_lines[3][0][1]) < line_tolerance:
                 # one line case
                 avg_p1 = int(np.average([zone_lines[0][1], zone_lines[2][1]]))
                 avg_p2 = int(np.average([zone_lines[1][1], zone_lines[3][1]]))
