@@ -68,7 +68,7 @@ class StateController:
         self.zone_change_delay = delay(0.6)  # delay before another zone change is allowed
 
         # adjustable parameters
-        self.color_tolerance = np.array([20, 20, 20])  # np.array([20, 20, 250])  # HSV, accept most values
+        self.color_tolerance = np.array([15, 25, 230])  # np.array([20, 20, 250])  # HSV, accept most values
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9
@@ -81,9 +81,9 @@ class StateController:
         self.goal_medium_standard = 75  # TODO calibrate with actual values
         self.goal_large_standard = 163
         # color standard values based off of sampling
-        self.pink_standard = [190, 125, 250]  # HSV [150, 150, 30]
-        self.green_standard = [25, 200, 110]  # HSV [47, 235, 10]
-        self.orange_line_standard = [160, 215, 240]  # HSV [130, 140, 30]
+        self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
+        self.green_standard = [50, 170, 150]  # BGR [25, 200, 110]
+        self.orange_line_standard = [20, 50, 250]  # BGR [160, 215, 240]
         self.mining_indicator_standard = self.green_standard
         if use_phone: client.sendData("You are connected")
 

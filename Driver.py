@@ -27,6 +27,7 @@ class Driver:
         while True:
             # get video info
             _, frame = cap.read()
+            frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
             # frame = cv.imread("test_images/line_test_image.jpg", cv.IMREAD_COLOR)
 
             # # run one frame of the main operating loop
@@ -58,6 +59,7 @@ class Driver:
             # grab the raw NumPy array representing the image, then initialize the timestamp
             # and occupied/unoccupied text
             frame = image.array
+            frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
             h, w = frame.shape[:2]
 
             if doOnce:
@@ -165,7 +167,7 @@ robot = StateController(debug=debug)
 if not laptop:
     #Driver.pi_cam_loop(robot)
     # robot.navigation_obj.tilt_head_to_move()
-    Driver.calibrate_color_size(robot, True)
+    Driver.calibrate_color_size(robot, False)
     robot.exit()
 else:
     Driver.laptop_cam_loop(robot)
