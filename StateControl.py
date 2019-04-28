@@ -32,6 +32,12 @@ class SecState(Enum):
     ACTING = 2
 
 
+class Location(Enum):
+    MINING_AREA = 0
+    ROCK_AREA = 1
+    GOAL_AREA = 2
+
+
 class StateController:
     """
     Controls the states of the robot, given the current frame
@@ -44,6 +50,8 @@ class StateController:
         # initialize with base state
         self.primary_state = PrmState.TRAVEL_MINING
         self.secondary_state = SecState.SEARCH
+        self.current_loc = Location.GOAL_AREA
+        self.last_loc = None
         self.navigation_obj.tilt_head_to_search()
         # global variables
         self.last_seen_time = -1  # default to negative value so that the first run always works
@@ -173,7 +181,7 @@ class StateController:
                     # 1) travel to mining area = obstacle_avoidance_state + target_mining_area
                     if self.debug: print("STATE = 1, travel to mining area")
                     try:
-                        if self.obstacle_avoidance_state(frame, self.target_mining_area, retargeting_timeout=self.timeout):
+                        if self.travel_or_avoid(frame, self.target_mining_area, retargeting_timeout=self.timeout):
                             # reached mining area since function returned True
                             # declare that mining area is reached
                             if not laptop and use_phone: client.sendData("The mining area has been reached")
@@ -190,7 +198,7 @@ class StateController:
                     print("STATE = 3, travel to human")
                     self.blur_frame = False  # turn off frame blurring for face detection
                     try:
-                        if self.traveling_state(frame, self.target_human, retargeting_timeout=self.timeout):
+                        if self.travel_or_avoid(frame, self.target_human, retargeting_timeout=self.timeout):
                             # reached human since function returned True
                             print("STATE = 3, asking for ice")
                             self.blur_frame = True
@@ -205,7 +213,7 @@ class StateController:
                     # 6) return to start = obstacle_avoidance_state + target_goal_area
                     print("STATE = 6, return to start")
                     try:
-                        if self.obstacle_avoidance_state(frame, self.target_goal_area, retargeting_timeout=self.timeout):
+                        if self.travel_or_avoid(frame, self.target_goal_area, retargeting_timeout=self.timeout):
                             # reached start area since function returned True
                             # declare goal area is reached
                             if not laptop and use_phone: client.sendData("We have reached the goal area")
@@ -222,7 +230,7 @@ class StateController:
                     # 8) travel to goal area = traveling_state + target_goal_area
                     print("STATE = 8, travel to goal area")
                     try:
-                        if self.traveling_state(frame, self.target_goal_area, retargeting_timeout=self.timeout):
+                        if self.travel_or_avoid(frame, self.target_goal_area, retargeting_timeout=self.timeout):
                             # reached goal area since function returned True
                             print("STATE = 8, goal area reached")
                             # set to next state
@@ -327,6 +335,24 @@ class StateController:
         self.navigation_obj.tilt_head_to_move()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.ACTING
+
+    def travel_or_avoid(self, frame, targeting_function, retargeting_timeout=0.5, suppress_exception=False):
+        """
+        ether activates the obstacle_avoidance_state or the traveling_state depending on what the current zone is.
+        :param frame: the current frame of the camera
+        :param targeting_function: function used to identify distance and direction to target,
+        returns est. distance to target and its location on the screen,
+        raises a LostTargetException if the target is lost
+        :param retargeting_timeout: time delay between researching for the target
+        :param suppress_exception: if True, the targeting_function will not use exceptions
+        :return: True if target is reached, False if it has not,
+        raises a LostTargetException if the target is lost after the retargeting_timeout
+        """
+        if self.current_loc == Location.ROCK_AREA:
+            # only avoid obstacles in the rock area
+            return self.obstacle_avoidance_state(frame, targeting_function, retargeting_timeout, suppress_exception)
+        else:
+            return self.traveling_state(frame, targeting_function, retargeting_timeout, suppress_exception)
 
     def obstacle_avoidance_state(self, frame, targeting_function, retargeting_timeout=0.5, suppress_exception=False):
         """
@@ -491,6 +517,28 @@ class StateController:
                 raise LostTargetException("TESTING, target lost in target_mining_area")
         else:
             try:
+                num_zone_lines = self.navigation_obj.get_zone_lines(frame)[0]
+                # check if the zone lines are in frame
+                if num_zone_lines == 0:
+                    if self.current_loc != Location.ROCK_AREA:
+                        # zone lines are not in frame
+                        if suppress_exception:
+                            return None
+                        else:
+                            raise LostTargetException("zone lines not in screen")
+                    else:
+                        # no zone lines but we are in the rock area,
+                        # this means we just crossed into the mining area
+                        self.last_loc = self.current_loc
+                        self.current_loc = Location.MINING_AREA
+                        # TODO move mining area announcement to here
+                elif num_zone_lines == 1:
+                    # just moved into the rock area
+                    if self.current_loc == Location.GOAL_AREA:
+                        self.last_loc = self.current_loc
+                        self.current_loc = Location.ROCK_AREA
+                        # TODO may need to use self.last_loc to revert if the target area is not in frame
+
                 # get the width and location for the mining area indicator
                 width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
                 # return distance ratio, and location of target
@@ -530,6 +578,28 @@ class StateController:
                 raise LostTargetException("TESTING, target lost in target_goal_area")
         else:
             try:
+                num_zone_lines = self.navigation_obj.get_zone_lines(frame)[0]
+                # check if the zone lines are in frame
+                if num_zone_lines == 0:
+                    if self.current_loc != Location.ROCK_AREA:
+                        # zone lines are not in frame
+                        if suppress_exception:
+                            return None
+                        else:
+                            raise LostTargetException("zone lines not in screen")
+                    else:
+                        # no zone lines but we are in the rock area,
+                        # this means we just crossed into the goal area
+                        self.last_loc = self.current_loc
+                        self.current_loc = Location.GOAL_AREA
+                        # TODO move goal area announcement to here
+                elif num_zone_lines == 1:
+                    # just moved into the rock area
+                    if self.current_loc == Location.MINING_AREA:
+                        self.last_loc = self.current_loc
+                        self.current_loc = Location.ROCK_AREA
+                        # TODO may need to use self.last_loc to revert if the target area is not in frame
+
                 # get the width and location for the given color
                 if goal_type == 0:
                     width, _, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
