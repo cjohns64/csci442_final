@@ -58,6 +58,7 @@ class Driver:
             # grab the raw NumPy array representing the image, then initialize the timestamp
             # and occupied/unoccupied text
             frame = image.array
+            h, w = frame.shape[:2]
 
             if doOnce:
                 diff32 = np.zeros(frame.shape, np.float32)
@@ -106,6 +107,7 @@ class Driver:
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
                 frame = image.array
+                h, w = frame.shape[:2]
                 frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 if sampling:
                     color = frame[w//2, h//2]
@@ -162,7 +164,7 @@ robot = StateController(debug=debug)
 if not laptop:
     #Driver.pi_cam_loop(robot)
     # robot.navigation_obj.tilt_head_to_move()
-    Driver.calibrate_color_size(robot, False)
+    Driver.calibrate_color_size(robot, True)
     robot.exit()
 else:
     Driver.laptop_cam_loop(robot)

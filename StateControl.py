@@ -86,7 +86,7 @@ class StateController:
         self.goal_large_standard = 163
         # color standard values based off of sampling
         self.pink_standard = [113, 39, 235]  # HSV [150, 150, 30]
-        self.green_standard = [94, 222, 53]  # HSV [47, 235, 10]
+        self.green_standard = [6, 180, 100]  # HSV [47, 235, 10]
         # self.orange_standard = [46, 139, 204]
         self.orange_line_standard = [130, 140, 30]
         self.mining_indicator_standard = self.pink_standard
