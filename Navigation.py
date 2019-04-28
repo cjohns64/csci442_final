@@ -28,7 +28,6 @@ class Navigation:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
-        self.slow = False
 
         # enable/disable displaying the detected path
         self.display = display
@@ -204,10 +203,7 @@ class Navigation:
     def move_forward(self):
         if self.debug: print("moving forward")
         if move_enabled:
-            if self.slow:
-                motor_max = 5200
-            else:
-                motor_max = self.fast_lower_value
+            motor_max = self.fast_lower_value
 
             # stop turning
             if not self.moving_forward:
@@ -222,10 +218,7 @@ class Navigation:
     def rotate_right(self):
         if self.debug: print("rotating right")
         if move_enabled:
-            if self.slow:
-                motor_max = 5600
-            else:
-                motor_max = self.slow_lower_value
+            motor_max = self.slow_lower_value
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
@@ -255,10 +248,7 @@ class Navigation:
     def rotate_left(self):
         if self.debug: print("rotating left")
         if move_enabled:
-            if self.slow:
-                motor_max = 6600
-            else:
-                motor_max = self.slow_upper_value
+            motor_max = self.slow_upper_value
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()

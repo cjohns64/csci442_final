@@ -434,9 +434,7 @@ class StateController:
             if targeting_function is self.target_human:
                 if not self.rotate_delay.check_time():
                     # target not found, rotate right
-                    self.navigation_obj.slow = True
                     self.navigation_obj.burst_right()
-                    self.navigation_obj.slow = False
                     self.rotate_delay.update_time()
                 return False
             else:
