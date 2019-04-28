@@ -108,7 +108,7 @@ class Driver:
                 # and occupied/unoccupied text
                 frame = image.array
                 h, w = frame.shape[:2]
-                frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
+                frame = cv.GaussianBlur(frame, (3, 3), cv.BORDER_DEFAULT)
                 if sampling:
                     color = frame[h//2, w//2]
                     try:
@@ -162,9 +162,9 @@ class Driver:
 robot = StateController(debug=debug)
 # run w/ laptop/pi camera
 if not laptop:
-    #Driver.pi_cam_loop(robot)
+    Driver.pi_cam_loop(robot)
     # robot.navigation_obj.tilt_head_to_move()
-    Driver.calibrate_color_size(robot, False)
+    #Driver.calibrate_color_size(robot, False)
     robot.exit()
 else:
     Driver.laptop_cam_loop(robot)

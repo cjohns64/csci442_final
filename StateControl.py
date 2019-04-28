@@ -1,6 +1,7 @@
 from global_settings import *
 from Navigation import Navigation as Nav
 from enum import Enum
+from TimeDelay import TimeDelay as delay
 import time
 import cv2 as cv
 import numpy as np
@@ -53,23 +54,16 @@ class StateController:
         self.current_loc = Location.GOAL_AREA
         self.last_loc = None
         self.navigation_obj.tilt_head_to_search()
-        # global variables
-        self.last_seen_time = -1  # default to negative value so that the first run always works
-        self.goal = 1  # index for the current goal type to look for (green == 0, pink == 1)
-        # face cascades
-        # if laptop:
-        #     base_path = "venv/lib/python3.7/site-packages/cv2/data/"
-        # else:
-        #     base_path = "/home/pi/Desktop/pythonFiles/csci442_final/venv/lib/python3.7/site-packages/cv2/data/"
-        base_path = ""
-        self.face_cascade = cv.CascadeClassifier(base_path + 'haarcascade_frontalface_default.xml')
         self.blur_frame = True
-        # pause between rotation and looking while searching for a face
-        self.face_search_pause = 1
-        self.last_rotate_time = -1
-        # time to wait before reverting back to searching for a face state
-        self.lost_face_state_timeout = 1
-        self.last_face_state_time = -1
+
+        # global variables
+        self.goal = 1  # index for the current goal type to look for (green == 0, pink == 1)
+        self.face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+        # Time Delay variables
+        self.target_timeout = delay(1.3)  # time delay between reverting back to searching state
+        self.rotate_delay = delay(1)  # pause between rotation and looking while searching for a face
+        # TODO self.face_timeout = delay(1)  # time to wait before reverting back to searching for a face state
 
         # adjustable parameters
         self.color_tolerance = np.array([20, 20, 20])  # np.array([20, 20, 250])  # HSV, accept most values
@@ -87,11 +81,8 @@ class StateController:
         # color standard values based off of sampling
         self.pink_standard = [190, 125, 250]  # HSV [150, 150, 30]
         self.green_standard = [25, 200, 110]  # HSV [47, 235, 10]
-        # self.orange_standard = [46, 139, 204]
         self.orange_line_standard = [160, 215, 240]  # HSV [130, 140, 30]
-        self.mining_indicator_standard = self.pink_standard
-        # timeout between returning to search state
-        self.timeout = 1.3
+        self.mining_indicator_standard = self.green_standard
         if use_phone: client.sendData("You are connected")
 
     @staticmethod
@@ -205,7 +196,7 @@ class StateController:
                             # set to next state
                             self.transition_to_acting_state()
                     except LostTargetException or TypeError:
-                        if time.process_time() - self.last_face_state_time > self.lost_face_state_timeout:
+                        if not self.rotate_delay.check_time():
                             # revert back to search state
                             self.transition_to_search_state(True)
 
@@ -216,8 +207,9 @@ class StateController:
                         if self.travel_or_avoid(frame, self.target_goal_area, retargeting_timeout=self.timeout):
                             # reached start area since function returned True
                             # declare goal area is reached
-                            if not laptop and use_phone: client.sendData("We have reached the goal area")
-                            time.sleep(1.5)
+                            if not laptop and use_phone:
+                                client.sendData("We have reached the goal area")
+                                time.sleep(1.5)
                             print("STATE = 6, goal area reached")
                             # set to next state
                             self.primary_state = PrmState.GOAL
@@ -255,7 +247,7 @@ class StateController:
                     print("STATE = 2, find human")
                     self.blur_frame = False  # turn off frame blurring for face detection
                     if self.find_state(frame, self.target_human):
-                        self.last_face_state_time = time.process_time()
+                        self.rotate_delay.update_time()
                         # detected human since function returned True
                         print("STATE = 2, human found")
                         # set to next state
@@ -370,11 +362,11 @@ class StateController:
             # try to find the target,
             dis, loc = targeting_function(frame, suppress_exception)
             # update the last seen time with the current time
-            self.last_seen_time = time.process_time()
+            self.target_timeout.update_time()
             if dis > self.distance_ratio:
                 return True
         except LostTargetException or TypeError:
-            if time.process_time() - self.last_seen_time > retargeting_timeout:
+            if not self.target_timeout.check_time():
                 # it has been to long since we last saw the target, will have to transition back into search state
                 if suppress_exception:
                     return None
@@ -405,7 +397,7 @@ class StateController:
             # find the object, LostTargetException raised if targeting_function fails to find the target
             distance, location = targeting_function(frame, suppress_exception)
             # update the last seen time with the current time
-            self.last_seen_time = time.process_time()
+            self.target_timeout.update_time()
             # check distance to target
             if distance < self.distance_ratio:
                 # get function for moving or rotating
@@ -417,7 +409,7 @@ class StateController:
                 return True
         # handle losing the target
         except LostTargetException or TypeError:
-            if time.process_time() - self.last_seen_time > retargeting_timeout:
+            if not self.target_timeout.check_time():
                 # it has been to long since we last saw the target, will have to transition back into search state
                 if suppress_exception:
                     return None
@@ -442,12 +434,12 @@ class StateController:
         # catch event that we lost the target, if exceptions are suppressed TypeError will catch the None type return
         except LostTargetException or TypeError:
             if targeting_function is self.target_human:
-                if time.process_time() - self.last_rotate_time > self.face_search_pause:
+                if not self.rotate_delay.check_time():
                     # target not found, rotate right
                     self.navigation_obj.slow = True
                     self.navigation_obj.burst_right()
                     self.navigation_obj.slow = False
-                    self.last_rotate_time = time.process_time()
+                    self.rotate_delay.update_time()
                 return False
             else:
                 # target not found, rotate right
@@ -517,27 +509,15 @@ class StateController:
                 raise LostTargetException("TESTING, target lost in target_mining_area")
         else:
             try:
-                num_zone_lines = self.navigation_obj.get_zone_lines(frame)[0]
-                # check if the zone lines are in frame
-                if num_zone_lines == 0:
-                    if self.current_loc != Location.ROCK_AREA:
-                        # zone lines are not in frame
-                        if suppress_exception:
-                            return None
-                        else:
-                            raise LostTargetException("zone lines not in screen")
-                    else:
-                        # no zone lines but we are in the rock area,
-                        # this means we just crossed into the mining area
-                        self.last_loc = self.current_loc
-                        self.current_loc = Location.MINING_AREA
-                        # TODO may need to force success return if target is in frame
-                elif num_zone_lines == 1:
-                    # just moved into the rock area
+                # detect if orange_line is in the lower end of the frame
+                h, w = frame.shape[:2]
+                if self.find_color_in_frame(frame[int(h * 0.9):h, int(w * 0.3):int(w * 0.6)],
+                                            self.orange_line_standard, suppress_exception):
+                    # line detected
                     if self.current_loc == Location.GOAL_AREA:
-                        self.last_loc = self.current_loc
                         self.current_loc = Location.ROCK_AREA
-                        # TODO may need to use self.last_loc to revert if the target area is not in frame
+                    elif self.current_loc == Location.ROCK_AREA:
+                        self.current_loc = Location.MINING_AREA
 
                 # get the width and location for the mining area indicator
                 width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
@@ -577,27 +557,15 @@ class StateController:
                 raise LostTargetException("TESTING, target lost in target_goal_area")
         else:
             try:
-                num_zone_lines = self.navigation_obj.get_zone_lines(frame)[0]
-                # check if the zone lines are in frame
-                if num_zone_lines == 0:
-                    if self.current_loc != Location.ROCK_AREA:
-                        # zone lines are not in frame
-                        if suppress_exception:
-                            return None
-                        else:
-                            raise LostTargetException("zone lines not in screen")
-                    else:
-                        # no zone lines but we are in the rock area,
-                        # this means we just crossed into the goal area
-                        self.last_loc = self.current_loc
-                        self.current_loc = Location.GOAL_AREA
-                        # TODO may need to force success return if target is in frame
-                elif num_zone_lines == 1:
-                    # just moved into the rock area
+                # detect if orange_line is in the lower end of the frame
+                h, w = frame.shape[:2]
+                if self.find_color_in_frame(frame[int(h * 0.9):h, int(w*0.3):int(w*0.6)],
+                                            self.orange_line_standard, suppress_exception):
+                    # line detected
                     if self.current_loc == Location.MINING_AREA:
-                        self.last_loc = self.current_loc
                         self.current_loc = Location.ROCK_AREA
-                        # TODO may need to use self.last_loc to revert if the target area is not in frame
+                    elif self.current_loc == Location.ROCK_AREA:
+                        self.current_loc = Location.GOAL_AREA
 
                 # get the width and location for the given color
                 if goal_type == 0:
