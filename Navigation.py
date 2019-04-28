@@ -36,6 +36,13 @@ class Navigation:
         self.debug = debug
         self.moving_forward = False
 
+        # motor values
+        self.motor_step = 300
+        self.slow_upper_value = 6700
+        self.slow_lower_value = 5400
+        self.fast_upper_value = 7500
+        self.fast_lower_value = 4000
+
     def set_arm_motors(self, elbow, hand, shoulder):
         self.ELBOW = elbow
         self.HAND = hand
@@ -200,14 +207,14 @@ class Navigation:
             if self.slow:
                 motor_max = 5200
             else:
-                motor_max = 4400
+                motor_max = self.fast_lower_value
 
             # stop turning
             if not self.moving_forward:
                 self.zero_wheels()
             self.moving_forward = True
             # one step increase in motor speed
-            self.motors -= 200
+            self.motors -= self.motor_step
             if self.motors < motor_max:
                 self.motors = motor_max
             if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
@@ -218,13 +225,13 @@ class Navigation:
             if self.slow:
                 motor_max = 5600
             else:
-                motor_max = 5000
+                motor_max = self.slow_lower_value
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
             self.moving_forward = False
             # one step increase in right turning speed
-            self.turn -= 200
+            self.turn -= self.motor_step
             if self.turn < motor_max:
                 self.turn = motor_max
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
@@ -232,7 +239,7 @@ class Navigation:
     def burst_right(self):
         if self.debug: print("burst right")
         if move_enabled:
-            for value in range(6000, 4900, -200):
+            for value in range(self.fast_upper_value, self.fast_lower_value, -self.motor_step):
                 self.turn = value
                 if not laptop: self.tango.setTarget(self.TURN, self.turn)
                 time.sleep(0.01)
@@ -251,13 +258,13 @@ class Navigation:
             if self.slow:
                 motor_max = 6600
             else:
-                motor_max = 6800
+                motor_max = self.slow_upper_value
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
             self.moving_forward = False
             # one step increase in left turning speed
-            self.turn += 200
+            self.turn += self.motor_step
             if self.turn > motor_max:
                 self.turn = motor_max
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
