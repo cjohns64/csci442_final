@@ -15,25 +15,25 @@ class Driver:
     @ staticmethod
     def laptop_cam_loop(obj):
         # set up video capture
-        #cap = cv.VideoCapture(0)
+        cap = cv.VideoCapture(0)
         cv.namedWindow("Video")
         cv.namedWindow("Detection")
 
         # set screen size
-        #cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
-        # #cap.set(cv.CAP_PROP_FRAME_HEIGHT, 300)
-        # line_color = np.array([126, 230, 255], np.uint8)
+        cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
+        cap.set(cv.CAP_PROP_FRAME_HEIGHT, 300)
+        line_color = np.array([126, 230, 255], np.uint8)
 
         while True:
             # get video info
-            #_, frame = cap.read()
-            frame = cv.imread("test_images/line_test_image.jpg", cv.IMREAD_COLOR)
+            _, frame = cap.read()
+            # frame = cv.imread("test_images/line_test_image.jpg", cv.IMREAD_COLOR)
 
             # # run one frame of the main operating loop
-            # if obj.main_loop_step(frame):
-            #     # cycle complete
-            #     break
-            lines = obj.navigation_obj.get_zone_lines(frame)
+            if obj.main_loop_step(frame):
+                # cycle complete
+                break
+
             cv.imshow("Video", frame)
 
             k = cv.waitKey(1)
