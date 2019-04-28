@@ -41,6 +41,62 @@ class Navigation:
         self.HAND = hand
         self.SHOULDER = shoulder
 
+    def get_zone_lines(self, frame, line_tolerance=20):
+        """
+        Finds and returns the zone lines that are in the current frame
+        :param frame: the current camera frame
+        :param line_tolerance: the min distance (in pixels) the line endpoints of each line
+        can be from each other before being counted as one line
+        :return: the number of detected lines, and a list of zone lines (up to 2), given as an array of [y1, y2]
+        and assuming the lines span the frame, or None if no lines where found
+        """
+        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+        saturation = hsv[:, :, 1]  # picks up line really well
+        detection = cv.threshold(saturation, 100, 255, cv.THRESH_BINARY)[1]
+        # remove noise
+        detection = cv.erode(detection, np.ones((5, 5)))
+        # get the width of the frame
+        w = frame.shape[1]
+        # find lines in the image, limiting the min line length should get rid of noise
+        lines = cv.HoughLinesP(detection, rho=1, theta=np.pi/180, threshold=175, minLineLength=w*0.75)
+        try:
+            # show each detected line
+            if False and self.display:
+                for line in lines:
+                    cv.line(frame, tuple(line[0][:2]), tuple(line[0][2:]), (255, 0, 255))
+            # order by y coordinates into 2 sets
+            y_ind = np.argpartition(lines[:, 0, 1], 2)
+            # take the y coordinates of the start of partition 1 and the end of partition 2
+            # and form 2 lines that span the frame
+            zone_lines = np.array([(0, lines[y_ind[0]][0][1]), (w, lines[y_ind[0]][0][3]),
+                                   (0, lines[y_ind[-1]][0][1]), (w, lines[y_ind[-1]][0][3])])
+
+            # check if 2 lines are truly present,
+            # if there are 2 lines, they will have different y locations
+            if np.abs(zone_lines[0][1] - zone_lines[2][1]) < line_tolerance \
+                    or np.abs(zone_lines[1][1] - zone_lines[3][1]) < line_tolerance:
+                # one line case
+                avg_p1 = int(np.average([zone_lines[0][1], zone_lines[2][1]]))
+                avg_p2 = int(np.average([zone_lines[1][1], zone_lines[3][1]]))
+                zone_lines = np.array([[0, avg_p1], [w, avg_p2]])
+                # display selected line
+                if self.display:
+                    cv.line(frame, tuple(zone_lines[0]), tuple(zone_lines[1]), (255, 0, 0), thickness=2)
+
+                return 1, zone_lines
+
+            else:  # 2 line case
+                # display selected lines
+                if self.display:
+                    cv.line(frame, tuple(zone_lines[0]), tuple(zone_lines[1]), (255, 0, 0), thickness=2)
+                    cv.line(frame, tuple(zone_lines[2]), tuple(zone_lines[3]), (255, 0, 0), thickness=2)
+
+                # return the 2 lines
+                return 2, zone_lines
+        except TypeError:
+            # no lines where found
+            return 0, None
+
     def get_path(self, frame):
         """
         Gets the target direction from the given frame

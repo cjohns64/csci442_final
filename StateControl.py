@@ -63,7 +63,6 @@ class StateController:
         self.lost_face_state_timeout = 1
         self.last_face_state_time = -1
 
-
         # adjustable parameters
         self.color_tolerance = 20
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
