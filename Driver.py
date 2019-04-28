@@ -54,10 +54,11 @@ class Driver:
         doOnce = True
 
         # capture frames from the camera
-        for image in camera.capture_continuous(rawCapture, format="hsv", use_video_port=True):
+        for image in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             # grab the raw NumPy array representing the image, then initialize the timestamp
             # and occupied/unoccupied text
             frame = image.array
+            frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
             if doOnce:
                 diff32 = np.zeros(frame.shape, np.float32)
