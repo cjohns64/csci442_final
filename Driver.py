@@ -128,8 +128,14 @@ class Driver:
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, obj.pink_standard)
                     cv.circle(frame, loc, wi//2, tuple(obj.pink_standard), 2)
+                except:
+                    pass
+                try:
                     wi, hi, loc = obj.find_color_in_frame(frame, obj.green_standard)
                     cv.circle(frame, loc, wi // 2, tuple(obj.green_standard), 2)
+                except:
+                    pass
+                try:
                     wi, hi, loc = obj.find_color_in_frame(frame, obj.orange_line_standard)
                     cv.circle(frame, loc, wi // 2, tuple(obj.orange_line_standard), 2)
                 except:
