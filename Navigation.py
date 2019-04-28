@@ -105,7 +105,7 @@ class Navigation:
                     cv.line(frame, tuple(zone_lines[0]), tuple(zone_lines[1]), (255, 0, 0), thickness=2)
                 # return the line
                 return 1, zone_lines
-            
+
         except TypeError or ValueError:
             # no lines where found
             return 0, None
