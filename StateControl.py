@@ -424,7 +424,7 @@ class StateController:
                 else:
                     raise LostTargetException("Target lost after timeout")
 
-    def find_state(self, frame, targeting_function, suppress_exception=False, delay=False):
+    def find_state(self, frame, targeting_function, suppress_exception=False):
         """
         Continues to search for the target, given by the targeting_function.
         Assumes the head is already in the correct orientation
@@ -531,7 +531,7 @@ class StateController:
                         # this means we just crossed into the mining area
                         self.last_loc = self.current_loc
                         self.current_loc = Location.MINING_AREA
-                        # TODO move mining area announcement to here
+                        # TODO may need to force success return if target is in frame
                 elif num_zone_lines == 1:
                     # just moved into the rock area
                     if self.current_loc == Location.GOAL_AREA:
@@ -592,7 +592,7 @@ class StateController:
                         # this means we just crossed into the goal area
                         self.last_loc = self.current_loc
                         self.current_loc = Location.GOAL_AREA
-                        # TODO move goal area announcement to here
+                        # TODO may need to force success return if target is in frame
                 elif num_zone_lines == 1:
                     # just moved into the rock area
                     if self.current_loc == Location.MINING_AREA:
