@@ -116,16 +116,16 @@ class Driver:
                     # color = obj.mining_indicator_standard
                     pass
 
-                cv.circle(frame, ((int)(w/1.28), (int)(h/1.71)), 30, (0, 255, 255), 2)
+                cv.circle(frame, int(w/1.28), int(h/1.71), 30, (0, 255, 255), 2)
 
-                def get_bgr(event, x, y, flags, params):
-                    global mouseX, mouseY
-                    if event == cv.EVENT_LBUTTONDOWN:
-                        mouseX, mouseY = x, y
-                        print("BGR value")
-                        print(frame[y, x])
+                # def get_bgr(event, x, y, flags, params):
+                #     global mouseX, mouseY
+                #     if event == cv.EVENT_LBUTTONDOWN:
+                #         mouseX, mouseY = x, y
+                #         print("HSV value")
+                #         print(frame[y, x])
 
-                cv.setMouseCallback('picture', get_bgr, param=frame)
+                # cv.setMouseCallback('picture', get_bgr, param=frame)
                 try:
                     wi, hi, loc = obj.find_color_in_frame(frame, color)
                     width += wi
@@ -134,6 +134,7 @@ class Driver:
                 except:
                     pass
 
+                print("HSV", frame[w//2, h//2])
                 cv.imshow("Video", frame)
 
                 key = cv.waitKey(1) & 0xFF
@@ -150,9 +151,9 @@ class Driver:
 robot = StateController(debug=debug)
 # run w/ laptop/pi camera
 if not laptop:
-    Driver.pi_cam_loop(robot)
+    #Driver.pi_cam_loop(robot)
     # robot.navigation_obj.tilt_head_to_move()
-    #Driver.calibrate_color_size(robot)
+    Driver.calibrate_color_size(robot, True)
     robot.exit()
 else:
     Driver.laptop_cam_loop(robot)
