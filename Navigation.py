@@ -79,8 +79,8 @@ class Navigation:
             # check if 2 lines are truly present,
             print(zone_lines)
             # if there are 2 lines, they will have different y locations
-            if len(zone_lines) <= 2 or np.abs(zone_lines[0][0][1] - zone_lines[2][0][1]) < line_tolerance \
-                    or np.abs(zone_lines[1][0][1] - zone_lines[3][0][1]) < line_tolerance:
+            if len(zone_lines) > 2 and (np.abs(zone_lines[0][0][1] - zone_lines[2][0][1]) < line_tolerance
+                                        or np.abs(zone_lines[1][0][1] - zone_lines[3][0][1]) < line_tolerance):
                 # one line case
                 avg_p1 = int(np.average([zone_lines[0][1], zone_lines[2][1]]))
                 avg_p2 = int(np.average([zone_lines[1][1], zone_lines[3][1]]))
@@ -91,7 +91,7 @@ class Navigation:
 
                 return 1, zone_lines
 
-            else:  # 2 line case
+            elif len(zone_lines) > 2:  # 2 line case
                 # display selected lines
                 if self.display:
                     cv.line(frame, tuple(zone_lines[0]), tuple(zone_lines[1]), (255, 0, 0), thickness=2)
@@ -99,6 +99,13 @@ class Navigation:
 
                 # return the 2 lines
                 return 2, zone_lines
+            else:
+                # one line not averaged
+                if self.display:
+                    cv.line(frame, tuple(zone_lines[0]), tuple(zone_lines[1]), (255, 0, 0), thickness=2)
+                # return the line
+                return 1, zone_lines
+            
         except TypeError or ValueError:
             # no lines where found
             return 0, None
