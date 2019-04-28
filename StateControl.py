@@ -280,7 +280,7 @@ class StateController:
                 if self.primary_state == PrmState.MINING:
                     # 4) identify ice -> grab ice once correct
                     print("STATE = 4, grabbing ice")
-                    if self.grab_ice(frame, self.goal):
+                    if self.grab_ice(frame):
                         # grab ice success
                         print("STATE = 4, grab success")
                         # set to next state
@@ -292,7 +292,7 @@ class StateController:
                 elif self.primary_state == PrmState.GOAL:
                     # 9) drop ice in correct goal area
                     print("STATE = 9, dropping ice")
-                    if self.drop_ice(frame, self.goal):
+                    if self.drop_ice():
                         # drop ice success
                         print("STATE = 9, drop success")
                         # set to default state
@@ -532,17 +532,12 @@ class StateController:
                 # so pass the bad news on, if suppress_exception==False the LostTargetException will continue up
                 return None
 
-    def target_goal_area(self, frame,  goal_type, suppress_exception=False):
+    def target_goal_area(self, frame, suppress_exception=False):
         """
         Finds if the goal area is on the screen, and if so est. the distance
         and returns the location of the goal area on the screen. If the goal area is close enough, will return the
         location of the specific goal area instead.
-
-        average pink BGR: [113, 39, 235] indexed as goal_type == 0
-        average green BGR: [94, 222, 53] indexed as goal_type == 1
-
         :param frame: The current camera frame
-        :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
         :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
         raises a LostTargetException if the target was not found
@@ -576,7 +571,7 @@ class StateController:
                     pass  # no line no location change
 
                 # get the width and location for the given color
-                if goal_type == 0:
+                if self.goal == 0:
                     width, _, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
                     if width < self.goal_large_standard / 10:
                         # throw out cases where the detection was too small
@@ -604,17 +599,11 @@ class StateController:
                 # so pass the bad news on, if suppress_exception==False the LostTargetException will continue up
                 return None
 
-    def grab_ice(self, frame, goal_type, suppress_exception = False):
+    def grab_ice(self, frame, suppress_exception = False):
         """
         Detects if the relevant ice is in the gripers, and closes them if it is.
         Must wait until an object enters the grippers
-
-        average pink BGR: [113, 39, 235] indexed as goal_type == 0
-        average green BGR: [94, 222, 53] indexed as goal_type == 1
-        average orange BGR: [46, 139, 204] indexed as goal_type == 2
-
         :param frame: the current frame of the camera
-        :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
         :return: True if ice was acquired, False otherwise
         """
         if self.debug and not self.is_debug_ignore_state():
@@ -628,7 +617,7 @@ class StateController:
         else:
             self.navigation_obj.arm_reach()
             self.navigation_obj.straighten_shoulder()
-            if goal_type == 0:
+            if self.goal == 0:
                 color = self.green_standard
             else:
                 color = self.pink_standard
@@ -647,14 +636,9 @@ class StateController:
             except LostTargetException or TypeError:
                 return False
 
-    def drop_ice(self, frame, goal_type):
+    def drop_ice(self):
         """
         Continues process to drop the ice in the relevant goal.
-
-        average pink BGR: [113, 39, 235] indexed as goal_type == 0
-        average green BGR: [94, 222, 53] indexed as goal_type == 1
-        average orange BGR: [46, 139, 204] indexed as goal_type == 2
-
         :return: True if ice was dropped, False otherwise
         """
         if self.debug and not self.is_debug_ignore_state():
