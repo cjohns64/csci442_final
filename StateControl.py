@@ -654,6 +654,8 @@ class StateController:
             self.navigation_obj.arm_raise()
             time.sleep(.5)
             self.navigation_obj.arm_reach()
+            time.sleep(.5)
+            self.navigation_obj.arm_lower()
             # ice is dropped
             return True
 

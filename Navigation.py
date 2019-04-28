@@ -20,7 +20,7 @@ class Navigation:
         self.SHOULDER_SIDE = 7
         self.HAND = 11
         self.hand = 6000
-        self.elbow = 6000
+        self.elbow = 5000
         self.shoulder = 6000
         self.shoulder_side = 5600#TODO 5400
         self.body = 6000
@@ -288,7 +288,7 @@ class Navigation:
     def arm_reach(self):
         if self.debug: print("arm reached out with open hand")
         self.shoulder = 8000
-        self.elbow = 6000
+        self.elbow = 5000
         self.hand = 5000
         if not laptop:
             self.tango.setTarget(self.HAND, self.hand)
