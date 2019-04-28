@@ -72,7 +72,7 @@ class StateController:
         self.last_face_state_time = -1
 
         # adjustable parameters
-        self.color_tolerance = np.array([20, 20, 250])  # HSV, accept most values
+        self.color_tolerance = np.array([20, 20, 20])  # np.array([20, 20, 250])  # HSV, accept most values
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9
@@ -85,8 +85,8 @@ class StateController:
         self.goal_medium_standard = 150  # TODO calibrate with actual values
         self.goal_large_standard = 163
         # color standard values based off of sampling
-        self.pink_standard = [150, 150, 30]
-        self.green_standard = [47, 235, 10]
+        self.pink_standard = [113, 39, 235]  # HSV [150, 150, 30]
+        self.green_standard = [94, 222, 53]  # HSV [47, 235, 10]
         # self.orange_standard = [46, 139, 204]
         self.orange_line_standard = [130, 140, 30]
         self.mining_indicator_standard = self.pink_standard

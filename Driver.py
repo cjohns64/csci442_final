@@ -58,7 +58,6 @@ class Driver:
             # grab the raw NumPy array representing the image, then initialize the timestamp
             # and occupied/unoccupied text
             frame = image.array
-            frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
             if doOnce:
                 diff32 = np.zeros(frame.shape, np.float32)
