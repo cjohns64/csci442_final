@@ -111,9 +111,9 @@ class Driver:
                 frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 if sampling:
                     color = frame[h//2, w//2]
-                    cv.circle(frame, (w // 2, h // 2), 3, (0, 0, 255), 5)
                     try:
                         wi, hi, loc = obj.find_color_in_frame(frame, color)
+                        cv.circle(frame, (w // 2, h // 2), 3, (0, 0, 255), 5)
                     except:
                         pass
                 else:
