@@ -36,11 +36,11 @@ class Navigation:
         self.moving_forward = False
 
         # motor values
-        self.motor_step = 300
+        self.motor_step = 200
         self.slow_upper_value = 7000
-        self.slow_lower_value = 5000
-        self.fast_upper_value = 8000
-        self.fast_lower_value = 2000
+        self.slow_lower_value = 3000
+        self.fast_upper_value = 8500
+        self.fast_lower_value = 3000
 
     def set_arm_motors(self, elbow, hand, shoulder):
         self.ELBOW = elbow
