@@ -50,8 +50,7 @@ class Navigation:
         :return: the number of detected lines, and a list of zone lines (up to 2), given as an array of [y1, y2]
         and assuming the lines span the frame, or None if no lines where found
         """
-        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-        saturation = hsv[:, :, 1]  # picks up line really well
+        saturation = frame[:, :, 1]  # picks up line really well
         detection = cv.threshold(saturation, 100, 255, cv.THRESH_BINARY)[1]
         # remove noise
         detection = cv.erode(detection, np.ones((5, 5)))
