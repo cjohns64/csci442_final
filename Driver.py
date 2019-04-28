@@ -113,11 +113,9 @@ class Driver:
                     color = frame[w//2, h//2]
                     cv.circle(frame, (w // 2, h // 2), 3, (0, 0, 255), 5)
                 else:
-                    color = obj.green_standard
+                    # color = obj.green_standard
                     # color = obj.mining_indicator_standard
                     pass
-
-                #cv.circle(frame, (int(w/1.28), int(h/1.71)), 30, (0, 255, 255), 2)
 
                 # def get_bgr(event, x, y, flags, params):
                 #     global mouseX, mouseY
@@ -128,10 +126,12 @@ class Driver:
 
                 # cv.setMouseCallback('picture', get_bgr, param=frame)
                 try:
-                    wi, hi, loc = obj.find_color_in_frame(frame, color)
-                    width += wi
-                    height += hi
-                    n += 1
+                    wi, hi, loc = obj.find_color_in_frame(frame, obj.pink_standard)
+                    cv.circle(frame, loc, wi//2, tuple(obj.pink_standard), 2)
+                    wi, hi, loc = obj.find_color_in_frame(frame, obj.green_standard)
+                    cv.circle(frame, loc, wi // 2, tuple(obj.green_standard), 2)
+                    wi, hi, loc = obj.find_color_in_frame(frame, obj.orange_line_standard)
+                    cv.circle(frame, loc, wi // 2, tuple(obj.orange_line_standard), 2)
                 except:
                     pass
 
@@ -154,7 +154,7 @@ robot = StateController(debug=debug)
 if not laptop:
     #Driver.pi_cam_loop(robot)
     # robot.navigation_obj.tilt_head_to_move()
-    Driver.calibrate_color_size(robot, True)
+    Driver.calibrate_color_size(robot, False)
     robot.exit()
 else:
     Driver.laptop_cam_loop(robot)
