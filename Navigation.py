@@ -198,9 +198,9 @@ class Navigation:
         if self.debug: print("moving forward")
         if move_enabled:
             if self.slow:
-                motor_max = 5600
-            else:
                 motor_max = 5200
+            else:
+                motor_max = 4400
 
             # stop turning
             if not self.moving_forward:
