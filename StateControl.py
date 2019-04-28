@@ -336,10 +336,9 @@ class StateController:
         :param targeting_function: function used to identify distance and direction to target,
         returns est. distance to target and its location on the screen,
         raises a LostTargetException if the target is lost
-        :param retargeting_timeout: time delay between researching for the target
         :param suppress_exception: if True, the targeting_function will not use exceptions
         :return: True if target is reached, False if it has not,
-        raises a LostTargetException if the target is lost after the retargeting_timeout
+        raises a LostTargetException if the target is lost after the retargeting timeout
         """
         if self.current_loc == Location.ROCK_AREA:
             # only avoid obstacles in the rock area
@@ -354,10 +353,9 @@ class StateController:
         :param targeting_function: function used to identify distance and direction to target,
         returns est. distance to target and its location on the screen,
         raises a LostTargetException if the target is lost
-        :param retargeting_timeout: time delay between researching for the target
         :param suppress_exception: if True, the targeting_function will not use exceptions
         :return: True if target is reached, False if it has not,
-        raises a LostTargetException if the target is lost after the retargeting_timeout
+        raises a LostTargetException if the target is lost after the retargeting timeout
         """
         try:
             # try to find the target,
@@ -389,7 +387,6 @@ class StateController:
         :param targeting_function: function used to identify distance and direction to target,
         returns est. distance to target and its location on the screen,
         raises a LostTargetException if the target is lost
-        :param retargeting_timeout: time delay between researching for the target
         :param suppress_exception: if True, the exception will not be raised and the function will return None instead
         :return: True if target is reached, False if it has not,
         raises a LostTargetException if the target is lost
@@ -510,17 +507,20 @@ class StateController:
                 raise LostTargetException("TESTING, target lost in target_mining_area")
         else:
             try:
-                # detect if orange_line is in the lower end of the frame
-                h, w = frame.shape[:2]
-                if self.find_color_in_frame(frame[int(h * 0.9):h, int(w * 0.3):int(w * 0.6)],
-                                            self.orange_line_standard, suppress_exception):
-                    # line detected
-                    if self.current_loc == Location.GOAL_AREA and not self.zone_change_delay.check_time():
-                        self.current_loc = Location.ROCK_AREA
-                        self.zone_change_delay.update_time()
-                    elif self.current_loc == Location.ROCK_AREA and not self.zone_change_delay.check_time():
-                        self.current_loc = Location.MINING_AREA
-                        self.zone_change_delay.update_time()
+                try:
+                    # detect if orange_line is in the lower end of the frame
+                    h, w = frame.shape[:2]
+                    if self.find_color_in_frame(frame[int(h * 0.9):h, int(w * 0.3):int(w * 0.6)],
+                                                self.orange_line_standard, suppress_exception):
+                        # line detected
+                        if self.current_loc == Location.GOAL_AREA and not self.zone_change_delay.check_time():
+                            self.current_loc = Location.ROCK_AREA
+                            self.zone_change_delay.update_time()
+                        elif self.current_loc == Location.ROCK_AREA and not self.zone_change_delay.check_time():
+                            self.current_loc = Location.MINING_AREA
+                            self.zone_change_delay.update_time()
+                except LostTargetException or TypeError:
+                    pass  # no line no location change
 
                 # get the width and location for the mining area indicator
                 width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
@@ -560,17 +560,20 @@ class StateController:
                 raise LostTargetException("TESTING, target lost in target_goal_area")
         else:
             try:
-                # detect if orange_line is in the lower end of the frame
-                h, w = frame.shape[:2]
-                if self.find_color_in_frame(frame[int(h * 0.9):h, int(w*0.3):int(w*0.6)],
-                                            self.orange_line_standard, suppress_exception):
-                    # line detected
-                    if self.current_loc == Location.MINING_AREA and not self.zone_change_delay.check_time():
-                        self.current_loc = Location.ROCK_AREA
-                        self.zone_change_delay.update_time()
-                    elif self.current_loc == Location.ROCK_AREA and not self.zone_change_delay.check_time():
-                        self.current_loc = Location.GOAL_AREA
-                        self.zone_change_delay.update_time()
+                try:
+                    # detect if orange_line is in the lower end of the frame
+                    h, w = frame.shape[:2]
+                    if self.find_color_in_frame(frame[int(h * 0.9):h, int(w*0.3):int(w*0.6)],
+                                                self.orange_line_standard, suppress_exception):
+                        # line detected
+                        if self.current_loc == Location.MINING_AREA and not self.zone_change_delay.check_time():
+                            self.current_loc = Location.ROCK_AREA
+                            self.zone_change_delay.update_time()
+                        elif self.current_loc == Location.ROCK_AREA and not self.zone_change_delay.check_time():
+                            self.current_loc = Location.GOAL_AREA
+                            self.zone_change_delay.update_time()
+                except LostTargetException or TypeError:
+                    pass  # no line no location change
 
                 # get the width and location for the given color
                 if goal_type == 0:
