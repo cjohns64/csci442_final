@@ -107,6 +107,7 @@ class Driver:
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
                 frame = image.array
+                frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
                 h, w = frame.shape[:2]
                 frame = cv.GaussianBlur(frame, (3, 3), cv.BORDER_DEFAULT)
                 if sampling:
@@ -145,7 +146,7 @@ class Driver:
 
                 # cv.setMouseCallback('picture', get_bgr, param=frame)
 
-                print("BGR", frame[h//2, w//2])
+                print("HSV", frame[h//2, w//2])
                 cv.imshow("Video", frame)
 
                 key = cv.waitKey(1) & 0xFF
@@ -162,9 +163,9 @@ class Driver:
 robot = StateController(debug=debug)
 # run w/ laptop/pi camera
 if not laptop:
-    Driver.pi_cam_loop(robot)
+    #Driver.pi_cam_loop(robot)
     # robot.navigation_obj.tilt_head_to_move()
-    #Driver.calibrate_color_size(robot, False)
+    Driver.calibrate_color_size(robot, True)
     robot.exit()
 else:
     Driver.laptop_cam_loop(robot)
