@@ -72,7 +72,7 @@ class StateController:
         self.last_face_state_time = -1
 
         # adjustable parameters
-        self.color_tolerance = 20
+        self.color_tolerance = np.array([20, 20, 120])  # HSV, accept most values
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9
