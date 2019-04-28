@@ -93,7 +93,7 @@ class Navigation:
 
                 # return the 2 lines
                 return 2, zone_lines
-        except TypeError:
+        except TypeError or ValueError:
             # no lines where found
             return 0, None
 
