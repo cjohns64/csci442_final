@@ -15,31 +15,24 @@ class Driver:
     @ staticmethod
     def laptop_cam_loop(obj):
         # set up video capture
-        cap = cv.VideoCapture(0)
+        #cap = cv.VideoCapture(0)
         cv.namedWindow("Video")
 
         # set screen size
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
-        cap.set(cv.CAP_PROP_FRAME_HEIGHT, 300)
-        _, frame = cap.read()
-        n = 100
+        #cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
+        # #cap.set(cv.CAP_PROP_FRAME_HEIGHT, 300)
+        # line_color = np.array([126, 230, 255], np.uint8)
+
         while True:
             # get video info
-            _, frame = cap.read()
+            #_, frame = cap.read()
+            frame = cv.imread("test_images/line_test_image_dual.jpg", cv.IMREAD_COLOR)
 
             # # run one frame of the main operating loop
             # if obj.main_loop_step(frame):
             #     # cycle complete
             #     break
-            frame = cv.normalize(frame, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX, dtype=cv.CV_8U)
-            i, j = 1.8, 5
-            if n > 500:
-                n = 0
-                #val = input("Enter face detection setting 1,2")
-                #i, j = val.split(",")
-            obj.calibrate_face_detection(frame, float(i), int(j))
-            n += 1
-
+            lines = obj.navigation_obj.get_zone_lines(frame)
             cv.imshow("Video", frame)
 
             k = cv.waitKey(1)
@@ -151,7 +144,7 @@ class Driver:
 
 
 # start robot state object
-robot = StateController(debug=True)
+robot = StateController(debug=debug)
 # run w/ laptop/pi camera
 if not laptop:
     Driver.pi_cam_loop(robot)
