@@ -85,8 +85,8 @@ class StateController:
         self.goal_medium_standard = 150  # TODO calibrate with actual values
         self.goal_large_standard = 163
         # color standard values based off of sampling
-        self.pink_standard = [177, 119, 215]
-        self.green_standard = [100, 215, 165]
+        self.pink_standard = [169, 213, 235]
+        self.green_standard = [67, 194, 222]
         # self.orange_standard = [46, 139, 204]
         self.orange_line_standard = [92, 204, 234]
         self.mining_indicator_standard = self.pink_standard
@@ -557,7 +557,6 @@ class StateController:
 
         average pink BGR: [113, 39, 235] indexed as goal_type == 0
         average green BGR: [94, 222, 53] indexed as goal_type == 1
-        average orange BGR: [46, 139, 204] indexed as goal_type == 2
 
         :param frame: The current camera frame
         :param goal_type: the type of goal to search for, e.i. small=0, medium=1, large=2
