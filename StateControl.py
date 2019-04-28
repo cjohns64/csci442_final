@@ -58,6 +58,7 @@ class StateController:
 
         # global variables
         self.goal = 1  # index for the current goal type to look for (green == 0, pink == 1)
+        self.start = 0
         self.face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
 
         # Time Delay variables
@@ -157,8 +158,8 @@ class StateController:
             2) find human = find_state + target_human
             3) travel to human = traveling_state + target_human -> ask for ice once there
             4) identify ice -> grab ice once correct
-            5) find goal area = find_state + target_goal_area
-            6) return to start = obstacle_avoidance_state + target_goal_area
+            5) find goal area = find_state + target_start_area
+            6) return to start = obstacle_avoidance_state + target_start_area
             7) find goal area = find_state + target_goal_area for current ice target
             8) travel to goal area = traveling_state + target_goal_area
             9) drop ice in correct goal area
@@ -201,10 +202,10 @@ class StateController:
                         self.transition_to_search_state(True)
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
-                    # 6) return to start = obstacle_avoidance_state + target_goal_area
+                    # 6) return to start = obstacle_avoidance_state + target_start_area
                     print("STATE = 6, return to start")
                     try:
-                        if self.travel_or_avoid(frame, self.target_goal_area):
+                        if self.travel_or_avoid(frame, self.target_start_area):
                             # reached start area since function returned True
                             # declare goal area is reached
                             if not laptop and use_phone:
@@ -256,9 +257,9 @@ class StateController:
                         self.transition_to_move_state(True)
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
-                    # 5) find start area = find_state + target_goal_area
+                    # 5) find start area = find_state + target_start_area
                     print("STATE = 5, find start area")
-                    if self.find_state(frame, self.target_goal_area):
+                    if self.find_state(frame, self.target_start_area):
                         # detected start area since function returned True
                         print("STATE = 5, start area found")
                         # set to next state
@@ -563,6 +564,73 @@ class StateController:
 
                 # get the width and location for the given color
                 if self.goal == 0:
+                    width, _, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
+                    if width < self.goal_large_standard / 10:
+                        # throw out cases where the detection was too small
+                        if suppress_exception:
+                            return None
+                        else:
+                            raise LostTargetException("detected target is too small")
+                    else:
+                        # return distance ratio, and location of target
+                        return width / self.goal_large_standard, center
+                else:
+                    width, _, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
+                    if width < self.goal_medium_standard / 10:
+                        # throw out cases where the detection was too small
+                        if suppress_exception:
+                            return None
+                        else:
+                            raise LostTargetException("detected target is too small")
+                    else:
+                        # return distance ratio, and location of target
+                        return width / self.goal_medium_standard, center
+            except TypeError:
+                # failed to find target
+                # TypeErrors only occur when suppress_exception==True and the function failed to find the color
+                # so pass the bad news on, if suppress_exception==False the LostTargetException will continue up
+                return None
+
+    def target_start_area(self, frame, suppress_exception=False):
+        """
+        Finds if the goal area is on the screen, and if so est. the distance
+        and returns the location of the goal area on the screen. If the goal area is close enough, will return the
+        location of the specific goal area instead.
+        :param frame: The current camera frame
+        :param suppress_exception: if True, the exception will not be raised and the function will return None instead
+        :return: est. distance (as a ratio) to target and its location (x, y) on the screen,
+        raises a LostTargetException if the target was not found
+        """
+        if self.debug and not self.is_debug_ignore_state():
+            tmp = input("at/not/lost:")
+            if tmp.__contains__("at"):
+                # at target
+                return [5, [frame.shape[0] // 2, frame.shape[1] // 2]]
+            elif tmp.__contains__("not"):
+                # not at target
+                return [0, [frame.shape[0] // 2, frame.shape[1] // 2]]
+            else:
+                # lost target
+                raise LostTargetException("TESTING, target lost in target_start_area")
+        else:
+            try:
+                try:
+                    # detect if orange_line is in the lower end of the frame
+                    h, w = frame.shape[:2]
+                    if self.find_color_in_frame(frame[int(h * 0.9):h, int(w * 0.3):int(w * 0.6)],
+                                                self.orange_line_standard, suppress_exception):
+                        # line detected
+                        if self.current_loc == Location.MINING_AREA and not self.zone_change_delay.check_time():
+                            self.current_loc = Location.ROCK_AREA
+                            self.zone_change_delay.update_time()
+                        elif self.current_loc == Location.ROCK_AREA and not self.zone_change_delay.check_time():
+                            self.current_loc = Location.GOAL_AREA
+                            self.zone_change_delay.update_time()
+                except LostTargetException or TypeError:
+                    pass  # no line no location change
+
+                # get the width and location for the given color
+                if self.start == 0:
                     width, _, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
                     if width < self.goal_large_standard / 10:
                         # throw out cases where the detection was too small
