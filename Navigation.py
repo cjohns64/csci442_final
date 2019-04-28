@@ -65,6 +65,7 @@ class Navigation:
                 for line in lines:
                     cv.line(frame, tuple(line[0][:2]), tuple(line[0][2:]), (255, 0, 255))
             # order by y coordinates into 2 sets
+            print(">>>>", lines, "<<<<")
             y_ind = np.argpartition(lines[:, 0, 1], 2)
             # take the y coordinates of the start of partition 1 and the end of partition 2
             # and form 2 lines that span the frame

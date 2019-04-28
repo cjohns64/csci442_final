@@ -26,7 +26,7 @@ class Driver:
         while True:
             # get video info
             #_, frame = cap.read()
-            frame = cv.imread("test_images/line_test_image_dual.jpg", cv.IMREAD_COLOR)
+            frame = cv.imread("test_images/line_test_image_none.jpg", cv.IMREAD_COLOR)
 
             # # run one frame of the main operating loop
             # if obj.main_loop_step(frame):
