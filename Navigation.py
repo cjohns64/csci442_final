@@ -235,7 +235,7 @@ class Navigation:
             for value in range(self.slow_lower_value, self.fast_lower_value, -self.motor_step):
                 self.turn = value
                 if not laptop: self.tango.setTarget(self.TURN, self.turn)
-                time.sleep(0.2)
+                time.sleep(0.4)
             self.zero_wheels()
 
     def turn_180(self):
