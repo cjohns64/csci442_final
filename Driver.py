@@ -106,14 +106,12 @@ class Driver:
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
                 frame = image.array
-                frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
                 frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 if sampling:
                     color = frame[w//2, h//2]
                     cv.circle(frame, (w // 2, h // 2), 3, (0, 0, 255), 5)
                     try:
                         wi, hi, loc = obj.find_color_in_frame(frame, color)
-                        print("detected COLOR")
                     except:
                         pass
                 else:
@@ -145,7 +143,7 @@ class Driver:
 
                 # cv.setMouseCallback('picture', get_bgr, param=frame)
 
-                print("HSV", frame[w//2, h//2])
+                print("BGR", frame[w//2, h//2])
                 cv.imshow("Video", frame)
 
                 key = cv.waitKey(1) & 0xFF
