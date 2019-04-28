@@ -17,6 +17,7 @@ class Driver:
         # set up video capture
         #cap = cv.VideoCapture(0)
         cv.namedWindow("Video")
+        cv.namedWindow("Detection")
 
         # set screen size
         #cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)

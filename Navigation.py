@@ -55,26 +55,31 @@ class Navigation:
         detection = cv.threshold(saturation, 100, 255, cv.THRESH_BINARY)[1]
         # remove noise
         detection = cv.erode(detection, np.ones((5, 5)))
+        if self.display: cv.imshow("Detection", detection)
         # get the width of the frame
         w = frame.shape[1]
         # find lines in the image, limiting the min line length should get rid of noise
         lines = cv.HoughLinesP(detection, rho=1, theta=np.pi/180, threshold=175, minLineLength=w*0.75)
         try:
             # show each detected line
-            if False and self.display:
+            if self.display:
                 for line in lines:
                     cv.line(frame, tuple(line[0][:2]), tuple(line[0][2:]), (255, 0, 255))
             # order by y coordinates into 2 sets
             print(">>>>", lines, "<<<<")
-            y_ind = np.argpartition(lines[:, 0, 1], 2)
-            # take the y coordinates of the start of partition 1 and the end of partition 2
-            # and form 2 lines that span the frame
-            zone_lines = np.array([(0, lines[y_ind[0]][0][1]), (w, lines[y_ind[0]][0][3]),
-                                   (0, lines[y_ind[-1]][0][1]), (w, lines[y_ind[-1]][0][3])])
+            if len(lines[0]) > 1:
+                y_ind = np.argpartition(lines[:, 0, 1], 2)
+                # take the y coordinates of the start of partition 1 and the end of partition 2
+                # and form 2 lines that span the frame
+                zone_lines = np.array([(0, lines[y_ind[0]][0][1]), (w, lines[y_ind[0]][0][3]),
+                                       (0, lines[y_ind[-1]][0][1]), (w, lines[y_ind[-1]][0][3])])
+            else:
+                # only one line was detected
+                zone_lines = np.array([[lines[0][:2]], [lines[2:]]])
 
             # check if 2 lines are truly present,
             # if there are 2 lines, they will have different y locations
-            if np.abs(zone_lines[0][1] - zone_lines[2][1]) < line_tolerance \
+            if len(zone_lines) == 1 or np.abs(zone_lines[0][1] - zone_lines[2][1]) < line_tolerance \
                     or np.abs(zone_lines[1][1] - zone_lines[3][1]) < line_tolerance:
                 # one line case
                 avg_p1 = int(np.average([zone_lines[0][1], zone_lines[2][1]]))
