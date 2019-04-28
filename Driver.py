@@ -107,7 +107,8 @@ class Driver:
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
                 frame = image.array
-                frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
+                frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+                #frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 if sampling:
                     color = frame[w//2, h//2]
                     cv.circle(frame, (w // 2, h // 2), 3, (0, 0, 255), 5)
@@ -116,7 +117,7 @@ class Driver:
                     # color = obj.mining_indicator_standard
                     pass
 
-                cv.circle(frame, int(w/1.28), int(h/1.71), 30, (0, 255, 255), 2)
+                #cv.circle(frame, (int(w/1.28), int(h/1.71)), 30, (0, 255, 255), 2)
 
                 # def get_bgr(event, x, y, flags, params):
                 #     global mouseX, mouseY
