@@ -63,7 +63,7 @@ class StateController:
 
         # Time Delay variables
         self.target_timeout = delay(1.6)  # time delay between reverting back to searching state
-        self.rotate_delay = delay(1)  # pause between rotation and looking while searching for a face
+        self.rotate_delay = delay(0.4)  # pause between rotation and looking while searching for a face
         # TODO self.face_timeout = delay(1)  # time to wait before reverting back to searching for a face state
         self.zone_change_delay = delay(0.6)  # delay before another zone change is allowed
 
