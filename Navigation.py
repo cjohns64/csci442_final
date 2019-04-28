@@ -37,8 +37,8 @@ class Navigation:
 
         # motor values
         self.motor_step = 200
-        self.slow_upper_value = 6600
-        self.slow_lower_value = 5000
+        self.slow_upper_value = 6800
+        self.slow_lower_value = 4800
         self.fast_upper_value = 7500
         self.fast_lower_value = 3400
 
