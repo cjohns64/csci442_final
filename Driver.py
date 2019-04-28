@@ -108,14 +108,34 @@ class Driver:
                 # and occupied/unoccupied text
                 frame = image.array
                 frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-                #frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
+                frame = cv.GaussianBlur(frame, (9, 9), cv.BORDER_DEFAULT)
                 if sampling:
                     color = frame[w//2, h//2]
                     cv.circle(frame, (w // 2, h // 2), 3, (0, 0, 255), 5)
+                    try:
+                        wi, hi, loc = obj.find_color_in_frame(frame, color)
+                        print("detected COLOR")
+                    except:
+                        pass
                 else:
-                    # color = obj.green_standard
-                    # color = obj.mining_indicator_standard
-                    pass
+                    try:
+                        wi, hi, loc = obj.find_color_in_frame(frame, obj.pink_standard)
+                        print("detected PINK")
+                        cv.circle(frame, loc, wi // 2, tuple(obj.pink_standard), 2)
+                    except:
+                        pass
+                    try:
+                        wi, hi, loc = obj.find_color_in_frame(frame, obj.green_standard)
+                        print("detected GREEN")
+                        cv.circle(frame, loc, wi // 2, tuple(obj.green_standard), 2)
+                    except:
+                        pass
+                    try:
+                        wi, hi, loc = obj.find_color_in_frame(frame, obj.orange_line_standard)
+                        print("detected ORANGE")
+                        cv.circle(frame, loc, wi // 2, tuple(obj.orange_line_standard), 2)
+                    except:
+                        pass
 
                 # def get_bgr(event, x, y, flags, params):
                 #     global mouseX, mouseY
@@ -125,24 +145,6 @@ class Driver:
                 #         print(frame[y, x])
 
                 # cv.setMouseCallback('picture', get_bgr, param=frame)
-                try:
-                    wi, hi, loc = obj.find_color_in_frame(frame, obj.pink_standard)
-                    print("detected PINK")
-                    cv.circle(frame, loc, wi//2, tuple(obj.pink_standard), 2)
-                except:
-                    pass
-                try:
-                    wi, hi, loc = obj.find_color_in_frame(frame, obj.green_standard)
-                    print("detected GREEN")
-                    cv.circle(frame, loc, wi // 2, tuple(obj.green_standard), 2)
-                except:
-                    pass
-                try:
-                    wi, hi, loc = obj.find_color_in_frame(frame, obj.orange_line_standard)
-                    print("detected ORANGE")
-                    cv.circle(frame, loc, wi // 2, tuple(obj.orange_line_standard), 2)
-                except:
-                    pass
 
                 print("HSV", frame[w//2, h//2])
                 cv.imshow("Video", frame)
@@ -163,7 +165,7 @@ robot = StateController(debug=debug)
 if not laptop:
     #Driver.pi_cam_loop(robot)
     # robot.navigation_obj.tilt_head_to_move()
-    Driver.calibrate_color_size(robot, False)
+    Driver.calibrate_color_size(robot, True)
     robot.exit()
 else:
     Driver.laptop_cam_loop(robot)
