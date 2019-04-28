@@ -64,6 +64,7 @@ class StateController:
         self.target_timeout = delay(1.3)  # time delay between reverting back to searching state
         self.rotate_delay = delay(1)  # pause between rotation and looking while searching for a face
         # TODO self.face_timeout = delay(1)  # time to wait before reverting back to searching for a face state
+        self.zone_change_delay = delay(0.6)  # delay before another zone change is allowed
 
         # adjustable parameters
         self.color_tolerance = np.array([20, 20, 20])  # np.array([20, 20, 250])  # HSV, accept most values
@@ -172,7 +173,7 @@ class StateController:
                     # 1) travel to mining area = obstacle_avoidance_state + target_mining_area
                     if self.debug: print("STATE = 1, travel to mining area")
                     try:
-                        if self.travel_or_avoid(frame, self.target_mining_area, retargeting_timeout=self.timeout):
+                        if self.travel_or_avoid(frame, self.target_mining_area):
                             # reached mining area since function returned True
                             # declare that mining area is reached
                             if not laptop and use_phone: client.sendData("The mining area has been reached")
@@ -189,7 +190,7 @@ class StateController:
                     print("STATE = 3, travel to human")
                     self.blur_frame = False  # turn off frame blurring for face detection
                     try:
-                        if self.travel_or_avoid(frame, self.target_human, retargeting_timeout=self.timeout):
+                        if self.travel_or_avoid(frame, self.target_human):
                             # reached human since function returned True
                             print("STATE = 3, asking for ice")
                             self.blur_frame = True
@@ -204,7 +205,7 @@ class StateController:
                     # 6) return to start = obstacle_avoidance_state + target_goal_area
                     print("STATE = 6, return to start")
                     try:
-                        if self.travel_or_avoid(frame, self.target_goal_area, retargeting_timeout=self.timeout):
+                        if self.travel_or_avoid(frame, self.target_goal_area):
                             # reached start area since function returned True
                             # declare goal area is reached
                             if not laptop and use_phone:
@@ -222,7 +223,7 @@ class StateController:
                     # 8) travel to goal area = traveling_state + target_goal_area
                     print("STATE = 8, travel to goal area")
                     try:
-                        if self.travel_or_avoid(frame, self.target_goal_area, retargeting_timeout=self.timeout):
+                        if self.travel_or_avoid(frame, self.target_goal_area):
                             # reached goal area since function returned True
                             print("STATE = 8, goal area reached")
                             # set to next state
@@ -328,7 +329,7 @@ class StateController:
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.ACTING
 
-    def travel_or_avoid(self, frame, targeting_function, retargeting_timeout=0.5, suppress_exception=False):
+    def travel_or_avoid(self, frame, targeting_function, suppress_exception=False):
         """
         ether activates the obstacle_avoidance_state or the traveling_state depending on what the current zone is.
         :param frame: the current frame of the camera
@@ -342,11 +343,11 @@ class StateController:
         """
         if self.current_loc == Location.ROCK_AREA:
             # only avoid obstacles in the rock area
-            return self.obstacle_avoidance_state(frame, targeting_function, retargeting_timeout, suppress_exception)
+            return self.obstacle_avoidance_state(frame, targeting_function, suppress_exception)
         else:
-            return self.traveling_state(frame, targeting_function, retargeting_timeout, suppress_exception)
+            return self.traveling_state(frame, targeting_function, suppress_exception)
 
-    def obstacle_avoidance_state(self, frame, targeting_function, retargeting_timeout=0.5, suppress_exception=False):
+    def obstacle_avoidance_state(self, frame, targeting_function, suppress_exception=False):
         """
         Continues to navigate through the obstacles, also takes into account if the target is seen.
         :param frame: the current frame of the camera
@@ -381,7 +382,7 @@ class StateController:
         move_function()
         return False
 
-    def traveling_state(self, frame, targeting_function, retargeting_timeout=1.0, suppress_exception=False):
+    def traveling_state(self, frame, targeting_function, suppress_exception=False):
         """
         Continues to travel to target, must be given a targeting function
         :param frame: the current camera frame
@@ -514,10 +515,12 @@ class StateController:
                 if self.find_color_in_frame(frame[int(h * 0.9):h, int(w * 0.3):int(w * 0.6)],
                                             self.orange_line_standard, suppress_exception):
                     # line detected
-                    if self.current_loc == Location.GOAL_AREA:
+                    if self.current_loc == Location.GOAL_AREA and not self.zone_change_delay.check_time():
                         self.current_loc = Location.ROCK_AREA
-                    elif self.current_loc == Location.ROCK_AREA:
+                        self.zone_change_delay.update_time()
+                    elif self.current_loc == Location.ROCK_AREA and not self.zone_change_delay.check_time():
                         self.current_loc = Location.MINING_AREA
+                        self.zone_change_delay.update_time()
 
                 # get the width and location for the mining area indicator
                 width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
@@ -562,10 +565,12 @@ class StateController:
                 if self.find_color_in_frame(frame[int(h * 0.9):h, int(w*0.3):int(w*0.6)],
                                             self.orange_line_standard, suppress_exception):
                     # line detected
-                    if self.current_loc == Location.MINING_AREA:
+                    if self.current_loc == Location.MINING_AREA and not self.zone_change_delay.check_time():
                         self.current_loc = Location.ROCK_AREA
-                    elif self.current_loc == Location.ROCK_AREA:
+                        self.zone_change_delay.update_time()
+                    elif self.current_loc == Location.ROCK_AREA and not self.zone_change_delay.check_time():
                         self.current_loc = Location.GOAL_AREA
+                        self.zone_change_delay.update_time()
 
                 # get the width and location for the given color
                 if goal_type == 0:
