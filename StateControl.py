@@ -85,10 +85,10 @@ class StateController:
         self.goal_medium_standard = 150  # TODO calibrate with actual values
         self.goal_large_standard = 163
         # color standard values based off of sampling
-        self.pink_standard = [175, 180, 30]
+        self.pink_standard = [150, 150, 30]
         self.green_standard = [47, 235, 10]
         # self.orange_standard = [46, 139, 204]
-        self.orange_line_standard = [130, 100, 30]
+        self.orange_line_standard = [130, 140, 30]
         self.mining_indicator_standard = self.pink_standard
         # timeout between returning to search state
         self.timeout = 1.3
