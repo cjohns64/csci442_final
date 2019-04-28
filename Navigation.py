@@ -37,10 +37,10 @@ class Navigation:
 
         # motor values
         self.motor_step = 200
-        self.slow_upper_value = 6800
-        self.slow_lower_value = 4800
-        self.fast_upper_value = 7500
-        self.fast_lower_value = 3400
+        self.slow_upper_value = 7000
+        self.slow_lower_value = 5000
+        self.fast_upper_value = 7000
+        self.fast_lower_value = 4600
 
     def set_arm_motors(self, elbow, hand, shoulder):
         self.ELBOW = elbow
@@ -236,6 +236,11 @@ class Navigation:
                 self.turn = value
                 if not laptop: self.tango.setTarget(self.TURN, self.turn)
                 time.sleep(0.01)
+
+    def turn_180(self):
+        if self.debug: print("turning around")
+        for _ in range(2):
+            self.burst_right()
 
     def zero_wheels(self):
         if self.debug: print("stopping movement")

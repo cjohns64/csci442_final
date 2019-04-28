@@ -197,9 +197,8 @@ class StateController:
                             # set to next state
                             self.transition_to_acting_state()
                     except LostTargetException or TypeError:
-                        if not self.rotate_delay.check_time():
-                            # revert back to search state
-                            self.transition_to_search_state(True)
+                        # revert back to search state
+                        self.transition_to_search_state(True)
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
                     # 6) return to start = obstacle_avoidance_state + target_goal_area
@@ -248,7 +247,6 @@ class StateController:
                     print("STATE = 2, find human")
                     self.blur_frame = False  # turn off frame blurring for face detection
                     if self.find_state(frame, self.target_human):
-                        self.rotate_delay.update_time()
                         # detected human since function returned True
                         print("STATE = 2, human found")
                         # set to next state
@@ -431,16 +429,11 @@ class StateController:
             return True
         # catch event that we lost the target, if exceptions are suppressed TypeError will catch the None type return
         except LostTargetException or TypeError:
-            if targeting_function is self.target_human:
-                if not self.rotate_delay.check_time():
-                    # target not found, rotate right
-                    self.navigation_obj.burst_right()
-                    self.rotate_delay.update_time()
-                return False
-            else:
+            if not self.rotate_delay.check_time():
                 # target not found, rotate right
-                self.navigation_obj.rotate_right()
-                return False
+                self.navigation_obj.burst_right()
+                self.rotate_delay.update_time()
+            return False
 
     def target_human(self, frame, suppress_exception=False):
         """
