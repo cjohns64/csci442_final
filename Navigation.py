@@ -40,7 +40,7 @@ class Navigation:
         # motor values
         self.motor_step = 200
         self.slow_upper_value = 6600
-        self.slow_lower_value = 5000
+        self.slow_lower_value = 5400
         self.fast_upper_value = 6800
         self.fast_lower_value = 4800
 
@@ -223,8 +223,8 @@ class Navigation:
             self.moving_forward = False
             # one step increase in right turning speed
             self.turn -= self.motor_step
-            if self.turn > self.fast_lower_value:
-                self.turn = self.fast_lower_value
+            if self.turn > self.slow_lower_value:
+                self.turn = self.slow_lower_value
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def burst_right(self):
@@ -258,8 +258,8 @@ class Navigation:
             self.moving_forward = False
             # one step increase in left turning speed
             self.turn += self.motor_step
-            if self.turn > self.fast_upper_value:
-                self.turn = self.fast_upper_value
+            if self.turn > self.slow_upper_value:
+                self.turn = self.slow_upper_value
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def tilt_head_to_search(self):
