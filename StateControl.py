@@ -9,7 +9,7 @@ if use_phone: from client import ClientSocket
 
 
 if not laptop:
-    IP = '10.200.46.186'
+    IP = '10.200.39.59'
     PORT = 5010
     face = None
     # set up client and face searching
