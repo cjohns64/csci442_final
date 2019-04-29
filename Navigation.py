@@ -28,6 +28,8 @@ class Navigation:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
+        self.tango.setAccel(self.MOTORS, 200)
+        self.tango.setAccel(self.TURN, 120)
 
         # enable/disable displaying the detected path
         self.display = display
@@ -203,30 +205,24 @@ class Navigation:
     def move_forward(self):
         if self.debug: print("moving forward")
         if move_enabled:
-            motor_max = self.fast_lower_value
-
             # stop turning
             if not self.moving_forward:
                 self.zero_wheels()
+
             self.moving_forward = True
-            # one step increase in motor speed
-            self.motors -= self.motor_step
-            if self.motors < motor_max:
-                self.motors = motor_max
+            self.motors = self.fast_lower_value
             if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_right(self):
         if self.debug: print("rotating right")
         if move_enabled:
-            motor_max = self.slow_lower_value
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
+
             self.moving_forward = False
             # one step increase in right turning speed
-            self.turn -= self.motor_step
-            if self.turn < motor_max:
-                self.turn = motor_max
+            self.turn = self.slow_lower_value
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def burst_right(self):
@@ -254,15 +250,12 @@ class Navigation:
     def rotate_left(self):
         if self.debug: print("rotating left")
         if move_enabled:
-            motor_max = self.slow_upper_value
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
             self.moving_forward = False
             # one step increase in left turning speed
-            self.turn += self.motor_step
-            if self.turn > motor_max:
-                self.turn = motor_max
+            self.turn = self.slow_upper_value
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def tilt_head_to_search(self):

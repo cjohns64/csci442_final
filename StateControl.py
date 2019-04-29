@@ -319,7 +319,7 @@ class StateController:
         if human:
             self.navigation_obj.tilt_head_to_human()
         else:
-            self.navigation_obj.tilt_head_to_move()
+            self.navigation_obj.tilt_head_to_search()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.MOVING
 
