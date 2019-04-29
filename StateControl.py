@@ -67,7 +67,7 @@ class StateController:
         self.keep_moving_delay = delay(0.2)  # delay before zeroing motors when a target is lost
 
         # adjustable parameters
-        self.color_tolerance = np.array([10, 15, 200])  # np.array([20, 20, 250])  # HSV, accept most values
+        self.color_tolerance = np.array([10, 45, 200])  # np.array([20, 20, 250])  # HSV, accept most values
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9
@@ -83,8 +83,13 @@ class StateController:
         self.start_size_standard = self.goal_size_standard
         # color standard values based off of sampling
         self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
+        self.pink_standard_430 = [156, 100, 253]
+
         self.green_standard = [50, 170, 150]  # BGR [25, 200, 110]
+        self.green_standard_430 = [44, 120, 240]
+
         self.orange_line_standard = [20, 50, 250]  # BGR [160, 215, 240]
+        self.orange_line_standard_430 = [16, 80, 240]
         self.mining_indicator_standard = self.green_standard
         self.start_indicator_standard = self.pink_standard
         self.goal_color_standard = self.pink_standard
