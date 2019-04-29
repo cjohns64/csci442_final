@@ -76,7 +76,7 @@ class StateController:
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 50
         self.mining_area_standard = 55
-        self.goal_small_standard = 70
+        self.goal_small_standard = 60
         self.goal_large_standard = 120
         self.goal_size_standard = self.goal_small_standard
         self.start_size_standard = self.goal_size_standard
@@ -407,7 +407,8 @@ class StateController:
             # check distance to target
             if distance < self.distance_ratio:
                 # get function for moving or rotating
-                move_function = self.navigation_obj.get_needed_action(location[0] - frame.shape[1] // 2)
+                move_function = self.navigation_obj.get_needed_action(location[0] - frame.shape[1] // 2,
+                                                                      min_action_value=90)
                 # do action
                 move_function()
                 return False
@@ -716,7 +717,7 @@ class StateController:
         try:
             # continue to move to box
             w, h, loc = self.find_color_in_frame(frame, self.goal_color_standard)
-            if w / self.goal_size_standard < 1:
+            if w / self.goal_size_standard < self.distance_ratio:
                 # color found, get action
                 move_function = self.navigation_obj.get_needed_action(loc[0] - frame.shape[1] // 2)
                 # do action
