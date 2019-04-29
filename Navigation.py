@@ -28,8 +28,7 @@ class Navigation:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
-        self.tango.setAccel(self.MOTORS, 160)
-        self.tango.setAccel(self.TURN, 80)
+        self.tango.setAccel(self.MOTORS, 150)
 
         # enable/disable displaying the detected path
         self.display = display
@@ -40,9 +39,9 @@ class Navigation:
         # motor values
         self.motor_step = 200
         self.slow_upper_value = 6800
-        self.slow_lower_value = 5000
-        self.fast_upper_value = 6900
-        self.fast_lower_value = 4600
+        self.slow_lower_value = 4800
+        self.fast_upper_value = 6800
+        self.fast_lower_value = 4800
 
     def set_arm_motors(self, elbow, hand, shoulder):
         self.ELBOW = elbow
@@ -222,7 +221,9 @@ class Navigation:
 
             self.moving_forward = False
             # one step increase in right turning speed
-            self.turn = self.slow_lower_value
+            self.turn -= self.motor_step
+            if self.turn > self.fast_lower_value:
+                self.turn = self.fast_lower_value
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def burst_right(self):
@@ -255,7 +256,9 @@ class Navigation:
                 self.zero_wheels()
             self.moving_forward = False
             # one step increase in left turning speed
-            self.turn = self.slow_upper_value
+            self.turn += self.motor_step
+            if self.turn > self.fast_upper_value:
+                self.turn = self.fast_upper_value
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
 
     def tilt_head_to_search(self):
