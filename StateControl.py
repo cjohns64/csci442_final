@@ -195,6 +195,8 @@ class StateController:
                             # reached human since function returned True
                             print("STATE = 3, asking for ice")
                             self.blur_frame = True
+                            # ask for ice.
+                            if not laptop and use_phone: client.sendData("May I please have some ice")
                             # set to next state
                             self.transition_to_acting_state()
                     except LostTargetException or TypeError:
@@ -252,8 +254,6 @@ class StateController:
                         print("STATE = 2, human found")
                         # set to next state
                         self.blur_frame = True
-                        # ask for ice.
-                        if not laptop and use_phone: client.sendData("May I please have some ice")
                         self.transition_to_move_state(True)
 
                 elif self.primary_state == PrmState.TRAVEL_GOAL:
