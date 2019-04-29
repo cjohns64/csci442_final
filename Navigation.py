@@ -39,7 +39,7 @@ class Navigation:
 
         # motor values
         self.forward_boost_mult = 3
-        self.rotate_boost_mult = .9
+        self.rotate_boost_mult = 1
         self.boost_delta = 100
         self.slow_forward = 5200
         self.slow_right = 5000
