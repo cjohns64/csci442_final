@@ -28,7 +28,7 @@ class Navigation:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
-        self.tango.setAccel(self.MOTORS, 40)
+        self.tango.setAccel(self.MOTORS, 50)
         self.tango.setAccel(self.TURN, 50)
 
         # enable/disable displaying the detected path
@@ -235,6 +235,7 @@ class Navigation:
             #     if not laptop: self.tango.setTarget(self.TURN, self.turn)
             #     time.sleep(0.8)
             if not laptop: self.tango.setTarget(self.TURN, self.fast_lower_value)
+            self.moving_forward = False
             time.sleep(0.3)
             self.zero_wheels()
 
