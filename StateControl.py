@@ -523,7 +523,7 @@ class StateController:
 
                 # get the width and location for the mining area indicator
                 width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
-                if np.abs(center[0] - pink_loc[0]) < 20 or np.abs(center[1] - pink_loc[1]) < 20:
+                if np.abs(center[0] - pink_loc[0]) < 5 or np.abs(center[1] - pink_loc[1]) < 5:
                     print("ERROR PINK FOUND")
                     if suppress_exception:
                         return None
