@@ -704,7 +704,6 @@ class StateController:
                     return True
                 else:
                     # ask for correct ice
-                    if not laptop and use_phone: client.sendData("Please give me the correct ice")
                     return False
             except LostTargetException or TypeError:
                 return False
