@@ -212,7 +212,7 @@ class Navigation:
                 self.zero_wheels()
 
             self.moving_forward = True
-            self.motors = self.slow_forward + self.boost_delta * self.forward_boost_mult
+            self.motors = self.slow_forward - self.boost_delta * self.forward_boost_mult
             if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
 
     def rotate_right(self):
