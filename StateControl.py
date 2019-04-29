@@ -78,7 +78,7 @@ class StateController:
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 15  # this value is for ~1 meter from the laptop camera
         self.mining_area_standard = 50
-        self.goal_small_standard = 50
+        self.goal_small_standard = 70
         self.goal_large_standard = 120
         # color standard values based off of sampling
         self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
