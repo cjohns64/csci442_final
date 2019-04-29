@@ -717,6 +717,7 @@ class StateController:
             # Moves forward to get right up on the box
             self.navigation_obj.move_forward()
             time.sleep(1)
+            self.navigation_obj.zero_wheels()
             # drops ice
             self.navigation_obj.arm_raise()
             time.sleep(.5)
