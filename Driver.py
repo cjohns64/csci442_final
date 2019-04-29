@@ -133,12 +133,12 @@ class Driver:
                         cv.circle(frame, loc, wi // 2, (0, 255, 0), 2)
                     except:
                         pass
-                    try:
-                        wi, hi, loc = obj.find_color_in_frame(frame, obj.orange_line_standard)
-                        print("detected ORANGE")
-                        cv.circle(frame, loc, wi // 2, (0, 125, 255), 2)
-                    except:
-                        pass
+                    #try:
+                    #    wi, hi, loc = obj.find_color_in_frame(frame, obj.orange_line_standard)
+                    #    print("detected ORANGE")
+                    #    cv.circle(frame, loc, wi // 2, (0, 125, 255), 2)
+                    #except:
+                    #    pass
 
                 # def get_bgr(event, x, y, flags, params):
                 #     global mouseX, mouseY
