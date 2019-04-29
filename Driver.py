@@ -27,7 +27,8 @@ class Driver:
         while True:
             # get video info
             _, frame = cap.read()
-            frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+            if (obj.get_state_index() != 2) and (obj.get_state_index() != 3):
+                frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
             # frame = cv.imread("test_images/line_test_image.jpg", cv.IMREAD_COLOR)
 
             # # run one frame of the main operating loop
