@@ -38,8 +38,8 @@ class Navigation:
         self.moving_forward = False
 
         # motor values
-        self.forward_boost_mult = 1
-        self.rotate_boost_mult = 0
+        self.forward_boost_mult = 2
+        self.rotate_boost_mult = 1
         self.boost_delta = 100
         self.slow_forward = 5200
         self.slow_right = 5000

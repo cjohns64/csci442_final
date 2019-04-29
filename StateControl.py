@@ -77,7 +77,7 @@ class StateController:
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 50
         self.mining_area_standard = 55
-        self.goal_small_standard = 70
+        self.goal_small_standard = 80
         self.goal_large_standard = 120
         self.goal_size_standard = self.goal_small_standard
         self.start_size_standard = self.goal_size_standard
