@@ -519,16 +519,16 @@ class StateController:
                 except LostTargetException or TypeError:
                     pass  # no line no location change
 
-                _, _, pink_loc = self.find_color_in_frame(frame, self.pink_standard)
+                # _, _, pink_loc = self.find_color_in_frame(frame, self.pink_standard)
 
                 # get the width and location for the mining area indicator
                 width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
-                if np.abs(center[0] - pink_loc[0]) < 5 or np.abs(center[1] - pink_loc[1]) < 5:
-                    print("ERROR PINK FOUND")
-                    if suppress_exception:
-                        return None
-                    else:
-                        raise LostTargetException
+                # if np.abs(center[0] - pink_loc[0]) < 5 or np.abs(center[1] - pink_loc[1]) < 5:
+                #     print("ERROR PINK FOUND")
+                #     if suppress_exception:
+                #         return None
+                #     else:
+                #         raise LostTargetException
                 # return distance ratio, and location of target
                 return height / self.mining_area_standard, center
             except TypeError:
