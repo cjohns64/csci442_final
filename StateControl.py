@@ -211,7 +211,7 @@ class StateController:
                             if not laptop and use_phone:
                                 client.sendData("We have reached the goal area")
                                 time.sleep(1.5)
-                            print("STATE = 6, goal area reached")
+                            print("STATE = 6, start area reached")
                             # set to next state
                             self.primary_state = PrmState.GOAL
                             self.transition_to_search_state()
