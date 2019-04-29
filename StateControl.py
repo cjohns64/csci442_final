@@ -169,6 +169,7 @@ class StateController:
         :param frame: the current frame of the camera
         :return: True on a successful completion of a cycle
         """
+        time.sleep(0.1)
         if frame is not None:
 
             # >>>> MOVING States >>>>
