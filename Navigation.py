@@ -28,8 +28,8 @@ class Navigation:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
-        self.tango.setAccel(self.MOTORS, 240)
-        self.tango.setAccel(self.TURN, 240)
+        self.tango.setAccel(self.MOTORS, 150)
+        self.tango.setAccel(self.TURN, 50)
 
         # enable/disable displaying the detected path
         self.display = display
@@ -39,7 +39,7 @@ class Navigation:
 
         # motor values
         self.motor_step = 200
-        self.slow_upper_value = 6600
+        self.slow_upper_value = 6800
         self.slow_lower_value = 5400
         self.fast_upper_value = 6900
         self.fast_lower_value = 4700
@@ -230,10 +230,12 @@ class Navigation:
     def burst_right(self):
         if self.debug: print("burst right")
         if move_enabled:
-            for value in range(self.slow_lower_value, self.fast_lower_value, -self.motor_step):
-                self.turn = value
-                if not laptop: self.tango.setTarget(self.TURN, self.turn)
-                time.sleep(0.8)
+            # for value in range(self.slow_lower_value, self.fast_lower_value, -self.motor_step):
+            #     self.turn = value
+            #     if not laptop: self.tango.setTarget(self.TURN, self.turn)
+            #     time.sleep(0.8)
+            if not laptop: self.tango.setTarget(self.TURN, self.fast_lower_value)
+            time.sleep(0.3)
             self.zero_wheels()
 
     def turn_180(self):
