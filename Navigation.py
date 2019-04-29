@@ -42,7 +42,7 @@ class Navigation:
         self.slow_upper_value = 6800
         self.slow_lower_value = 5000
         self.fast_upper_value = 6900
-        self.fast_lower_value = 4800
+        self.fast_lower_value = 4600
 
     def set_arm_motors(self, elbow, hand, shoulder):
         self.ELBOW = elbow
@@ -231,7 +231,7 @@ class Navigation:
             for value in range(self.slow_lower_value, self.fast_lower_value, -self.motor_step):
                 self.turn = value
                 if not laptop: self.tango.setTarget(self.TURN, self.turn)
-                time.sleep(0.4)
+                time.sleep(0.2)
             self.zero_wheels()
 
     def turn_180(self):
