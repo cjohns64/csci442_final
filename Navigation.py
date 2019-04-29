@@ -193,6 +193,7 @@ class Navigation:
         to be needed
         :return: the movement function needed
         """
+        self.zero_wheels()
         if self.debug: print(target_x_from_center, min_action_value)
         if np.abs(target_x_from_center) < min_action_value:
             return self.move_forward  # no rotation
