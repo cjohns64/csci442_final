@@ -716,11 +716,15 @@ class StateController:
         try:
             # continue to move to box
             w, h, loc = self.find_color_in_frame(frame, self.goal_color_standard)
-            # color found, get action
-            move_function = self.navigation_obj.get_needed_action(loc[0] - frame.shape[1] // 2)
-            # do action
-            move_function()
-            return False
+            if w / self.goal_size_standard < 1:
+                # color found, get action
+                move_function = self.navigation_obj.get_needed_action(loc[0] - frame.shape[1] // 2)
+                # do action
+                move_function()
+                return False
+            else:
+                # we are done
+                raise LostTargetException
         # lost the target, assume that the box has been reached
         except LostTargetException or TypeError:
             # finishing forward move to contact box
