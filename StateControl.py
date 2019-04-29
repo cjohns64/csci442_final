@@ -713,7 +713,10 @@ class StateController:
                 # function failure
                 return False
         else:
-            # drops ice TODO test
+            # Moves forward to get right up on the box
+            self.navigation_obj.move_forward()
+            time.sleep(1)
+            # drops ice
             self.navigation_obj.arm_raise()
             time.sleep(.5)
             self.navigation_obj.arm_reach()
