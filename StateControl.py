@@ -60,10 +60,11 @@ class StateController:
         self.face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
 
         # Time Delay variables
-        self.target_timeout = delay(1.3)  # time delay between reverting back to searching state
+        # TODO self.target_timeout = delay(1.3)  # time delay between reverting back to searching state
         self.rotate_delay = delay(0.4)  # pause between rotation and looking while searching for a face
         # TODO self.face_timeout = delay(1)  # time to wait before reverting back to searching for a face state
         self.zone_change_delay = delay(0.6)  # delay before another zone change is allowed
+        self.keep_moving_delay = delay(0.4)  # delay before zeroing motors when a target is lost
 
         # adjustable parameters
         self.color_tolerance = np.array([10, 15, 200])  # np.array([20, 20, 250])  # HSV, accept most values
@@ -370,11 +371,11 @@ class StateController:
             # try to find the target,
             dis, loc = targeting_function(frame, suppress_exception)
             # update the last seen time with the current time
-            self.target_timeout.update_time()
+            self.keep_moving_delay.update_time()
             if dis > self.distance_ratio:
                 return True
         except LostTargetException or TypeError:
-            if not self.target_timeout.check_time():
+            if not self.keep_moving_delay.check_time():
                 # it has been to long since we last saw the target, will have to transition back into search state
                 if suppress_exception:
                     return None
@@ -404,7 +405,7 @@ class StateController:
             # find the object, LostTargetException raised if targeting_function fails to find the target
             distance, location = targeting_function(frame, suppress_exception)
             # update the last seen time with the current time
-            self.target_timeout.update_time()
+            self.keep_moving_delay.update_time()
             # check distance to target
             if distance < self.distance_ratio:
                 # get function for moving or rotating
@@ -417,7 +418,7 @@ class StateController:
                 return True
         # handle losing the target
         except LostTargetException or TypeError:
-            if not self.target_timeout.check_time():
+            if not self.keep_moving_delay.check_time():
                 # it has been to long since we last saw the target, will have to transition back into search state
                 if suppress_exception:
                     return None
