@@ -40,7 +40,7 @@ class Navigation:
         # motor values
         self.forward_boost_mult = 1
         self.rotate_boost_mult = 0
-        self.boost_delta = 200
+        self.boost_delta = 100
         self.slow_forward = 5200
         self.slow_right = 5000
         self.slow_left = 7200
@@ -233,7 +233,7 @@ class Navigation:
             #     if not laptop: self.tango.setTarget(self.TURN, self.turn)
             #     time.sleep(0.8)
             self.rotate_right()
-            time.sleep(0.4)
+            time.sleep(0.5)
             self.zero_wheels()
 
     def rotate_left(self):
