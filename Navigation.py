@@ -29,7 +29,7 @@ class Navigation:
         self.motors = 6000
         self.turn = 6000
         self.tango.setAccel(self.MOTORS, 200)
-        self.tango.setAccel(self.TURN, 120)
+        self.tango.setAccel(self.TURN, 40)
 
         # enable/disable displaying the detected path
         self.display = display

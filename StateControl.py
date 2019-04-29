@@ -77,9 +77,9 @@ class StateController:
         # and the ratio of the current sensor value and this distance
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 15  # this value is for ~1 meter from the laptop camera
-        self.mining_area_standard = 100
-        self.goal_medium_standard = 75  # TODO calibrate with actual values
-        self.goal_large_standard = 163
+        self.mining_area_standard = 50
+        self.goal_small_standard = 30
+        self.goal_large_standard = 100
         # color standard values based off of sampling
         self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
         self.green_standard = [50, 170, 150]  # BGR [25, 200, 110]
@@ -581,7 +581,7 @@ class StateController:
                         return width / self.goal_large_standard, center
                 else:
                     width, _, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
-                    if width < self.goal_medium_standard / 10:
+                    if width < self.goal_small_standard / 10:
                         # throw out cases where the detection was too small
                         if suppress_exception:
                             return None
@@ -589,7 +589,7 @@ class StateController:
                             raise LostTargetException("detected target is too small")
                     else:
                         # return distance ratio, and location of target
-                        return width / self.goal_medium_standard, center
+                        return width / self.goal_small_standard, center
             except TypeError:
                 # failed to find target
                 # TypeErrors only occur when suppress_exception==True and the function failed to find the color
@@ -648,7 +648,7 @@ class StateController:
                         return width / self.goal_large_standard, center
                 else:
                     width, _, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
-                    if width < self.goal_medium_standard / 10:
+                    if width < self.goal_small_standard / 10:
                         # throw out cases where the detection was too small
                         if suppress_exception:
                             return None
@@ -656,7 +656,7 @@ class StateController:
                             raise LostTargetException("detected target is too small")
                     else:
                         # return distance ratio, and location of target
-                        return width / self.goal_medium_standard, center
+                        return width / self.goal_small_standard, center
             except TypeError:
                 # failed to find target
                 # TypeErrors only occur when suppress_exception==True and the function failed to find the color

@@ -22,7 +22,6 @@ class Driver:
         # set screen size
         cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
         cap.set(cv.CAP_PROP_FRAME_HEIGHT, 300)
-        line_color = np.array([126, 230, 255], np.uint8)
 
         while True:
             # get video info
