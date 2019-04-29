@@ -779,25 +779,32 @@ class StateController:
             hull = np.array(hull)
             # find the hull with the largest area
             area_max_index = np.argmax(area_hull)
-            # find the location of the center of mass
-            M = cv.moments(contours[area_max_index])
-            try:
-                x = int(M["m10"] / M["m00"])
-                y = int(M["m01"] / M["m00"])
-                # trim hull down to just the hull of interest
-                hull = hull[area_max_index]
-                # find the min and max x values
-                max_x = np.max(hull[:, :, 0])
-                min_x = np.min(hull[:, :, 0])
-                max_y = np.max(hull[:, :, 1])
-                min_y = np.min(hull[:, :, 1])
-                if self.debug:
-                    print("color detected, width =", max_x - min_x)
-                    cv.circle(frame, (x, y), (max_x-min_x)//2, color=(255, 0, 0), thickness=2)
-                # success, return width of hull and center of mass
-                return max_x - min_x, max_y - min_y, [x, y]
-            except ZeroDivisionError:
-                # color not found
+            if area_hull[int(area_max_index)] > 10:
+                # find the location of the center of mass
+                M = cv.moments(contours[area_max_index])
+                try:
+                    x = int(M["m10"] / M["m00"])
+                    y = int(M["m01"] / M["m00"])
+                    # trim hull down to just the hull of interest
+                    hull = hull[area_max_index]
+                    # find the min and max x values
+                    max_x = np.max(hull[:, :, 0])
+                    min_x = np.min(hull[:, :, 0])
+                    max_y = np.max(hull[:, :, 1])
+                    min_y = np.min(hull[:, :, 1])
+                    if self.debug:
+                        print("color detected, width =", max_x - min_x)
+                        cv.circle(frame, (x, y), (max_x-min_x)//2, color=(255, 0, 0), thickness=2)
+                    # success, return width of hull and center of mass
+                    return max_x - min_x, max_y - min_y, [x, y]
+                except ZeroDivisionError:
+                    # color not found
+                    if suppress_exception:
+                        return None
+                    else:
+                        raise LostTargetException("Color not found in frame")
+            else:
+                # color not found, area not large enough
                 if suppress_exception:
                     return None
                 else:
