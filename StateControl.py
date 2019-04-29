@@ -78,7 +78,7 @@ class StateController:
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 15  # this value is for ~1 meter from the laptop camera
         self.mining_area_standard = 50
-        self.goal_small_standard = 50
+        self.goal_small_standard = 70
         self.goal_large_standard = 120
         # color standard values based off of sampling
         self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
@@ -519,16 +519,8 @@ class StateController:
                 except LostTargetException or TypeError:
                     pass  # no line no location change
 
-                # _, _, pink_loc = self.find_color_in_frame(frame, self.pink_standard)
-
                 # get the width and location for the mining area indicator
                 width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
-                # if np.abs(center[0] - pink_loc[0]) < 5 or np.abs(center[1] - pink_loc[1]) < 5:
-                #     print("ERROR PINK FOUND")
-                #     if suppress_exception:
-                #         return None
-                #     else:
-                #         raise LostTargetException
                 # return distance ratio, and location of target
                 return height / self.mining_area_standard, center
             except TypeError:
