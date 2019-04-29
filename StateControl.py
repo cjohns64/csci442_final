@@ -78,8 +78,8 @@ class StateController:
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 15  # this value is for ~1 meter from the laptop camera
         self.mining_area_standard = 50
-        self.goal_small_standard = 30
-        self.goal_large_standard = 100
+        self.goal_small_standard = 50
+        self.goal_large_standard = 120
         # color standard values based off of sampling
         self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
         self.green_standard = [50, 170, 150]  # BGR [25, 200, 110]
@@ -513,6 +513,14 @@ class StateController:
                             self.zone_change_delay.update_time()
                 except LostTargetException or TypeError:
                     pass  # no line no location change
+
+                try:
+                    w, h, loc = self.find_color_in_frame(frame, self.pink_standard)
+                    if w > 0:
+                        # pink in frame, target can't be in this direction
+                        raise LostTargetException("pointing at goal area")
+                except TypeError:
+                    return None
 
                 # get the width and location for the mining area indicator
                 width, height, center = self.find_color_in_frame(frame, self.mining_indicator_standard, suppress_exception)
