@@ -124,19 +124,19 @@ class Driver:
                     try:
                         wi, hi, loc = obj.find_color_in_frame(frame, obj.pink_standard)
                         print("detected PINK")
-                        cv.circle(frame, loc, wi // 2, (255, 0, 0), 2)
+                        cv.circle(frame, loc, wi // 2, (190, 0, 255), 2)
                     except:
                         pass
                     try:
                         wi, hi, loc = obj.find_color_in_frame(frame, obj.green_standard)
                         print("detected GREEN")
-                        cv.circle(frame, loc, wi // 2, (255, 0, 0), 2)
+                        cv.circle(frame, loc, wi // 2, (0, 255, 0), 2)
                     except:
                         pass
                     try:
                         wi, hi, loc = obj.find_color_in_frame(frame, obj.orange_line_standard)
                         print("detected ORANGE")
-                        cv.circle(frame, loc, wi // 2, (255, 0, 0), 2)
+                        cv.circle(frame, loc, wi // 2, (0, 125, 255), 2)
                     except:
                         pass
 
