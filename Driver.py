@@ -166,9 +166,9 @@ class Driver:
 robot = StateController(debug=debug)
 # run w/ laptop/pi camera
 if not laptop:
-    Driver.pi_cam_loop(robot)
+    #Driver.pi_cam_loop(robot)
     # robot.navigation_obj.tilt_head_to_move()
-    #Driver.calibrate_color_size(robot, False)
+    Driver.calibrate_color_size(robot, True)
     robot.exit()
 else:
     Driver.laptop_cam_loop(robot)
