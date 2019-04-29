@@ -344,7 +344,8 @@ class StateController:
         :return: True if target is reached, False if it has not,
         raises a LostTargetException if the target is lost after the retargeting timeout
         """
-        if self.current_loc == Location.ROCK_AREA:
+        # TODO obstacle_avoidance_state disabled
+        if False and self.current_loc == Location.ROCK_AREA:
             # only avoid obstacles in the rock area
             return self.obstacle_avoidance_state(frame, targeting_function, suppress_exception)
         else:
