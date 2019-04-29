@@ -68,7 +68,7 @@ class StateController:
         self.zone_change_delay = delay(0.6)  # delay before another zone change is allowed
 
         # adjustable parameters
-        self.color_tolerance = np.array([15, 25, 230])  # np.array([20, 20, 250])  # HSV, accept most values
+        self.color_tolerance = np.array([10, 15, 200])  # np.array([20, 20, 250])  # HSV, accept most values
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.9
@@ -779,7 +779,7 @@ class StateController:
             hull = np.array(hull)
             # find the hull with the largest area
             area_max_index = np.argmax(area_hull)
-            if area_hull[int(area_max_index)] > 10:
+            if area_hull[int(area_max_index)] > 15:
                 # find the location of the center of mass
                 M = cv.moments(contours[area_max_index])
                 try:
