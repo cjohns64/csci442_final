@@ -272,7 +272,7 @@ class StateController:
                         # detected goal area since function returned True
                         print("STATE = 7, goal area found")
                         # set to next state
-                        self.transition_to_move_state()
+                        self.transition_to_goal_state()
 
             # >>>> ACTING States >>>>
             else:  # SecState == ACTING
@@ -327,6 +327,11 @@ class StateController:
         self.navigation_obj.tilt_head_to_move()
         self.navigation_obj.zero_wheels()
         self.secondary_state = SecState.ACTING
+
+    def transition_to_goal_state(self):
+        self.navigation_obj.tilt_head_to_move()
+        self.navigation_obj.zero_wheels()
+        self.secondary_state = SecState.MOVING
 
     def travel_or_avoid(self, frame, targeting_function, suppress_exception=False):
         """
