@@ -29,7 +29,7 @@ class Navigation:
         self.motors = 6000
         self.turn = 6000
         self.tango.setAccel(self.MOTORS, 40)
-        self.tango.setAccel(self.TURN, 40)
+        self.tango.setAccel(self.TURN, 50)
 
         # enable/disable displaying the detected path
         self.display = display
@@ -41,8 +41,8 @@ class Navigation:
         self.motor_step = 200
         self.slow_upper_value = 7200
         self.slow_lower_value = 5600
-        self.fast_upper_value = 6900
-        self.fast_lower_value = 4700
+        self.fast_upper_value = 7400
+        self.fast_lower_value = 5200
 
     def set_arm_motors(self, elbow, hand, shoulder):
         self.ELBOW = elbow
