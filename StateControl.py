@@ -91,8 +91,8 @@ class StateController:
         self.orange_line_standard = [20, 50, 250]  # BGR [160, 215, 240]
         self.orange_line_standard_430 = [16, 80, 240]
         self.mining_indicator_standard = self.green_standard
-        self.start_indicator_standard = self.pink_standard
-        self.goal_color_standard = self.pink_standard
+        self.start_indicator_standard = self.pink_standard_430
+        self.goal_color_standard = self.pink_standard_430
         self.min_width_mult = 0.1
         if use_phone: client.sendData("You are connected")
 
@@ -755,7 +755,7 @@ class StateController:
                 return self.green_standard
             elif tmp.__contains__("pink"):
                 # pink ice
-                return self.pink_standard
+                return self.pink_standard_430
             else:
                 # lost target
                 raise LostTargetException("TESTING, no ice detected")
@@ -768,8 +768,8 @@ class StateController:
                 # green not found
                 try:
                     # look for pink
-                    w, h, loc = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
-                    return self.pink_standard
+                    w, h, loc = self.find_color_in_frame(frame, self.pink_standard_430, suppress_exception)
+                    return self.pink_standard_430
                 except LostTargetException or TypeError:
                     # no colors found
                     if suppress_exception:
