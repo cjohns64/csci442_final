@@ -523,6 +523,7 @@ class StateController:
                     w, h, loc = self.find_color_in_frame(frame, self.pink_standard)
                     if w > 0:
                         # pink in frame, target can't be in this direction
+                        print("ERROR PINK FOUND")
                         raise LostTargetException("pointing at goal area")
                 except TypeError:
                     return None
