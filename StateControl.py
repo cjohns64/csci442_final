@@ -58,7 +58,7 @@ class StateController:
 
         # global variables
         self.goal = 1  # index for the current goal type to look for (green == 0, pink == 1)
-        self.start = 0
+        self.start = 1
         self.face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
 
         # Time Delay variables
