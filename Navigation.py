@@ -325,6 +325,7 @@ class Navigation:
     def arm_grab_ice(self):
         if self.debug: print("arm grabbed ice")
         self.hand = 7700
+        time.sleep(.5)
         if not laptop: self.tango.setTarget(self.HAND, self.hand)
 
     def zero_motors(self):
