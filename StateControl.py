@@ -57,8 +57,6 @@ class StateController:
         self.blur_frame = True
 
         # global variables
-        self.goal = 1  # index for the current goal type to look for (green == 0, pink == 1)
-        self.start = 1
         self.face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
 
         # Time Delay variables
@@ -80,11 +78,16 @@ class StateController:
         self.mining_area_standard = 50
         self.goal_small_standard = 70
         self.goal_large_standard = 120
+        self.goal_size_standard = self.goal_small_standard
+        self.start_size_standard = self.goal_size_standard
         # color standard values based off of sampling
         self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
         self.green_standard = [50, 170, 150]  # BGR [25, 200, 110]
         self.orange_line_standard = [20, 50, 250]  # BGR [160, 215, 240]
         self.mining_indicator_standard = self.green_standard
+        self.start_indicator_standard = self.pink_standard
+        self.goal_color_standard = self.pink_standard
+        self.min_width_mult = 0.1
         if use_phone: client.sendData("You are connected")
 
     @staticmethod
@@ -291,7 +294,7 @@ class StateController:
                 elif self.primary_state == PrmState.GOAL:
                     # 9) drop ice in correct goal area
                     print("STATE = 9, dropping ice")
-                    if self.drop_ice():
+                    if self.drop_ice(frame):
                         # drop ice success
                         print("STATE = 9, drop success")
                         # set to default state
@@ -569,28 +572,16 @@ class StateController:
                     pass  # no line no location change
 
                 # get the width and location for the given color
-                if self.goal == 0:
-                    width, _, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
-                    if width < self.goal_large_standard / 10:
-                        # throw out cases where the detection was too small
-                        if suppress_exception:
-                            return None
-                        else:
-                            raise LostTargetException("detected target is too small")
+                width, _, center = self.find_color_in_frame(frame, self.goal_color_standard, suppress_exception)
+                if width < self.goal_size_standard * self.min_width_mult:
+                    # throw out cases where the detection was too small
+                    if suppress_exception:
+                        return None
                     else:
-                        # return distance ratio, and location of target
-                        return width / self.goal_large_standard, center
+                        raise LostTargetException("detected target is too small")
                 else:
-                    width, _, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
-                    if width < self.goal_small_standard / 10:
-                        # throw out cases where the detection was too small
-                        if suppress_exception:
-                            return None
-                        else:
-                            raise LostTargetException("detected target is too small")
-                    else:
-                        # return distance ratio, and location of target
-                        return width / self.goal_small_standard, center
+                    # return distance ratio, and location of target
+                    return width / self.goal_size_standard, center
             except TypeError:
                 # failed to find target
                 # TypeErrors only occur when suppress_exception==True and the function failed to find the color
@@ -636,28 +627,16 @@ class StateController:
                     pass  # no line no location change
 
                 # get the width and location for the given color
-                if self.start == 0:
-                    width, _, center = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
-                    if width < self.goal_large_standard / 10:
-                        # throw out cases where the detection was too small
-                        if suppress_exception:
-                            return None
-                        else:
-                            raise LostTargetException("detected target is too small")
+                width, _, center = self.find_color_in_frame(frame, self.start_indicator_standard, suppress_exception)
+                if width < self.start_size_standard * self.min_width_mult:
+                    # throw out cases where the detection was too small
+                    if suppress_exception:
+                        return None
                     else:
-                        # return distance ratio, and location of target
-                        return width / self.goal_large_standard, center
+                        raise LostTargetException("detected target is too small")
                 else:
-                    width, _, center = self.find_color_in_frame(frame, self.pink_standard, suppress_exception)
-                    if width < self.goal_small_standard / 10:
-                        # throw out cases where the detection was too small
-                        if suppress_exception:
-                            return None
-                        else:
-                            raise LostTargetException("detected target is too small")
-                    else:
-                        # return distance ratio, and location of target
-                        return width / self.goal_small_standard, center
+                    # return distance ratio, and location of target
+                    return width / self.start_size_standard, center
             except TypeError:
                 # failed to find target
                 # TypeErrors only occur when suppress_exception==True and the function failed to find the color
@@ -682,15 +661,12 @@ class StateController:
         else:
             self.navigation_obj.arm_reach()
             self.navigation_obj.straighten_shoulder()
-            if self.goal == 0:
-                color = self.green_standard
-            else:
-                color = self.pink_standard
+
             roi = frame[90:180, 250:320]
             cv.rectangle(frame,(250, 90),(320,180), (255, 0, 0), 3)
             try:
                 found = self.find_any_color(roi, suppress_exception)
-                if found == color:
+                if found == self.goal_color_standard:
                     self.navigation_obj.arm_grab_ice()
                     self.navigation_obj.arm_lower()
                     return True
@@ -700,9 +676,10 @@ class StateController:
             except LostTargetException or TypeError:
                 return False
 
-    def drop_ice(self):
+    def drop_ice(self, frame):
         """
         Continues process to drop the ice in the relevant goal.
+        :param frame: the current frame of the camera
         :return: True if ice was dropped, False otherwise
         """
         if self.debug and not self.is_debug_ignore_state():
@@ -715,16 +692,41 @@ class StateController:
                 return False
         else:
             # Moves forward to get right up on the box
+            if self.move_to_goal_box(frame):
+                self.navigation_obj.zero_wheels()
+                # drops ice
+                self.navigation_obj.arm_raise()
+                time.sleep(.5)
+                self.navigation_obj.arm_reach()
+                time.sleep(.5)
+                self.navigation_obj.arm_lower()
+                # ice is dropped
+                return True
+            else:
+                # ice is not dropped
+                return False
+
+    def move_to_goal_box(self, frame):
+        """
+        Move robot up to the goal box, i.e. move towards the goal until it is lost
+        Must be basically at the box already.
+        :param frame: the current frame of the camera
+        :return: True if goal box is reached, otherwise False
+        """
+        try:
+            # continue to move to box
+            w, h, loc = self.find_color_in_frame(frame, self.goal_color_standard)
+            # color found, get action
+            move_function = self.navigation_obj.get_needed_action(loc[0] - frame.shape[1] // 2)
+            # do action
+            move_function()
+            return False
+        # lost the target, assume that the box has been reached
+        except LostTargetException or TypeError:
+            # finishing forward move to contact box
             self.navigation_obj.move_forward()
-            time.sleep(1)
+            time.sleep(0.2)
             self.navigation_obj.zero_wheels()
-            # drops ice
-            self.navigation_obj.arm_raise()
-            time.sleep(.5)
-            self.navigation_obj.arm_reach()
-            time.sleep(.5)
-            self.navigation_obj.arm_lower()
-            # ice is dropped
             return True
 
     def find_any_color(self, frame, suppress_exception=False):
