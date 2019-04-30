@@ -92,7 +92,7 @@ class StateController:
 
         self.orange_line_standard = [20, 50, 250]  # BGR [160, 215, 240]
         self.orange_line_standard_430 = [16, 80, 240]
-        self.mining_indicator_standard = self.green_standard_800
+        self.mining_indicator_standard = self.green_standard
         self.start_indicator_standard = self.pink_standard_520
         self.goal_color_standard = self.pink_standard_520
         self.min_width_mult = 0.1
