@@ -68,6 +68,7 @@ class StateController:
 
         # adjustable parameters
         self.color_tolerance = np.array([10, 20, 100])  # np.array([20, 20, 250])  # HSV, accept most values
+        self.color_tolerance_green = np.array([10, 35, 100])
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.70
@@ -794,7 +795,10 @@ class StateController:
         """
         value = np.array(color)  # tolerance pivot point
         # threshold on color within the bounds of the tolerance
-        detection = cv.inRange(frame, value - self.color_tolerance, value + self.color_tolerance)
+        if color == self.green_standard or color == self.green_standard_430 or color == self.green_standard_800:
+            detection = cv.inRange(frame, value - self.color_tolerance_green, value + self.color_tolerance_green)
+        else:
+            detection = cv.inRange(frame, value - self.color_tolerance, value + self.color_tolerance)
         # find the contours of the path area
         contours, _ = cv.findContours(detection, mode=cv.RETR_TREE, method=cv.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
