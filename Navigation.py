@@ -320,7 +320,7 @@ class Navigation:
     def arm_raise(self):
         if self.debug: print("arm raised without releasing hand")
         self.shoulder = 7000
-        self.shoulder_side = 6900
+        self.shoulder_side = 7000
         if not laptop:
             self.tango.setTarget(self.SHOULDER, self.shoulder)
             time.sleep(0.75)
