@@ -92,7 +92,7 @@ class StateController:
 
         self.orange_line_standard = [20, 50, 250]  # BGR [160, 215, 240]
         self.orange_line_standard_430 = [16, 80, 240]
-        self.mining_indicator_standard = self.green_standard
+        self.mining_indicator_standard = self.green_standard_800
         self.start_indicator_standard = self.pink_standard
         self.goal_color_standard = self.pink_standard
         self.min_width_mult = 0.1
@@ -754,7 +754,7 @@ class StateController:
             tmp = input("green/pink/lost:")
             if tmp.__contains__("green"):
                 # green ice
-                return self.green_standard
+                return self.green_standard_800
             elif tmp.__contains__("pink"):
                 # pink ice
                 return self.pink_standard
@@ -764,8 +764,8 @@ class StateController:
         else:
             try:
                 # look for green
-                w, h, loc = self.find_color_in_frame(frame, self.green_standard, suppress_exception)
-                return self.green_standard
+                w, h, loc = self.find_color_in_frame(frame, self.green_standard_800, suppress_exception)
+                return self.green_standard_800
             except LostTargetException or TypeError:
                 # green not found
                 try:
