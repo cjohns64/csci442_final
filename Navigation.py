@@ -218,10 +218,10 @@ class Navigation:
             self.motors = self.slow_forward - self.boost_delta * self.forward_boost_mult
             if not laptop: self.tango.setTarget(self.MOTORS, self.motors)
 
-    def rotate_right(self):
+    def rotate_right(self, use_delay=True):
         if self.debug: print("rotating right")
-        if move_enabled and self.turn_delay.check_time():
-            self.turn_delay.update_time()
+        if move_enabled and (use_delay or self.turn_delay.check_time()):
+            if use_delay: self.turn_delay.update_time()
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
@@ -237,14 +237,14 @@ class Navigation:
             #     self.turn = value
             #     if not laptop: self.tango.setTarget(self.TURN, self.turn)
             #     time.sleep(0.8)
-            self.rotate_right()
+            self.rotate_right(False)
             time.sleep(0.3)
             self.zero_wheels()
 
-    def rotate_left(self):
+    def rotate_left(self, use_delay=True):
         if self.debug: print("rotating left")
-        if move_enabled and self.turn_delay.check_time():
-            self.turn_delay.update_time()
+        if move_enabled and (use_delay or self.turn_delay.check_time()):
+            if use_delay: self.turn_delay.update_time()
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
