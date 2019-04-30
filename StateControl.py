@@ -677,10 +677,9 @@ class StateController:
         else:
             self.navigation_obj.arm_reach()
             self.navigation_obj.straighten_shoulder()
-            h, w = frame.shape[:2]
 
-            roi = frame[90:180, w - 250:w - 320]
-            cv.rectangle(frame,(w - 250, 90),(w- 320,180), (255, 0, 0), 3)
+            roi = frame[90:180, 0:70]
+            cv.rectangle(frame,(0, 90),(70,180), (255, 0, 0), 3)
             try:
                 found = self.find_any_color(roi, suppress_exception)
                 if found == self.goal_color_standard:
