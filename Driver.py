@@ -59,26 +59,26 @@ class Driver:
             # grab the raw NumPy array representing the image, then initialize the timestamp
             # and occupied/unoccupied text
             frame = image.array
-            # if (obj.get_state_index() != 2) and (obj.get_state_index() != 3):
-            #     frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+            if (obj.get_state_index() != 2) and (obj.get_state_index() != 3):
+                frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
             h, w = frame.shape[:2]
 
             if doOnce:
                 diff32 = np.zeros(frame.shape, np.float32)
                 doOnce = False
-            # if obj.get_frame_blur():
-            #     frame = cv.GaussianBlur(frame, (3, 3), cv.BORDER_DEFAULT)
-            #     # stabilize image
-            #     cv.accumulateWeighted(frame, diff32, 0.80)
-            #     cv.convertScaleAbs(diff32, frame)
-            #     frame = cv.normalize(frame, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX, dtype=cv.CV_8U)
+            if obj.get_frame_blur():
+                frame = cv.GaussianBlur(frame, (3, 3), cv.BORDER_DEFAULT)
+                # stabilize image
+                cv.accumulateWeighted(frame, diff32, 0.80)
+                cv.convertScaleAbs(diff32, frame)
+                frame = cv.normalize(frame, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX, dtype=cv.CV_8U)
 
             # run one frame of the main operating loop
-            # if obj.main_loop_step(frame):
-            #     # cycle complete
-            #     break
-            obj.navigation_obj.tilt_head_to_human()
-            obj.cal_face(frame, 1.2, 5)
+            if obj.main_loop_step(frame):
+                # cycle complete
+                break
+            # obj.navigation_obj.tilt_head_to_human()
+            # obj.cal_face(frame, 1.2, 5)
 
             cv.imshow("Video", frame)
 
