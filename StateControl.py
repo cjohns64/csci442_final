@@ -80,7 +80,7 @@ class StateController:
         self.goal_small_standard = 140
         self.goal_large_standard = 120
         self.goal_size_standard = self.goal_small_standard
-        self.start_size_standard = self.goal_size_standard - 30
+        self.start_size_standard = self.goal_size_standard - 50
         # color standard values based off of sampling
         self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
         self.pink_standard_430 = [156, 100, 253]
