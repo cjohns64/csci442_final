@@ -71,6 +71,7 @@ class StateController:
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.70
+        self.face_distance_ratio = 0.9
         # standard distances for targeting functions
         # 1 distance value is recorded at the optimum distance
         # and the ratio of the current sensor value and this distance
@@ -415,7 +416,9 @@ class StateController:
             # update the last seen time with the current time
             self.keep_moving_delay.update_time()
             # check distance to target
-            if distance < self.distance_ratio:
+            if distance < self.distance_ratio or \
+                    ((self.get_state_index() == 3 or self.get_state_index() == 4)
+                     and distance < self.face_distance_ratio):
                 # get function for moving or rotating
                 move_function = self.navigation_obj.get_needed_action(location[0] - frame.shape[1] // 2,
                                                                       min_action_value=70)
