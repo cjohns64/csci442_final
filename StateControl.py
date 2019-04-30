@@ -89,16 +89,18 @@ class StateController:
         self.pink_standard_520 = [165, 150, 225] # pink for 5:20 p.m.
         self.pink_standard_915 = [157, 76, 253] # pink for 9:15 a.m.
         self.pink_standard_1010 = [160, 85, 200] # pink for 10:10 a.m.
+        self.use_pink = self.pink_standard_1010
 
         self.green_standard = [50, 170, 150]  # BGR [25, 200, 110]
         self.green_standard_430 = [44, 120, 240]
         self.green_standard_800 = [43, 170, 223]
+        self.use_green = self.green_standard
 
         self.orange_line_standard = [20, 50, 250]  # BGR [160, 215, 240]
         self.orange_line_standard_430 = [16, 80, 240]
-        self.mining_indicator_standard = self.green_standard_800
-        self.start_indicator_standard = self.pink_standard_1010
-        self.goal_color_standard = self.pink_standard_1010
+        self.mining_indicator_standard = self.use_green
+        self.start_indicator_standard = self.use_pink
+        self.goal_color_standard = self.use_pink
         self.min_width_mult = 0.05
         if use_phone: client.sendData("You are connected")
 
@@ -760,24 +762,24 @@ class StateController:
             tmp = input("green/pink/lost:")
             if tmp.__contains__("green"):
                 # green ice
-                return self.green_standard_800
+                return self.use_green
             elif tmp.__contains__("pink"):
                 # pink ice
-                return self.pink_standard_915
+                return self.use_pink
             else:
                 # lost target
                 raise LostTargetException("TESTING, no ice detected")
         else:
             try:
                 # look for green
-                w, h, loc = self.find_color_in_frame(frame, self.green_standard_800, suppress_exception)
-                return self.green_standard_800
+                w, h, loc = self.find_color_in_frame(frame, self.use_green, suppress_exception)
+                return self.use_green
             except LostTargetException or TypeError:
                 # green not found
                 try:
                     # look for pink
-                    w, h, loc = self.find_color_in_frame(frame, self.pink_standard_915, suppress_exception)
-                    return self.pink_standard_915
+                    w, h, loc = self.find_color_in_frame(frame, self.use_pink, suppress_exception)
+                    return self.use_pink
                 except LostTargetException or TypeError:
                     # no colors found
                     if suppress_exception:
@@ -795,7 +797,7 @@ class StateController:
         """
         value = np.array(color)  # tolerance pivot point
         # threshold on color within the bounds of the tolerance
-        if color == self.green_standard or color == self.green_standard_430 or color == self.green_standard_800:
+        if color == self.use_green:
             detection = cv.inRange(frame, value - self.color_tolerance_green, value + self.color_tolerance_green)
         else:
             detection = cv.inRange(frame, value - self.color_tolerance, value + self.color_tolerance)
