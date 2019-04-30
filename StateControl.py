@@ -70,15 +70,15 @@ class StateController:
         self.color_tolerance = np.array([10, 45, 200])  # np.array([20, 20, 250])  # HSV, accept most values
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
-        self.distance_ratio = 0.9
+        self.distance_ratio = 0.95
         # standard distances for targeting functions
         # 1 distance value is recorded at the optimum distance
         # and the ratio of the current sensor value and this distance
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 50
         self.mining_area_standard = 55
-        self.goal_small_standard = 140
-        self.goal_large_standard = 120
+        self.goal_small_standard = 130
+        self.goal_large_standard = 130
         self.goal_size_standard = self.goal_small_standard
         self.start_size_standard = self.goal_size_standard - 50
         # color standard values based off of sampling

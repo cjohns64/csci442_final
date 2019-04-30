@@ -228,7 +228,7 @@ class Navigation:
             self.turn = self.slow_right - self.boost_delta * self.rotate_boost_mult
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
             if use_delay:
-                time.sleep(0.15)
+                time.sleep(0.2)
                 self.zero_wheels()
 
     def burst_right(self):
@@ -252,7 +252,7 @@ class Navigation:
             self.turn = self.slow_left + self.boost_delta * self.rotate_boost_mult
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
             if use_delay:
-                time.sleep(0.15)
+                time.sleep(0.2)
                 self.zero_wheels()
 
     def turn_180(self):
