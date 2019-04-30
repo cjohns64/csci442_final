@@ -64,7 +64,7 @@ class StateController:
         self.rotate_delay = delay(0.4)  # pause between rotation and looking while searching for a face
         # TODO self.face_timeout = delay(1)  # time to wait before reverting back to searching for a face state
         self.zone_change_delay = delay(0.6)  # delay before another zone change is allowed
-        self.keep_moving_delay = delay(0.2)  # delay before zeroing motors when a target is lost
+        self.keep_moving_delay = delay(0.1)  # delay before zeroing motors when a target is lost
 
         # adjustable parameters
         self.color_tolerance = np.array([10, 45, 200])  # np.array([20, 20, 250])  # HSV, accept most values
