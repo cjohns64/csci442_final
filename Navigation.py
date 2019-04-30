@@ -38,7 +38,6 @@ class Navigation:
         # enable/disable debug printouts/testing
         self.debug = debug
         self.moving_forward = False
-        self.turn_delay = delay(0.1)
 
         # motor values
         self.forward_boost_mult = 4
@@ -220,8 +219,7 @@ class Navigation:
 
     def rotate_right(self, use_delay=True):
         if self.debug: print("rotating right")
-        if move_enabled and (use_delay or self.turn_delay.check_time()):
-            if use_delay: self.turn_delay.update_time()
+        if move_enabled:
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
@@ -229,6 +227,9 @@ class Navigation:
             self.moving_forward = False
             self.turn = self.slow_right - self.boost_delta * self.rotate_boost_mult
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
+            if use_delay:
+                time.sleep(0.15)
+                self.zero_wheels()
 
     def burst_right(self):
         if self.debug: print("burst right")
@@ -243,14 +244,16 @@ class Navigation:
 
     def rotate_left(self, use_delay=True):
         if self.debug: print("rotating left")
-        if move_enabled and (use_delay or self.turn_delay.check_time()):
-            if use_delay: self.turn_delay.update_time()
+        if move_enabled:
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
             self.moving_forward = False
             self.turn = self.slow_left + self.boost_delta * self.rotate_boost_mult
             if not laptop: self.tango.setTarget(self.TURN, self.turn)
+            if use_delay:
+                time.sleep(0.15)
+                self.zero_wheels()
 
     def turn_180(self):
         if self.debug: print("turning around")
