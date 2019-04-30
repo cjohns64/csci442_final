@@ -52,12 +52,14 @@ class KeyControl():
             self.body += 200
             if(self.body > 7900):
                 self.body = 7900
+            print(self.body)
             self.tango.setTarget(BODY, self.body)
             print("waist right")
         elif key.keycode == 52:
             self.body -= 200
             if(self.body < 1510):
                 self.body = 1510
+            print(self.body)
             self.tango.setTarget(BODY, self.body)
             print ('waist left')
    
