@@ -90,7 +90,7 @@ class StateController:
         self.pink_standard_915 = [157, 76, 253] # pink for 9:15 a.m.
         self.pink_standard_1010 = [160, 85, 200] # pink for 10:10 a.m.
         self.pink_standard_1145 = [155, 40, 253] # pink for 11:45 a.m.
-        self.use_pink = self.pink_standard_1145
+        self.use_pink = self.pink_standard_1010
 
         self.green_standard = [50, 170, 150]  # BGR [25, 200, 110]
         self.green_standard_430 = [44, 120, 240]
