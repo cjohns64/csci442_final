@@ -29,7 +29,7 @@ class Navigation:
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
-        acceleration = 80
+        acceleration = 200
         self.tango.setAccel(self.MOTORS, acceleration)
         self.tango.setAccel(self.TURN, acceleration)
 
@@ -42,7 +42,7 @@ class Navigation:
 
         # motor values
         self.forward_boost_mult = 4
-        self.rotate_boost_mult = 1
+        self.rotate_boost_mult = 2
         self.boost_delta = 100
         self.slow_forward = 5200
         self.slow_right = 5000
