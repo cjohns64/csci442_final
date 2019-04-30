@@ -294,7 +294,7 @@ class Navigation:
 
     def arm_reach(self):
         if self.debug: print("arm reached out with open hand")
-        self.shoulder = 7800
+        self.shoulder = 7500
         self.elbow = 5000
         self.hand = 5000
         if not laptop:
