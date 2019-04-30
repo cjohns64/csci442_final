@@ -66,17 +66,18 @@ class Driver:
             if doOnce:
                 diff32 = np.zeros(frame.shape, np.float32)
                 doOnce = False
-            if obj.get_frame_blur():
-                frame = cv.GaussianBlur(frame, (3, 3), cv.BORDER_DEFAULT)
-                # stabilize image
-                cv.accumulateWeighted(frame, diff32, 0.80)
-                cv.convertScaleAbs(diff32, frame)
-                frame = cv.normalize(frame, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX, dtype=cv.CV_8U)
+            # if obj.get_frame_blur():
+            #     frame = cv.GaussianBlur(frame, (3, 3), cv.BORDER_DEFAULT)
+            #     # stabilize image
+            #     cv.accumulateWeighted(frame, diff32, 0.80)
+            #     cv.convertScaleAbs(diff32, frame)
+            #     frame = cv.normalize(frame, None, alpha=0, beta=255, norm_type=cv.NORM_MINMAX, dtype=cv.CV_8U)
 
             # run one frame of the main operating loop
-            if obj.main_loop_step(frame):
-                # cycle complete
-                break
+            # if obj.main_loop_step(frame):
+            #     # cycle complete
+            #     break
+            obj.cal_face(frame, 1.2, 5)
 
             cv.imshow("Video", frame)
 

@@ -845,3 +845,13 @@ class StateController:
             else:
                 raise LostTargetException("Color not found in frame")
 
+    def cal_face(self, frame, x=1.1, y=5):
+        # look for a face in the frame
+        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        faces = self.face_cascade.detectMultiScale(gray, x, y)
+        if len(faces) > 0:
+            print("faces", len(faces))
+            # identify face to use
+            (x, y, w, h) = faces[0]
+            if self.debug: cv.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
