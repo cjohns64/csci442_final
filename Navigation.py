@@ -2,6 +2,7 @@ import numpy as np
 import cv2 as cv
 import time
 from global_settings import *
+from TimeDelay import TimeDelay as delay
 if not laptop: import maestro
 
 
@@ -37,10 +38,11 @@ class Navigation:
         # enable/disable debug printouts/testing
         self.debug = debug
         self.moving_forward = False
+        self.turn_delay = delay(0.1)
 
         # motor values
         self.forward_boost_mult = 4
-        self.rotate_boost_mult = 1
+        self.rotate_boost_mult = 0
         self.boost_delta = 100
         self.slow_forward = 5200
         self.slow_right = 5000
@@ -218,7 +220,8 @@ class Navigation:
 
     def rotate_right(self):
         if self.debug: print("rotating right")
-        if move_enabled:
+        if move_enabled and self.turn_delay.check_time():
+            self.turn_delay.update_time()
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
@@ -235,12 +238,13 @@ class Navigation:
             #     if not laptop: self.tango.setTarget(self.TURN, self.turn)
             #     time.sleep(0.8)
             self.rotate_right()
-            time.sleep(0.4)
+            time.sleep(0.3)
             self.zero_wheels()
 
     def rotate_left(self):
         if self.debug: print("rotating left")
-        if move_enabled:
+        if move_enabled and self.turn_delay.check_time():
+            self.turn_delay.update_time()
             # stop going forward
             if self.moving_forward:
                 self.zero_wheels()
