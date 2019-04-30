@@ -16,13 +16,13 @@ class Navigation:
         self.TURN = 2
         self.HEADTURN = 3
         self.HEADTILT = 4
-        self.ELBOW = 8
-        self.SHOULDER = 6
-        self.SHOULDER_SIDE = 7
-        self.HAND = 11
+        self.ELBOW = 7
+        self.SHOULDER = 5
+        self.SHOULDER_SIDE = 6
+        self.HAND = 10
         self.hand = 6000
         self.elbow = 5000
-        self.shoulder = 5400
+        self.shoulder = 4800
         self.shoulder_side = 7000#TODO 5400
         self.body = 6600
         self.headTurn = 6000
@@ -296,7 +296,7 @@ class Navigation:
         if self.debug: print("arm reached out with open hand")
         self.shoulder = 7500
         self.elbow = 5000
-        self.hand = 5000
+        self.hand = 4000
         if not laptop:
             self.tango.setTarget(self.HAND, self.hand)
             self.tango.setTarget(self.SHOULDER, self.shoulder)
@@ -304,13 +304,13 @@ class Navigation:
 
     def straighten_shoulder(self):
         if self.debug: print("shoulder straightened")
-        self.shoulder_side = 7000
+        self.shoulder_side = 6000
         if not laptop:
             self.tango.setTarget(self.SHOULDER_SIDE, self.shoulder_side)
 
     def arm_lower(self):
         if self.debug: print("arm lowered without releasing hand")
-        self.shoulder_side = 7000
+        self.shoulder_side = 6000
         self.shoulder = 5400
         if not laptop:
             self.tango.setTarget(self.SHOULDER_SIDE, self.shoulder_side)
@@ -320,7 +320,7 @@ class Navigation:
     def arm_raise(self):
         if self.debug: print("arm raised without releasing hand")
         self.shoulder = 7800
-        self.shoulder_side = 5900
+        self.shoulder_side = 6900
         if not laptop:
             self.tango.setTarget(self.SHOULDER, self.shoulder)
             time.sleep(0.75)
@@ -328,7 +328,7 @@ class Navigation:
 
     def arm_grab_ice(self):
         if self.debug: print("arm grabbed ice")
-        self.hand = 7200 #7700
+        self.hand = 7600 #7700
         time.sleep(0.5)
         if not laptop: self.tango.setTarget(self.HAND, self.hand)
 
