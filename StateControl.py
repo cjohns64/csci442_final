@@ -67,7 +67,7 @@ class StateController:
         self.keep_moving_delay = delay(0.1)  # delay before zeroing motors when a target is lost
 
         # adjustable parameters
-        self.color_tolerance = np.array([10, 20, 100])  # np.array([20, 20, 250])  # HSV, accept most values
+        self.color_tolerance = np.array([10, 25, 100])  # np.array([20, 20, 250])  # HSV, accept most values
         self.color_tolerance_green = np.array([10, 35, 100])
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
@@ -99,7 +99,7 @@ class StateController:
         self.mining_indicator_standard = self.green_standard_800
         self.start_indicator_standard = self.pink_standard_1010
         self.goal_color_standard = self.pink_standard_1010
-        self.min_width_mult = 0.1
+        self.min_width_mult = 0.05
         if use_phone: client.sendData("You are connected")
 
     @staticmethod
@@ -419,7 +419,7 @@ class StateController:
             self.keep_moving_delay.update_time()
             # check distance to target
             if distance < self.distance_ratio or \
-                    ((self.get_state_index() == 3 or self.get_state_index() == 4)
+                    ((self.get_state_index() == 3 or self.get_state_index() == 2)
                      and distance < self.face_distance_ratio):
                 # get function for moving or rotating
                 move_function = self.navigation_obj.get_needed_action(location[0] - frame.shape[1] // 2,
