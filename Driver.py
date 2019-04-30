@@ -77,7 +77,7 @@ class Driver:
             # if obj.main_loop_step(frame):
             #     # cycle complete
             #     break
-            obj.navigation_obj.tilt_head_to_search()
+            obj.navigation_obj.tilt_head_to_human()
             obj.cal_face(frame, 1.2, 5)
 
             cv.imshow("Video", frame)
