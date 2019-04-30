@@ -22,8 +22,8 @@ class Navigation:
         self.HAND = 11
         self.hand = 6000
         self.elbow = 5000
-        self.shoulder = 6000
-        self.shoulder_side = 5600#TODO 5400
+        self.shoulder = 5400
+        self.shoulder_side = 7000#TODO 5400
         self.body = 6000
         self.headTurn = 6000
         self.headTilt = 6000
@@ -294,7 +294,7 @@ class Navigation:
 
     def arm_reach(self):
         if self.debug: print("arm reached out with open hand")
-        self.shoulder = 8000
+        self.shoulder = 7800
         self.elbow = 5000
         self.hand = 5000
         if not laptop:
@@ -304,14 +304,14 @@ class Navigation:
 
     def straighten_shoulder(self):
         if self.debug: print("shoulder straightened")
-        self.shoulder_side = 5600
+        self.shoulder_side = 7000
         if not laptop:
             self.tango.setTarget(self.SHOULDER_SIDE, self.shoulder_side)
 
     def arm_lower(self):
         if self.debug: print("arm lowered without releasing hand")
-        self.shoulder_side = 5600
-        self.shoulder = 6000
+        self.shoulder_side = 7000
+        self.shoulder = 5400
         if not laptop:
             self.tango.setTarget(self.SHOULDER_SIDE, self.shoulder_side)
             time.sleep(0.5)
@@ -319,8 +319,8 @@ class Navigation:
 
     def arm_raise(self):
         if self.debug: print("arm raised without releasing hand")
-        self.shoulder = 8000
-        self.shoulder_side = 4200
+        self.shoulder = 7800
+        self.shoulder_side = 5200
         if not laptop:
             self.tango.setTarget(self.SHOULDER, self.shoulder)
             time.sleep(0.75)
@@ -328,7 +328,7 @@ class Navigation:
 
     def arm_grab_ice(self):
         if self.debug: print("arm grabbed ice")
-        self.hand = 7700
+        self.hand = 7200 #7700
         time.sleep(0.5)
         if not laptop: self.tango.setTarget(self.HAND, self.hand)
 
