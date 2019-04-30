@@ -83,8 +83,8 @@ class StateController:
         self.start_size_standard = self.goal_size_standard - 50
         # color standard values based off of sampling
         self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
-        self.pink_standard_430 = [156, 100, 253]
-        self.pink_standard_520 = [165, 150, 225]
+        self.pink_standard_430 = [156, 100, 253] # pink for 4:30 p.m.
+        self.pink_standard_520 = [165, 150, 225] # pink for 5:20 p.m.
 
         self.green_standard = [50, 170, 150]  # BGR [25, 200, 110]
         self.green_standard_430 = [44, 120, 240]
