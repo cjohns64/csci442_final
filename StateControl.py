@@ -77,10 +77,10 @@ class StateController:
         # will be compared to the distance_ratio to determine if we have reached the target or not
         self.face_width_standard = 50
         self.mining_area_standard = 55
-        self.goal_small_standard = 130
+        self.goal_small_standard = 135
         self.goal_large_standard = 130
         self.goal_size_standard = self.goal_small_standard
-        self.start_size_standard = self.goal_size_standard - 50
+        self.start_size_standard = self.goal_size_standard - 40
         # color standard values based off of sampling
         self.pink_standard = [160, 130, 240]  # BGR [190, 125, 250]
         self.pink_standard_430 = [156, 100, 253] # pink for 4:30 p.m.
