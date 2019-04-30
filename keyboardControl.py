@@ -22,6 +22,14 @@ class KeyControl():
         self.headTilt = 6000
         self.motors = 6000
         self.turn = 6000
+        self.elbow = 5000
+        self.shoulder = 6000
+        self.shoulder_side = 7000
+        self.hand = 4800
+        self.tango.setTarget(ELBOW, self.elbow)
+        self.tango.setTarget(SHOULDER, self.shoulder)
+        self.tango.setTarget(SHOULDER_SIDE, self.shoulder_side)
+        self.tango.setTarget(HAND, self.hand)
         
     def head(self,key):
         print(key.keycode)
@@ -65,7 +73,7 @@ class KeyControl():
             # self.elbow+=200
             # self.shoulder_side-=200
             # print(self.elbow)
-            self.shoulder+=200
+            self.shoulder-=200
             print(self.shoulder)
             #self.hand += 200
             # print(self.hand)
