@@ -73,7 +73,7 @@ class KeyControl():
             # self.elbow+=200
             # self.shoulder_side-=200
             # print(self.elbow)
-            self.shoulder+=200
+            self.shoulder-=200
             print(self.shoulder)
             #self.hand += 200
             # print(self.hand)
