@@ -59,8 +59,8 @@ class Driver:
             # grab the raw NumPy array representing the image, then initialize the timestamp
             # and occupied/unoccupied text
             frame = image.array
-            if (obj.get_state_index() != 2) and (obj.get_state_index() != 3):
-                frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+            # if (obj.get_state_index() != 2) and (obj.get_state_index() != 3):
+            #     frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
             h, w = frame.shape[:2]
 
             if doOnce:
@@ -77,6 +77,7 @@ class Driver:
             # if obj.main_loop_step(frame):
             #     # cycle complete
             #     break
+            obj.navigation_obj.tilt_head_to_search()
             obj.cal_face(frame, 1.2, 5)
 
             cv.imshow("Video", frame)
