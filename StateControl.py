@@ -416,7 +416,7 @@ class StateController:
             if distance < self.distance_ratio:
                 # get function for moving or rotating
                 move_function = self.navigation_obj.get_needed_action(location[0] - frame.shape[1] // 2,
-                                                                      min_action_value=90)
+                                                                      min_action_value=70)
                 # do action
                 move_function()
                 return False
