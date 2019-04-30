@@ -24,7 +24,7 @@ class Navigation:
         self.elbow = 5000
         self.shoulder = 5400
         self.shoulder_side = 7000#TODO 5400
-        self.body = 6000
+        self.body = 6600
         self.headTurn = 6000
         self.headTilt = 6000
         self.motors = 6000
@@ -335,7 +335,7 @@ class Navigation:
     def zero_motors(self):
         if self.debug: print("zeroing motors")
         # zero all motors
-        self.body = 6000
+        self.body = 6600
         self.headTurn = 6000
         self.headTilt = 6000
         self.motors = 6000
