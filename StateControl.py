@@ -70,7 +70,7 @@ class StateController:
         self.color_tolerance = np.array([10, 30, 200])  # np.array([20, 20, 250])  # HSV, accept most values
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
-        self.distance_ratio = 0.90
+        self.distance_ratio = 0.70
         # standard distances for targeting functions
         # 1 distance value is recorded at the optimum distance
         # and the ratio of the current sensor value and this distance
@@ -739,7 +739,7 @@ class StateController:
         except LostTargetException or TypeError:
             # finishing forward move to contact box
             self.navigation_obj.move_forward()
-            time.sleep(0.2)
+            time.sleep(0.4)
             self.navigation_obj.zero_wheels()
             return True
 
