@@ -259,7 +259,7 @@ class Navigation:
         if not laptop:
             self.tango.setTarget(self.TURN, self.turn)
             self.tango.setTarget(self.MOTORS, self.motors)
-        time.sleep(0.1)
+        time.sleep(0.03)
 
     def tilt_head_to_search(self):
         # zero all motors
