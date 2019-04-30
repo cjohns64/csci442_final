@@ -71,7 +71,7 @@ class StateController:
         # ratio of the current face distance and the standard distance, i.e current/standard, that is acceptable
         # values less then 1 occur when target is far away
         self.distance_ratio = 0.70
-        self.face_distance_ratio = 0.9
+        self.face_distance_ratio = 1
         # standard distances for targeting functions
         # 1 distance value is recorded at the optimum distance
         # and the ratio of the current sensor value and this distance
