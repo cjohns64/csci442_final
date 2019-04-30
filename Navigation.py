@@ -235,7 +235,7 @@ class Navigation:
             #     if not laptop: self.tango.setTarget(self.TURN, self.turn)
             #     time.sleep(0.8)
             self.rotate_right()
-            time.sleep(0.5)
+            time.sleep(0.4)
             self.zero_wheels()
 
     def rotate_left(self):
