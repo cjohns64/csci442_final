@@ -6,7 +6,10 @@ TURN = 2
 BODY = 0
 HEADTILT = 4
 HEADTURN = 3
-
+ELBOW = 7
+SHOULDER = 5
+SHOULDER_SIDE = 6
+HAND = 10
 
 # def sendCommand(x):
 #    if(x == '8'):
@@ -62,14 +65,14 @@ class KeyControl():
             # self.elbow+=200
             # self.shoulder_side-=200
             # print(self.elbow)
-            # self.shoulder+=200
-            # print(self.shoulder)
-            self.hand += 200
-            print(self.hand)
-            self.tango.setTarget(HAND, self.hand)
+            self.shoulder+=200
+            print(self.shoulder)
+            #self.hand += 200
+            # print(self.hand)
+            # self.tango.setTarget(HAND, self.hand)
             # self.tango.setTarget(SHOULDER_SIDE, self.shoulder_side)
             # self.tango.setTarget(ELBOW, self.elbow)
-            # self.tango.setTarget(SHOULDER,self.shoulder)
+            self.tango.setTarget(SHOULDER,self.shoulder)
    
     
     def arrow(self, key):
